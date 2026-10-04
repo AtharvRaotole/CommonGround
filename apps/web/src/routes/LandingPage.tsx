@@ -10,6 +10,7 @@ export function LandingPage() {
         </span>
         <nav className="landing__nav" aria-label="Primary">
           <Link to="/example">Walk through</Link>
+          <Link to="/privacy">Privacy</Link>
         </nav>
       </header>
 

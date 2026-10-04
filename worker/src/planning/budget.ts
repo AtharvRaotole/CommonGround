@@ -43,31 +43,34 @@ async function increment(
   kind: BudgetKind,
   by: number,
 ): Promise<number> {
-  const current = await getCount(db, scope, scopeId, day, kind);
-  const next = current + by;
-  if (current === 0) {
+  if (by < 0) {
+    // Refund path — never INSERT a negative row; clamp at zero.
     await db
       .prepare(
-        `INSERT INTO usage_daily (id, scope, scope_id, day, kind, count)
-         VALUES (?, ?, ?, ?, ?, ?)`,
-      )
-      .bind(randomId(), scope, scopeId, day, kind, next)
-      .run();
-  } else {
-    await db
-      .prepare(
-        `UPDATE usage_daily SET count = ?
+        `UPDATE usage_daily SET count = MAX(0, count + ?)
          WHERE scope = ? AND scope_id = ? AND day = ? AND kind = ?`,
       )
-      .bind(next, scope, scopeId, day, kind)
+      .bind(by, scope, scopeId, day, kind)
       .run();
+    return getCount(db, scope, scopeId, day, kind);
   }
-  return next;
+  // Upsert so concurrent first-writers do not trip the UNIQUE constraint (FLOW-04).
+  await db
+    .prepare(
+      `INSERT INTO usage_daily (id, scope, scope_id, day, kind, count)
+       VALUES (?, ?, ?, ?, ?, ?)
+       ON CONFLICT(scope, scope_id, day, kind) DO UPDATE SET
+         count = count + excluded.count`,
+    )
+    .bind(randomId(), scope, scopeId, day, kind, by)
+    .run();
+  return getCount(db, scope, scopeId, day, kind);
 }
 
 /**
  * Atomically reserve one lookup against member/event/global daily caps.
  * Charged before the provider call; retries must call again.
+ * Concurrent writers upsert then refund on overshoot (FLOW-04).
  */
 export async function reserveLookup(input: {
   db: D1Like;
@@ -75,22 +78,24 @@ export async function reserveLookup(input: {
   eventId: string;
 }): Promise<ReserveResult> {
   const day = utcDay();
-  const member = await getCount(input.db, "member", input.memberId, day, "lookup");
-  if (member >= LOOKUP_CAPS.perMemberDay) {
+  const memberNext = await increment(input.db, "member", input.memberId, day, "lookup", 1);
+  if (memberNext > LOOKUP_CAPS.perMemberDay) {
+    await increment(input.db, "member", input.memberId, day, "lookup", -1);
     return { ok: false, reason: "quota", which: "member" };
   }
-  const event = await getCount(input.db, "event", input.eventId, day, "lookup");
-  if (event >= LOOKUP_CAPS.perEventDay) {
+  const eventNext = await increment(input.db, "event", input.eventId, day, "lookup", 1);
+  if (eventNext > LOOKUP_CAPS.perEventDay) {
+    await increment(input.db, "member", input.memberId, day, "lookup", -1);
+    await increment(input.db, "event", input.eventId, day, "lookup", -1);
     return { ok: false, reason: "quota", which: "event" };
   }
-  const global = await getCount(input.db, "global", "app", day, "lookup");
-  if (global >= LOOKUP_CAPS.globalDay) {
+  const globalNext = await increment(input.db, "global", "app", day, "lookup", 1);
+  if (globalNext > LOOKUP_CAPS.globalDay) {
+    await increment(input.db, "member", input.memberId, day, "lookup", -1);
+    await increment(input.db, "event", input.eventId, day, "lookup", -1);
+    await increment(input.db, "global", "app", day, "lookup", -1);
     return { ok: false, reason: "quota", which: "global" };
   }
-
-  const memberNext = await increment(input.db, "member", input.memberId, day, "lookup", 1);
-  const eventNext = await increment(input.db, "event", input.eventId, day, "lookup", 1);
-  const globalNext = await increment(input.db, "global", "app", day, "lookup", 1);
 
   return {
     ok: true,

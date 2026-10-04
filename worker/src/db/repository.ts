@@ -292,16 +292,6 @@ export class Repository {
     return results.map((r) => r.qloo_entity_id).filter(Boolean);
   }
 
-  async invalidateEventResults(eventId: string): Promise<void> {
-    const ts = nowIso();
-    await this.db
-      .prepare(
-        `UPDATE events SET results_invalid_at = ?, version = version + 1, updated_at = ? WHERE id = ?`,
-      )
-      .bind(ts, ts, eventId)
-      .run();
-  }
-
   async listPreferences(eventId: string) {
     const { results } = await this.db
       .prepare(
@@ -510,9 +500,367 @@ export class Repository {
       .bind(session.eventId, session.participantId)
       .run();
     await this.db
+      .prepare(`DELETE FROM vetoes WHERE event_id = ? AND owner_participant_id = ?`)
+      .bind(session.eventId, session.participantId)
+      .run();
+    await this.db
+      .prepare(`DELETE FROM feedback WHERE event_id = ? AND participant_id = ?`)
+      .bind(session.eventId, session.participantId)
+      .run();
+    await this.db
+      .prepare(`DELETE FROM acceptances WHERE event_id = ? AND participant_id = ?`)
+      .bind(session.eventId, session.participantId)
+      .run();
+    await this.db
       .prepare(`UPDATE sessions SET revoked_at = ? WHERE id = ? AND event_id = ?`)
       .bind(ts, session.sessionId, session.eventId)
       .run();
     await this.invalidateEventResults(session.eventId);
+    await this.invalidateApprovals(session.eventId);
+  }
+
+  /** FLOW-01: material change clears export-ready approvals and acceptances. */
+  async invalidateApprovals(eventId: string): Promise<void> {
+    const ts = nowIso();
+    await this.db
+      .prepare(
+        `UPDATE approvals SET invalidated_at = ?, export_ready = 0
+         WHERE event_id = ? AND invalidated_at IS NULL`,
+      )
+      .bind(ts, eventId)
+      .run();
+    await this.db
+      .prepare(`DELETE FROM acceptances WHERE event_id = ?`)
+      .bind(eventId)
+      .run();
+  }
+
+  async invalidateEventResults(eventId: string): Promise<void> {
+    const ts = nowIso();
+    await this.db
+      .prepare(
+        `UPDATE events SET results_invalid_at = ?, version = version + 1, updated_at = ? WHERE id = ?`,
+      )
+      .bind(ts, ts, eventId)
+      .run();
+    await this.invalidateApprovals(eventId);
+  }
+
+  async putVeto(
+    session: SessionContext,
+    venueId: string,
+    reasonCategory: string,
+  ): Promise<{ vetoId: string; version: number }> {
+    const ts = nowIso();
+    const vetoId = randomId();
+    await this.db
+      .prepare(
+        `INSERT INTO vetoes (id, event_id, owner_participant_id, venue_id, reason_category, created_at)
+         VALUES (?, ?, ?, ?, ?, ?)
+         ON CONFLICT(event_id, owner_participant_id, venue_id) DO UPDATE SET
+           reason_category = excluded.reason_category,
+           withdrawn_at = NULL,
+           created_at = excluded.created_at`,
+      )
+      .bind(vetoId, session.eventId, session.participantId, venueId, reasonCategory, ts)
+      .run();
+    // Also persist as hard veto constraint for readiness filtering.
+    const constraintId = `veto-${session.participantId.slice(0, 8)}-${venueId}`.slice(0, 64);
+    await this.putConstraint(session, {
+      id: constraintId.length >= 8 ? constraintId : randomId(),
+      ownerId: session.participantId,
+      kind: "veto",
+      required: true,
+      value: { venueId },
+    });
+    const event = await this.getEvent(session.eventId);
+    return { vetoId, version: event?.version ?? 0 };
+  }
+
+  async listActiveVetoVenueIds(eventId: string): Promise<string[]> {
+    const { results } = await this.db
+      .prepare(
+        `SELECT venue_id FROM vetoes WHERE event_id = ? AND withdrawn_at IS NULL`,
+      )
+      .bind(eventId)
+      .all<{ venue_id: string }>();
+    return results.map((r) => r.venue_id);
+  }
+
+  /** Host-safe aggregate — never identity or reason. */
+  async vetoSummary(eventId: string): Promise<{ activeVetoCount: number }> {
+    const row = await this.db
+      .prepare(
+        `SELECT COUNT(*) AS n FROM vetoes WHERE event_id = ? AND withdrawn_at IS NULL`,
+      )
+      .bind(eventId)
+      .first<{ n: number }>();
+    return { activeVetoCount: Number(row?.n ?? 0) };
+  }
+
+  async getRevision(eventId: string, revisionId: string) {
+    return this.db
+      .prepare(
+        `SELECT id, event_id, run_id, event_version, venue_ids_json, evidence_ids_json,
+                unknown_fact_ids_json, alternatives_json, explanations_json, taste_mode,
+                profiled_member_count, total_member_count, readiness, data_mode,
+                parent_revision_id, diff_json, expires_at, created_at
+         FROM revisions WHERE id = ? AND event_id = ?`,
+      )
+      .bind(revisionId, eventId)
+      .first<{
+        id: string;
+        event_id: string;
+        run_id: string | null;
+        event_version: number;
+        venue_ids_json: string;
+        evidence_ids_json: string;
+        unknown_fact_ids_json: string;
+        alternatives_json: string;
+        explanations_json: string;
+        taste_mode: string;
+        profiled_member_count: number;
+        total_member_count: number;
+        readiness: string;
+        data_mode: string;
+        parent_revision_id: string | null;
+        diff_json: string | null;
+        expires_at: string;
+        created_at: string;
+      }>();
+  }
+
+  async latestRevision(eventId: string) {
+    return this.db
+      .prepare(
+        `SELECT id, event_id, run_id, event_version, venue_ids_json, evidence_ids_json,
+                unknown_fact_ids_json, alternatives_json, explanations_json, taste_mode,
+                profiled_member_count, total_member_count, readiness, data_mode,
+                parent_revision_id, diff_json, expires_at, created_at
+         FROM revisions WHERE event_id = ? ORDER BY created_at DESC LIMIT 1`,
+      )
+      .bind(eventId)
+      .first<{
+        id: string;
+        event_id: string;
+        run_id: string | null;
+        event_version: number;
+        venue_ids_json: string;
+        evidence_ids_json: string;
+        unknown_fact_ids_json: string;
+        alternatives_json: string;
+        explanations_json: string;
+        taste_mode: string;
+        profiled_member_count: number;
+        total_member_count: number;
+        readiness: string;
+        data_mode: string;
+        parent_revision_id: string | null;
+        diff_json: string | null;
+        expires_at: string;
+        created_at: string;
+      }>();
+  }
+
+  async putAcceptance(
+    session: SessionContext,
+    revisionId: string,
+    venueId: string,
+  ): Promise<void> {
+    const rev = await this.getRevision(session.eventId, revisionId);
+    if (!rev) throw new Error("revision_not_found");
+    if (Date.parse(rev.expires_at) < Date.now()) throw new Error("revision_expired");
+    const venues = JSON.parse(rev.venue_ids_json) as string[];
+    if (!venues.includes(venueId)) throw new Error("venue_not_in_revision");
+    await this.db
+      .prepare(
+        `INSERT INTO acceptances (id, event_id, participant_id, revision_id, venue_id, created_at)
+         VALUES (?, ?, ?, ?, ?, ?)
+         ON CONFLICT(event_id, participant_id, revision_id) DO UPDATE SET
+           venue_id = excluded.venue_id,
+           created_at = excluded.created_at`,
+      )
+      .bind(randomId(), session.eventId, session.participantId, revisionId, venueId, nowIso())
+      .run();
+  }
+
+  async listAcceptances(eventId: string, revisionId: string) {
+    const { results } = await this.db
+      .prepare(
+        `SELECT participant_id, venue_id FROM acceptances
+         WHERE event_id = ? AND revision_id = ?`,
+      )
+      .bind(eventId, revisionId)
+      .all<{ participant_id: string; venue_id: string }>();
+    return results;
+  }
+
+  async approveRevision(input: {
+    session: SessionContext;
+    revisionId: string;
+    expectedVersion: number;
+  }): Promise<
+    | { ok: true; exportReady: boolean; approvalId: string }
+    | { ok: false; reason: "conflict" | "not_ready" | "missing_acceptance" }
+  > {
+    const event = await this.getEvent(input.session.eventId);
+    if (!event || event.version !== input.expectedVersion) {
+      return { ok: false, reason: "conflict" };
+    }
+    const rev = await this.getRevision(input.session.eventId, input.revisionId);
+    if (!rev || rev.event_version !== event.version) {
+      return { ok: false, reason: "conflict" };
+    }
+    const participants = await this.listParticipants(input.session.eventId);
+    const acceptances = await this.listAcceptances(input.session.eventId, input.revisionId);
+    if (acceptances.length < participants.length) {
+      return { ok: false, reason: "missing_acceptance" };
+    }
+    const venueIds = new Set(acceptances.map((a) => a.venue_id));
+    if (venueIds.size !== 1) return { ok: false, reason: "not_ready" };
+    const unknown = JSON.parse(rev.unknown_fact_ids_json) as string[];
+    const exportReady = rev.readiness === "ready_for_host_review" && unknown.length === 0;
+    const approvalId = randomId();
+    await this.db
+      .prepare(
+        `INSERT INTO approvals (id, event_id, revision_id, host_participant_id, export_ready, approved_at)
+         VALUES (?, ?, ?, ?, ?, ?)
+         ON CONFLICT(event_id, revision_id) DO UPDATE SET
+           export_ready = excluded.export_ready,
+           approved_at = excluded.approved_at,
+           invalidated_at = NULL,
+           host_participant_id = excluded.host_participant_id`,
+      )
+      .bind(
+        approvalId,
+        input.session.eventId,
+        input.revisionId,
+        input.session.participantId,
+        exportReady ? 1 : 0,
+        nowIso(),
+      )
+      .run();
+    await this.db
+      .prepare(`UPDATE events SET state = 'approved', updated_at = ? WHERE id = ?`)
+      .bind(nowIso(), input.session.eventId)
+      .run();
+    return { ok: true, exportReady, approvalId };
+  }
+
+  async getActiveApproval(eventId: string) {
+    return this.db
+      .prepare(
+        `SELECT id, revision_id, export_ready, approved_at, invalidated_at
+         FROM approvals WHERE event_id = ? AND invalidated_at IS NULL
+         ORDER BY approved_at DESC LIMIT 1`,
+      )
+      .bind(eventId)
+      .first<{
+        id: string;
+        revision_id: string;
+        export_ready: number;
+        approved_at: string;
+        invalidated_at: string | null;
+      }>();
+  }
+
+  async putFeedback(
+    session: SessionContext,
+    data: {
+      attended?: "yes" | "no" | "skipped";
+      actualFit?: "good" | "ok" | "poor";
+      planningExperience?: "smooth" | "ok" | "frustrating";
+      hostActiveMinutes?: number;
+      supportMinutes?: number;
+      venueChanged?: boolean;
+    },
+  ): Promise<void> {
+    // Missing fields stay null — never infer dislike from no-show (P19 AC02).
+    await this.db
+      .prepare(
+        `INSERT INTO feedback (
+           id, event_id, participant_id, attended, actual_fit, planning_experience,
+           host_active_minutes, support_minutes, venue_changed, created_at
+         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         ON CONFLICT(event_id, participant_id) DO UPDATE SET
+           attended = COALESCE(excluded.attended, feedback.attended),
+           actual_fit = COALESCE(excluded.actual_fit, feedback.actual_fit),
+           planning_experience = COALESCE(excluded.planning_experience, feedback.planning_experience),
+           host_active_minutes = COALESCE(excluded.host_active_minutes, feedback.host_active_minutes),
+           support_minutes = COALESCE(excluded.support_minutes, feedback.support_minutes),
+           venue_changed = COALESCE(excluded.venue_changed, feedback.venue_changed)`,
+      )
+      .bind(
+        randomId(),
+        session.eventId,
+        session.participantId,
+        data.attended ?? null,
+        data.actualFit ?? null,
+        data.planningExperience ?? null,
+        session.role === "host" ? (data.hostActiveMinutes ?? null) : null,
+        session.role === "host" ? (data.supportMinutes ?? null) : null,
+        session.role === "host" ? (data.venueChanged ? 1 : data.venueChanged === false ? 0 : null) : null,
+        nowIso(),
+      )
+      .run();
+  }
+
+  /**
+   * Duplicate host settings into a new event. Private seeds are NOT copied (P19 AC01).
+   */
+  async duplicateEventSettings(
+    session: SessionContext,
+  ): Promise<{ eventId: string; hostClaimSecret: string; hostRecoverySecret: string }> {
+    const src = await this.db
+      .prepare(
+        `SELECT title, group_size, timezone, area, budget_cents, currency, starts_at_local
+         FROM events WHERE id = ?`,
+      )
+      .bind(session.eventId)
+      .first<{
+        title: string;
+        group_size: number;
+        timezone: string | null;
+        area: string | null;
+        budget_cents: number | null;
+        currency: string | null;
+        starts_at_local: string | null;
+      }>();
+    if (!src) throw new Error("event_not_found");
+    const created = await this.createEvent({
+      title: `${src.title} (repeat)`,
+      groupSize: src.group_size,
+      area: src.area ?? undefined,
+      timezone: src.timezone ?? undefined,
+    });
+    const ts = nowIso();
+    await this.db
+      .prepare(
+        `UPDATE events SET parent_event_id = ?, budget_cents = ?, currency = ?,
+         starts_at_local = ?, updated_at = ? WHERE id = ?`,
+      )
+      .bind(
+        session.eventId,
+        src.budget_cents,
+        src.currency,
+        src.starts_at_local,
+        ts,
+        created.eventId,
+      )
+      .run();
+    return {
+      eventId: created.eventId,
+      hostClaimSecret: created.hostClaimSecret,
+      hostRecoverySecret: created.hostRecoverySecret,
+    };
+  }
+
+  /** DATA-02: drop expired vendor-derived revisions. */
+  async purgeExpiredRevisions(now = new Date()): Promise<number> {
+    const result = await this.db
+      .prepare(`DELETE FROM revisions WHERE expires_at < ?`)
+      .bind(now.toISOString())
+      .run();
+    return Number(result.meta?.changes ?? 0);
   }
 }

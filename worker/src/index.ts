@@ -1,11 +1,16 @@
 import {
+  AcceptanceRequestSchema,
+  ApproveRequestSchema,
   CONSENT_TASTE_VERSION,
   ConstraintSchema,
+  CreateRunRequestSchema,
   EntityIdSchema,
   EntitySearchRequestSchema,
   EntitySearchResponseSchema,
+  FeedbackRequestSchema,
   PreferencesPutSchema,
   HealthResponseSchema,
+  VetoRequestSchema,
 } from "@common-ground/contracts";
 import {
   assertSameOrigin,
@@ -18,15 +23,25 @@ import {
   cookieHeader,
   parseCookies,
 } from "./auth/capabilities";
+import {
+  REQUEST_CAPS,
+  clientIpKey,
+  contentLengthOf,
+  reserveRequest,
+} from "./auth/ratelimit";
 import { Repository, type D1Like } from "./db/repository";
 import { remainingLookups, reserveLookup } from "./planning/budget";
+import { recordTelemetry } from "./telemetry/events";
 import {
   assertModelCannotWaive,
   assessSlateReadiness,
 } from "./planning/constraints";
 import { discoverBoundedCandidates } from "./planning/discover";
+import { cancelRun, createOrGetRun, getRun, stepRun } from "./planning/machine";
 import { toPublicRankDto } from "./planning/rank";
 import { rankProfiledMembersOnSlate } from "./planning/score";
+import { assessDstLocalTime, buildIcs } from "./export/ics";
+import { OpenAIClient } from "./providers/openai";
 import { QlooClient } from "./providers/qloo";
 import { deleteOwnMemberInputs } from "./privacy/delete";
 import type { VenueRecord } from "./venues/facts";
@@ -37,6 +52,8 @@ export interface Env {
   ALLOWED_ORIGINS?: string;
   QLOO_API_KEY?: string;
   QLOO_BASE_URL?: string;
+  OPENAI_API_KEY?: string;
+  OPENAI_MODEL?: string;
   ASSETS?: Fetcher;
   DB: D1Like;
 }
@@ -59,6 +76,8 @@ function json(data: unknown, status = 200, headers: Record<string, string> = {})
       "content-type": "application/json; charset=utf-8",
       "cache-control": "no-store",
       "referrer-policy": "no-referrer",
+      "x-content-type-options": "nosniff",
+      "permissions-policy": "geolocation=(), microphone=(), camera=()",
       ...headers,
     },
   });
@@ -88,6 +107,44 @@ function qlooClient(env: Env): QlooClient {
   });
 }
 
+function openaiClient(env: Env): OpenAIClient {
+  return new OpenAIClient({
+    apiKey: env.OPENAI_API_KEY,
+    model: env.OPENAI_MODEL,
+  });
+}
+
+async function loadMachineContext(repo: Repository, eventId: string) {
+  const event = await repo.getEvent(eventId);
+  if (!event) return null;
+  const prefs = await repo.listPreferences(eventId);
+  const consents = await repo.listConsents(eventId);
+  const participants = await repo.listParticipants(eventId);
+  const constraints = await repo.listConstraints(eventId);
+  const catalogEntityIds = await repo.listConfirmedCatalogEntityIds();
+  const skip = new Set(consents.filter((c) => c.skip_profiling).map((c) => c.participant_id));
+  const members = prefs.map((p) => {
+    let seeds: import("@common-ground/contracts").ConfirmedSeed[] = [];
+    try {
+      seeds = JSON.parse(p.seeds_json);
+    } catch {
+      seeds = [];
+    }
+    return {
+      participantId: p.participant_id,
+      seeds,
+      skipProfiling: skip.has(p.participant_id),
+    };
+  });
+  return {
+    event,
+    members,
+    constraints,
+    participants,
+    catalogEntityIds,
+  };
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
@@ -111,6 +168,46 @@ export default {
       );
     }
 
+    // Peek session early for rate meters (mutating API only).
+    const earlySession = url.pathname.startsWith("/api/")
+      ? await repo.sessionFromToken(parseCookies(request.headers.get("cookie"))[SESSION_COOKIE])
+      : null;
+
+    if (
+      url.pathname.startsWith("/api/") &&
+      request.method !== "GET" &&
+      request.method !== "HEAD" &&
+      url.pathname !== "/api/health"
+    ) {
+      const meter = await reserveRequest({
+        db: env.DB,
+        sessionId: earlySession?.sessionId,
+        ipKey: clientIpKey(request),
+        contentLength: contentLengthOf(request),
+      });
+      if (!meter.ok) {
+        await recordTelemetry({
+          db: env.DB,
+          eventId: earlySession?.eventId,
+          kind: "quota_exhausted",
+          detail: { code: meter.which, dataMode: env.QLOO_API_KEY ? "live" : "synthetic" },
+        });
+        const status = meter.which === "body" ? 413 : 429;
+        return json(
+          {
+            code: meter.which === "body" ? "payload_too_large" : "rate_limited",
+            message:
+              meter.which === "body"
+                ? `Request body exceeds ${REQUEST_CAPS.maxBodyBytes} bytes`
+                : "Request budget exhausted for this demo window",
+            retryable: meter.which !== "body",
+            requestId: crypto.randomUUID(),
+          },
+          status,
+        );
+      }
+    }
+
     if (request.method === "POST" && url.pathname === "/api/events") {
       const body = (await request.json().catch(() => null)) as {
         title?: string;
@@ -131,6 +228,12 @@ export default {
         groupSize,
         area: body?.area,
         timezone: body?.timezone,
+      });
+      await recordTelemetry({
+        db: env.DB,
+        eventId: created.eventId,
+        kind: "event_started",
+        detail: { dataMode: env.QLOO_API_KEY ? "live" : "synthetic" },
       });
       return json(
         {
@@ -171,9 +274,11 @@ export default {
       );
     }
 
-    const session = await repo.sessionFromToken(
-      parseCookies(request.headers.get("cookie"))[SESSION_COOKIE],
-    );
+    const session =
+      earlySession ??
+      (await repo.sessionFromToken(
+        parseCookies(request.headers.get("cookie"))[SESSION_COOKIE],
+      ));
 
     const inviteMatch = url.pathname.match(/^\/api\/events\/([^/]+)\/invites$/);
     if (request.method === "POST" && inviteMatch) {
@@ -302,6 +407,12 @@ export default {
     if (request.method === "DELETE" && deleteMe) {
       if (!session || session.eventId !== deleteMe[1]) return genericUnauthorized();
       await deleteOwnMemberInputs(repo, session);
+      await recordTelemetry({
+        db: env.DB,
+        eventId: session.eventId,
+        kind: "intake_dropout",
+        detail: { dataMode: env.QLOO_API_KEY ? "live" : "synthetic" },
+      });
       return json(
         { ok: true },
         200,
@@ -509,6 +620,443 @@ export default {
         dataMode: ranked.dataMode,
         qlooCallsUsed: ranked.qlooCallsUsed,
       });
+    }
+
+    const runsMatch = url.pathname.match(/^\/api\/events\/([^/]+)\/runs$/);
+    if (request.method === "POST" && runsMatch) {
+      if (!session || session.role !== "host" || session.eventId !== runsMatch[1]) {
+        return genericUnauthorized();
+      }
+      const body = await request.json().catch(() => null);
+      const parsed = CreateRunRequestSchema.safeParse(body);
+      if (!parsed.success) {
+        return json(
+          {
+            code: "invalid",
+            message: "idempotencyKey required (8–128 chars)",
+            retryable: false,
+            requestId: crypto.randomUUID(),
+          },
+          422,
+        );
+      }
+      const event = await repo.getEvent(session.eventId);
+      if (!event) return genericUnauthorized();
+      const { run, created } = await createOrGetRun({
+        deps: { db: env.DB, qloo: qlooClient(env), openai: openaiClient(env) },
+        eventId: session.eventId,
+        eventVersion: event.version,
+        idempotencyKey: parsed.data.idempotencyKey,
+        preferAgent: !!env.OPENAI_API_KEY,
+      });
+      // Stash optional candidates on first create via last_safe_json.
+      if (created && (parsed.data.candidateEntityIds?.length || parsed.data.familiarVenueIds?.length)) {
+        await env.DB.prepare(
+          `UPDATE runs SET last_safe_json = ? WHERE id = ? AND event_id = ?`,
+        )
+          .bind(
+            JSON.stringify({
+              candidateEntityIds: parsed.data.candidateEntityIds ?? [],
+              familiarVenueIds: parsed.data.familiarVenueIds ?? [],
+            }),
+            run.id,
+            run.event_id,
+          )
+          .run();
+      }
+      if (created) {
+        await recordTelemetry({
+          db: env.DB,
+          eventId: session.eventId,
+          kind: "run_started",
+          detail: {
+            dataMode: env.QLOO_API_KEY ? "live" : "synthetic",
+            stage: run.stage,
+          },
+        });
+      }
+      return json(
+        {
+          runId: run.id,
+          state: run.state,
+          mode: run.mode,
+          stage: run.stage,
+          deadlineAt: run.deadline_at,
+          created,
+        },
+        created ? 202 : 200,
+      );
+    }
+
+    const runGetMatch = url.pathname.match(/^\/api\/runs\/([^/]+)$/);
+    if (request.method === "GET" && runGetMatch) {
+      if (!session) return genericUnauthorized();
+      const run = await getRun(env.DB, runGetMatch[1]);
+      if (!run || run.event_id !== session.eventId) return genericUnauthorized();
+      let lastSafe: Record<string, unknown> = {};
+      try {
+        lastSafe = run.last_safe_json ? JSON.parse(run.last_safe_json) : {};
+      } catch {
+        lastSafe = {};
+      }
+      return json({
+        runId: run.id,
+        state: run.state,
+        mode: run.mode,
+        stage: run.stage,
+        deadlineAt: run.deadline_at,
+        qlooCallsUsed: run.qloo_calls_used,
+        errorCode: run.error_code,
+        revisionId: typeof lastSafe.revisionId === "string" ? lastSafe.revisionId : null,
+        // Redacted trace — tool names/notes only, no private reasoning.
+        trace: (() => {
+          try {
+            return (JSON.parse(run.trace_json) as { name: string; note: string; at: string }[]).map(
+              (t) => ({ name: t.name, note: t.note, at: t.at }),
+            );
+          } catch {
+            return [];
+          }
+        })(),
+      });
+    }
+
+    const runStepMatch = url.pathname.match(/^\/api\/runs\/([^/]+)\/step$/);
+    if (request.method === "POST" && runStepMatch) {
+      if (!session || session.role !== "host") return genericUnauthorized();
+      const run = await getRun(env.DB, runStepMatch[1]);
+      if (!run || run.event_id !== session.eventId) return genericUnauthorized();
+      const ctxBundle = await loadMachineContext(repo, session.eventId);
+      if (!ctxBundle) return genericUnauthorized();
+      let lastSafe: Record<string, unknown> = {};
+      try {
+        lastSafe = run.last_safe_json ? JSON.parse(run.last_safe_json) : {};
+      } catch {
+        lastSafe = {};
+      }
+      const result = await stepRun({
+        deps: { db: env.DB, qloo: qlooClient(env), openai: openaiClient(env) },
+        runId: run.id,
+        ctx: {
+          members: ctxBundle.members,
+          constraints: ctxBundle.constraints,
+          venues: [],
+          catalogEntityIds: ctxBundle.catalogEntityIds,
+          candidateEntityIds: (lastSafe.candidateEntityIds as string[] | undefined) ?? undefined,
+          familiarVenueIds: (lastSafe.familiarVenueIds as string[] | undefined) ?? undefined,
+          totalMemberCount: ctxBundle.participants.length,
+          currentEventVersion: ctxBundle.event.version,
+        },
+      });
+      return json({
+        runId: result.run.id,
+        state: result.run.state,
+        mode: result.run.mode,
+        stage: result.run.stage,
+        progress: result.progress,
+        revisionId: result.revisionId ?? null,
+        errorCode: result.run.error_code,
+      });
+    }
+
+    const runCancelMatch = url.pathname.match(/^\/api\/runs\/([^/]+)\/cancel$/);
+    if (request.method === "POST" && runCancelMatch) {
+      if (!session || session.role !== "host") return genericUnauthorized();
+      const run = await getRun(env.DB, runCancelMatch[1]);
+      if (!run || run.event_id !== session.eventId) return genericUnauthorized();
+      const cancelled = await cancelRun(
+        { db: env.DB, qloo: qlooClient(env), openai: openaiClient(env) },
+        run.id,
+      );
+      return json({
+        runId: cancelled?.id,
+        state: cancelled?.state,
+        externalCallsPending: cancelled?.external_calls_pending ?? 0,
+      });
+    }
+
+    const revisionMatch = url.pathname.match(/^\/api\/events\/([^/]+)\/revision$/);
+    if (request.method === "GET" && revisionMatch) {
+      if (!session || session.eventId !== revisionMatch[1]) return genericUnauthorized();
+      const rev = await repo.latestRevision(session.eventId);
+      if (!rev) {
+        return json(
+          { code: "not_found", message: "No revision yet", retryable: false, requestId: crypto.randomUUID() },
+          404,
+        );
+      }
+      const veto = await repo.vetoSummary(session.eventId);
+      const alternatives = JSON.parse(rev.alternatives_json);
+      const explanations = JSON.parse(rev.explanations_json);
+      // Host: aggregate only. Member: same public cards (private ranks never stored).
+      return json({
+        revisionId: rev.id,
+        eventVersion: rev.event_version,
+        dataMode: rev.data_mode,
+        tasteMode: rev.taste_mode,
+        profiledMemberCount: rev.profiled_member_count,
+        totalMemberCount: rev.total_member_count,
+        readiness: rev.readiness,
+        venueIds: JSON.parse(rev.venue_ids_json),
+        unknownFactIds: JSON.parse(rev.unknown_fact_ids_json),
+        alternatives,
+        explanations,
+        vetoSummary: veto,
+        parentRevisionId: rev.parent_revision_id,
+        diff: rev.diff_json ? JSON.parse(rev.diff_json) : null,
+        expiresAt: rev.expires_at,
+        notice:
+          rev.data_mode === "synthetic"
+            ? "Synthetic example — not a live recommendation"
+            : "Live planning",
+      });
+    }
+
+    const vetoMatch = url.pathname.match(/^\/api\/events\/([^/]+)\/vetoes$/);
+    if (request.method === "POST" && vetoMatch) {
+      if (!session || session.eventId !== vetoMatch[1]) return genericUnauthorized();
+      const body = await request.json().catch(() => null);
+      const parsed = VetoRequestSchema.safeParse(body);
+      if (!parsed.success) {
+        return json(
+          {
+            code: "invalid",
+            message: "venueId and reasonCategory required",
+            retryable: false,
+            requestId: crypto.randomUUID(),
+          },
+          422,
+        );
+      }
+      const { version } = await repo.putVeto(
+        session,
+        parsed.data.venueId,
+        parsed.data.reasonCategory,
+      );
+      const summary = await repo.vetoSummary(session.eventId);
+      await recordTelemetry({
+        db: env.DB,
+        eventId: session.eventId,
+        kind: "veto",
+        detail: { count: summary.activeVetoCount, dataMode: env.QLOO_API_KEY ? "live" : "synthetic" },
+      });
+      return json({
+        ok: true,
+        version,
+        // Generic group summary — never identity or reason (P17).
+        groupSummary: `Removed one venue after a participant objection. ${summary.activeVetoCount} active objection(s).`,
+        activeVetoCount: summary.activeVetoCount,
+      });
+    }
+
+    const acceptMatch = url.pathname.match(/^\/api\/events\/([^/]+)\/acceptances$/);
+    if (request.method === "POST" && acceptMatch) {
+      if (!session || session.eventId !== acceptMatch[1]) return genericUnauthorized();
+      const body = await request.json().catch(() => null);
+      const parsed = AcceptanceRequestSchema.safeParse(body);
+      if (!parsed.success) {
+        return json(
+          {
+            code: "invalid",
+            message: "revisionId and venueId required",
+            retryable: false,
+            requestId: crypto.randomUUID(),
+          },
+          422,
+        );
+      }
+      try {
+        await repo.putAcceptance(session, parsed.data.revisionId, parsed.data.venueId);
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "invalid";
+        return json(
+          { code: "conflict", message: msg, retryable: false, requestId: crypto.randomUUID() },
+          409,
+        );
+      }
+      return json({ ok: true });
+    }
+
+    const approveMatch = url.pathname.match(/^\/api\/events\/([^/]+)\/approve$/);
+    if (request.method === "POST" && approveMatch) {
+      if (!session || session.role !== "host" || session.eventId !== approveMatch[1]) {
+        return genericUnauthorized();
+      }
+      const body = await request.json().catch(() => null);
+      const parsed = ApproveRequestSchema.safeParse(body);
+      if (!parsed.success) {
+        return json(
+          {
+            code: "invalid",
+            message: "revisionId and expectedVersion required",
+            retryable: false,
+            requestId: crypto.randomUUID(),
+          },
+          422,
+        );
+      }
+      const result = await repo.approveRevision({
+        session,
+        revisionId: parsed.data.revisionId,
+        expectedVersion: parsed.data.expectedVersion,
+      });
+      if (!result.ok) {
+        const status = result.reason === "conflict" ? 409 : 422;
+        return json(
+          {
+            code: result.reason,
+            message:
+              result.reason === "conflict"
+                ? "Stale approval — event changed; re-review the current revision"
+                : result.reason === "missing_acceptance"
+                  ? "Every participant must accept the selected venue on this revision"
+                  : "Plan not ready for approval",
+            retryable: false,
+            requestId: crypto.randomUUID(),
+          },
+          status,
+        );
+      }
+      await recordTelemetry({
+        db: env.DB,
+        eventId: session.eventId,
+        kind: "approval",
+        detail: { dataMode: env.QLOO_API_KEY ? "live" : "synthetic" },
+      });
+      return json({
+        ok: true,
+        approvalId: result.approvalId,
+        exportReady: result.exportReady,
+        notice:
+          "Approving confirms the group's plan inside Common Ground. It does not reserve a table, charge a card, or message the venue.",
+      });
+    }
+
+    const exportMatch = url.pathname.match(/^\/api\/events\/([^/]+)\/export$/);
+    if (request.method === "GET" && exportMatch) {
+      if (!session || session.role !== "host" || session.eventId !== exportMatch[1]) {
+        return genericUnauthorized();
+      }
+      const format = url.searchParams.get("format") || "json";
+      const tentative = url.searchParams.get("tentative") === "1";
+      const approval = await repo.getActiveApproval(session.eventId);
+      const rev = approval
+        ? await repo.getRevision(session.eventId, approval.revision_id)
+        : await repo.latestRevision(session.eventId);
+      if (!rev) {
+        return json(
+          { code: "not_found", message: "Nothing to export", retryable: false, requestId: crypto.randomUUID() },
+          404,
+        );
+      }
+      if (!tentative && (!approval || !approval.export_ready)) {
+        return json(
+          {
+            code: "not_ready",
+            message: "Export ready requires host approval with all acceptances and no unknown required facts. Use tentative=1 for a planning brief.",
+            retryable: false,
+            requestId: crypto.randomUUID(),
+          },
+          409,
+        );
+      }
+      const event = await repo.getEvent(session.eventId);
+      const venueIds = JSON.parse(rev.venue_ids_json) as string[];
+      const selected = venueIds[0] ?? "venue";
+      const timezone = "America/New_York";
+      const localStart = "2026-10-18T19:00";
+      const dst = assessDstLocalTime(localStart, timezone);
+      const summary = {
+        revisionId: rev.id,
+        title: event?.title ?? "Outing",
+        venueId: selected,
+        timezone,
+        localStart,
+        dataMode: rev.data_mode,
+        reservationStatus: "unconfirmed" as const,
+        exportKind: tentative || !approval?.export_ready ? ("tentative" as const) : ("ready" as const),
+        banner:
+          tentative || !approval?.export_ready
+            ? "Tentative planning brief — not host-approved / not a reservation."
+            : "Approved plan — reservation still unconfirmed. Host must book.",
+        unknownFactIds: JSON.parse(rev.unknown_fact_ids_json),
+      };
+      if (format === "ics") {
+        if (dst !== "ok") {
+          return json(
+            {
+              code: "dst_choice_required",
+              message: "Ambiguous or nonexistent daylight-saving time — choose an explicit local time.",
+              retryable: false,
+              requestId: crypto.randomUUID(),
+              dstStatus: dst,
+            },
+            422,
+          );
+        }
+        const ics = buildIcs({
+          uid: `${rev.id}@common-ground`,
+          summary: event?.title ?? "Common Ground outing",
+          description: `${summary.banner}\nVenue: ${selected}`,
+          location: selected,
+          localStart,
+          timezone,
+          dstStatus: dst,
+        });
+        if (!ics.ok) {
+          return json(
+            { code: ics.reason, message: "Calendar export blocked", retryable: false, requestId: crypto.randomUUID() },
+            422,
+          );
+        }
+        return new Response(ics.ics, {
+          status: 200,
+          headers: {
+            "content-type": "text/calendar; charset=utf-8",
+            "content-disposition": 'attachment; filename="common-ground.ics"',
+            "cache-control": "no-store",
+          },
+        });
+      }
+      return json(summary);
+    }
+
+    const feedbackMatch = url.pathname.match(/^\/api\/events\/([^/]+)\/feedback$/);
+    if (request.method === "POST" && feedbackMatch) {
+      if (!session || session.eventId !== feedbackMatch[1]) return genericUnauthorized();
+      const body = await request.json().catch(() => null);
+      const parsed = FeedbackRequestSchema.safeParse(body);
+      if (!parsed.success) {
+        return json(
+          {
+            code: "invalid",
+            message: "feedback fields optional but must match schema when present",
+            retryable: false,
+            requestId: crypto.randomUUID(),
+          },
+          422,
+        );
+      }
+      await repo.putFeedback(session, parsed.data);
+      return json({ ok: true });
+    }
+
+    const repeatMatch = url.pathname.match(/^\/api\/events\/([^/]+)\/repeat$/);
+    if (request.method === "POST" && repeatMatch) {
+      if (!session || session.role !== "host" || session.eventId !== repeatMatch[1]) {
+        return genericUnauthorized();
+      }
+      const dup = await repo.duplicateEventSettings(session);
+      return json(
+        {
+          eventId: dup.eventId,
+          hostClaimSecret: dup.hostClaimSecret,
+          hostRecoverySecret: dup.hostRecoverySecret,
+          notice:
+            "Settings copied. Private taste seeds were not copied — members consent again for the new outing.",
+        },
+        201,
+      );
     }
 
     // IDOR probe surface: never return cross-member preference by guessed id.

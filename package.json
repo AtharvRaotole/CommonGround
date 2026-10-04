@@ -16,6 +16,8 @@
     "test:e2e": "playwright test",
     "test:live:qloo": "node -e \"console.error('C6 live Qloo tests require QLOO_API_KEY in a protected env'); process.exit(1)\"",
     "verify:release": "node scripts/verify-release.mjs",
+    "measure:runtime": "node scripts/measure-runtime.mjs",
+    "eval:report": "pnpm exec vitest run --config vitest.config.ts tests/unit/eval-analysis.test.ts",
     "dev:web": "pnpm --filter @common-ground/web dev",
     "dev:worker": "pnpm --filter @common-ground/worker dev",
     "verify:ci": "pnpm lint && pnpm typecheck && pnpm build && pnpm test:unit && pnpm test:integration && pnpm verify:release"

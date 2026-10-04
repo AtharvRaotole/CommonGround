@@ -1,0 +1,156 @@
+.shortlist .cards,
+.cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.card {
+  padding: 1.1rem 0;
+  border-top: 1px solid var(--line);
+  animation: rise 420ms ease both;
+}
+
+.card:nth-child(2) {
+  animation-delay: 60ms;
+}
+
+.card:nth-child(3) {
+  animation-delay: 120ms;
+}
+
+.card__kicker {
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--moss);
+  margin: 0 0 0.35rem;
+}
+
+.card h2 {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  margin: 0 0 0.35rem;
+}
+
+.card__meta,
+.card__clauses {
+  margin: 0 0 0.65rem;
+  line-height: 1.45;
+}
+
+.card__clauses {
+  padding-left: 1.1rem;
+}
+
+.card__evidence {
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  color: var(--moss);
+}
+
+.card__unknown {
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+  color: #7a3e1d;
+  margin: 0.35rem 0;
+}
+
+.card__source a {
+  font-family: var(--font-ui);
+  color: var(--moss);
+}
+
+.revision {
+  margin: 0 0 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px dashed var(--line);
+  animation: rise 360ms ease both;
+}
+
+.revision__title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  margin: 0 0 0.35rem;
+}
+
+.revision__summary {
+  font-family: var(--font-ui);
+  margin: 0.5rem 0;
+}
+
+.revision__diff {
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+  padding-left: 1.1rem;
+}
+
+.badge {
+  display: inline-block;
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  padding: 0.35rem 0.55rem;
+  background: rgba(47, 93, 80, 0.12);
+  color: var(--moss);
+  margin: 0 0 1rem;
+}
+
+.btn {
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.7rem 1rem;
+  border: none;
+  background: var(--copper);
+  color: var(--copper-ink);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+}
+
+.export {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 360px) {
+  .page {
+    padding-inline: 0.85rem;
+  }
+
+  .form__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

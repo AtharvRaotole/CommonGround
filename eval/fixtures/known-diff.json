@@ -1,0 +1,42 @@
+{
+  "protocolVersion": "2026-10-04-v1",
+  "note": "Synthetic analysis fixture — not customer evidence. Hand-calc: 2 wins, median delta 1.0",
+  "occasions": [
+    {
+      "groupId": "g1",
+      "occasionId": "g1-a",
+      "method": "baseline",
+      "memberRatings": [
+        [{ "venueId": "v1", "score": 2 }],
+        [{ "venueId": "v1", "score": 3 }]
+      ]
+    },
+    {
+      "groupId": "g1",
+      "occasionId": "g1-b",
+      "method": "qloo",
+      "memberRatings": [
+        [{ "venueId": "v1", "score": 3 }],
+        [{ "venueId": "v1", "score": 4 }]
+      ]
+    },
+    {
+      "groupId": "g2",
+      "occasionId": "g2-a",
+      "method": "baseline",
+      "memberRatings": [
+        [{ "venueId": "v1", "score": 3 }],
+        [{ "venueId": "v1", "score": 3 }]
+      ]
+    },
+    {
+      "groupId": "g2",
+      "occasionId": "g2-b",
+      "method": "qloo",
+      "memberRatings": [
+        [{ "venueId": "v1", "score": 4 }],
+        [{ "venueId": "v1", "score": 4 }]
+      ]
+    }
+  ]
+}

@@ -278,3 +278,121 @@ export const ConstraintSchema = z.discriminatedUnion("kind", [
     .strict(),
 ]);
 export type Constraint = z.infer<typeof ConstraintSchema>;
+
+/** Planning run / event lifecycle (P15). */
+export const EventStateSchema = z.enum([
+  "draft",
+  "collecting",
+  "ready_to_plan",
+  "planning",
+  "needs_input",
+  "shortlisted",
+  "approved",
+  "failed",
+  "deleted",
+]);
+export type EventState = z.infer<typeof EventStateSchema>;
+
+export const RunStateSchema = z.enum([
+  "queued",
+  "discovering",
+  "checking",
+  "ranking",
+  "explaining",
+  "complete",
+  "needs_input",
+  "failed",
+  "cancelled",
+]);
+export type RunState = z.infer<typeof RunStateSchema>;
+
+export const AGENT_TOOLS = [
+  "request_missing_input",
+  "resolve_entities",
+  "discover_candidates",
+  "rank_common_slate",
+  "check_constraints",
+  "propose_revision",
+  "prepare_handoff",
+] as const;
+export type AgentToolName = (typeof AGENT_TOOLS)[number];
+
+export const AgentToolNameSchema = z.enum(AGENT_TOOLS);
+
+export const PLANNING_POLICY_VERSION = "2026-10-04-v1";
+export const RUN_DEADLINE_MS = 90_000;
+export const RUN_MAX_EXTERNAL_PER_STEP = 2;
+export const RUN_MAX_ACTIVE_PROVIDER_CALLS = 3;
+export const REVISION_TTL_MS = 24 * 3600 * 1000;
+export const EVENT_RETENTION_DAYS = 30;
+
+export const CreateRunRequestSchema = z
+  .object({
+    idempotencyKey: z.string().trim().min(8).max(128),
+    candidateEntityIds: z.array(EntityIdSchema).max(30).optional(),
+    familiarVenueIds: z.array(z.string().min(1).max(64)).max(8).optional(),
+  })
+  .strict();
+export type CreateRunRequest = z.infer<typeof CreateRunRequestSchema>;
+
+export const VetoReasonCategorySchema = z.enum([
+  "access",
+  "budget",
+  "vibe",
+  "location",
+  "dietary",
+  "other",
+]);
+
+export const VetoRequestSchema = z
+  .object({
+    venueId: z.string().min(1).max(64),
+    reasonCategory: VetoReasonCategorySchema,
+  })
+  .strict();
+export type VetoRequest = z.infer<typeof VetoRequestSchema>;
+
+export const AcceptanceRequestSchema = z
+  .object({
+    revisionId: z.string().min(8).max(64),
+    venueId: z.string().min(1).max(64),
+  })
+  .strict();
+export type AcceptanceRequest = z.infer<typeof AcceptanceRequestSchema>;
+
+export const ApproveRequestSchema = z
+  .object({
+    revisionId: z.string().min(8).max(64),
+    expectedVersion: z.number().int().positive(),
+  })
+  .strict();
+export type ApproveRequest = z.infer<typeof ApproveRequestSchema>;
+
+export const FeedbackRequestSchema = z
+  .object({
+    attended: z.enum(["yes", "no", "skipped"]).optional(),
+    actualFit: z.enum(["good", "ok", "poor"]).optional(),
+    planningExperience: z.enum(["smooth", "ok", "frustrating"]).optional(),
+    hostActiveMinutes: z.number().int().nonnegative().max(24 * 60).optional(),
+    supportMinutes: z.number().int().nonnegative().max(24 * 60).optional(),
+    venueChanged: z.boolean().optional(),
+  })
+  .strict();
+export type FeedbackRequest = z.infer<typeof FeedbackRequestSchema>;
+
+export const ExplanationClauseSchema = z
+  .object({
+    text: z.string().trim().min(1).max(280),
+    evidenceIds: z.array(z.string().min(1).max(64)).max(8),
+  })
+  .strict();
+
+export const VenueExplanationSchema = z
+  .object({
+    venueId: z.string().min(1).max(64),
+    role: z.enum(["best_compromise", "mean_rank_alternative", "familiar_fallback"]),
+    clauses: z.array(ExplanationClauseSchema).max(6),
+    source: z.enum(["template", "openai"]),
+  })
+  .strict();
+export type VenueExplanation = z.infer<typeof VenueExplanationSchema>;

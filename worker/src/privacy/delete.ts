@@ -12,3 +12,9 @@ export async function deleteOwnMemberInputs(
   await repo.deleteOwnInputs(session);
   return { ok: true };
 }
+
+/** DATA-02: purge expired vendor-derived revisions (aggregate metadata kept on events). */
+export async function purgeExpiredDerived(repo: Repository): Promise<{ purged: number }> {
+  const purged = await repo.purgeExpiredRevisions();
+  return { purged };
+}
