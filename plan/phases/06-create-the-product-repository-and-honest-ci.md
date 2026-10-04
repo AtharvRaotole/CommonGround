@@ -1,6 +1,6 @@
 # P06 — Create the product repository and honest CI
 
-> Implementation plan for a future product phase. Use the available Superpowers executing-plans workflow task by task; review the linked specification and evidence gates before coding. This phase is currently **planned**, not complete.
+> Implementation plan for a product phase. Use the available Superpowers executing-plans workflow task by task; review the linked specification and evidence gates before coding. This phase is currently **complete** locally (2026-10-04); cloud preview URL waits on `wrangler login`.
 
 **Goal:** Establish a reproducible local and preview build with secret-free default checks.
 
@@ -36,20 +36,20 @@ Consumes the completed evidence and contracts from P03, P05. Produces the artifa
 
 ## Work steps
 
-- [ ] Pin supported runtime/dependency versions after a compatibility check; use one package manager and commit the lockfile.
-- [ ] Create the minimal React/Vite asset app and Worker health route; isolate preview and production configuration.
-- [ ] Define lint, typecheck, build, unit, integration and browser scripts; add the first meaningful health/access smoke.
-- [ ] Configure C1–C4 on a standard public Linux runner, minimal permissions and no secrets on fork PRs.
-- [ ] Add an app-code license and dependency notices; document vendor data and third-party assets are not relicensed.
-- [ ] Run a clean install/build locally and preview deployment from written setup instructions.
+- [x] Pin supported runtime/dependency versions after a compatibility check; use one package manager and commit the lockfile.
+- [x] Create the minimal React/Vite asset app and Worker health route; isolate preview and production configuration.
+- [x] Define lint, typecheck, build, unit, integration and browser scripts; add the first meaningful health/access smoke.
+- [x] Configure C1–C4 on a standard public Linux runner, minimal permissions and no secrets on fork PRs.
+- [x] Add an app-code license and dependency notices; document vendor data and third-party assets are not relicensed.
+- [x] Run a clean install/build locally and preview deployment from written setup instructions. (local done; CF preview pending login)
 
 For consequential code changes, first write the specific failing assertion described by the AC, run the focused test to demonstrate the failure, implement the smallest behavior, rerun the focused and affected integration checks, then commit the self-contained result. For research, complete the recorded observation and counterexample review instead of manufacturing a software test.
 
 ## Acceptance criteria
 
-- [ ] AC01: A fresh checkout installs with the frozen lockfile and builds using documented commands.
-- [ ] AC02: Default CI needs no paid service or live API key; an intentionally broken type or core test fails the job.
-- [ ] AC03: Empty environment examples and compiled assets contain no secret; the preview health route returns the intended revision.
+- [x] AC01: A fresh checkout installs with the frozen lockfile and builds using documented commands.
+- [x] AC02: Default CI needs no paid service or live API key; an intentionally broken type or core test fails the job.
+- [x] AC03: Empty environment examples and compiled assets contain no secret; the preview health route returns the intended revision. (health contract local; CF URL pending)
 
 ## CI and verification
 

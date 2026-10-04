@@ -70,4 +70,4 @@
 
 1. **P03** — Qloo key/rights/capability (founder submits account).  
 2. When calendar allows: send prepared outreach to near-ICP list; re-open this decision.  
-3. Do **not** start P04 until a real outing exists.
+3. ~~Do **not** start P04 until a real outing exists.~~ **Updated 2026-10-04:** P04 Path A unblocked — recruit a real friend/colleague outing (Decision 003). Still forbidden: synthetic/fake completed pilots. Path A does **not** clear P02 buyer AC.

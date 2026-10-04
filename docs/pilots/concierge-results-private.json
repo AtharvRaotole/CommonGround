@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "phase": "P04",
+  "outing_id": "CG-P04-001",
+  "status": "ready_for_recruitment",
+  "created": "2026-10-04",
+  "protocol_ref": "docs/pilots/concierge-protocol.md",
+  "slate_ref": "docs/pilots/venue-slate.json",
+  "slate_id": "nyc-catchment-v1",
+  "path": "A",
+  "path_notes": "Primary: founder-accessible real friend/colleague outing. Does not count as P02 buyer interview.",
+  "privacy": "Pseudonyms only in this file. No emails, phones, or raw private seed text beyond typed titles members already chose to share with the founder.",
+  "outing": {
+    "title": null,
+    "date_local": null,
+    "timezone": "America/New_York",
+    "catchment_override": null,
+    "group_size_target": null,
+    "host_brief": {
+      "budget_usd_per_person": null,
+      "budget_includes_tax_tip_drinks": null,
+      "neighborhood_pref": null,
+      "hard_requirements": [],
+      "baseline_arm_H": [],
+      "baseline_rationale": null,
+      "filled_at": null
+    }
+  },
+  "recruitment": {
+    "path_A_invited": 0,
+    "path_A_consented": 0,
+    "path_A_abandoned": 0,
+    "path_B_attempted": 0,
+    "path_B_replied": 0,
+    "invite_sent_at": null
+  },
+  "members": [],
+  "freeze": {
+    "inputs_frozen_at": null,
+    "slate_frozen_id": null
+  },
+  "feasible_after_hard_requirements": [],
+  "dropped_for_hard_requirements": [],
+  "blinding": {
+    "coin_flip_at": null,
+    "method_X_is": null,
+    "method_Y_is": null
+  },
+  "arms": {
+    "H": {
+      "status": "pending_host_brief",
+      "shortlist": [],
+      "primary_metric_min_wta": null
+    },
+    "E": {
+      "status": "pending_inputs",
+      "shortlist": [],
+      "primary_metric_min_wta": null,
+      "rank_notes": null
+    },
+    "Q": {
+      "status": "blocked_no_api_key",
+      "shortlist": [],
+      "primary_metric_min_wta": null,
+      "rerun_when": "QLOO_API_KEY available; freeze inputs/slate unchanged"
+    }
+  },
+  "ratings": [],
+  "host_blind_preference": null,
+  "veto": null,
+  "revision": null,
+  "host_decision": null,
+  "effort_minutes": {
+    "founder": null,
+    "host": null,
+    "members_aggregate": null
+  },
+  "ac_status": {
+    "AC01": "incomplete",
+    "AC02": "blocked",
+    "AC03": "incomplete"
+  },
+  "deviations": [],
+  "limitations": [
+    "Live Qloo arm blocked until hackathon key issued.",
+    "Path A group is not a qualified buyer interview for P02.",
+    "Desk-checked venue facts may stale; unknowns preserved."
+  ]
+}

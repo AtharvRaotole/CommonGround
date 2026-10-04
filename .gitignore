@@ -2,9 +2,14 @@
 .env.*
 !.env.example
 docs/verification/p03-private/
+docs/pilots/roster-private.json
+docs/pilots/*-emails-private*
 *.pem
 node_modules/
-.DS_Store
-
+dist/
 .DS_Store
 output/
+playwright-report/
+test-results/
+.wrangler/
+*.log

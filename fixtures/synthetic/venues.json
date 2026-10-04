@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "data_mode": "synthetic",
+  "warning": "Fabricated venues for UI/tests. Not real places.",
+  "venues": [
+    {
+      "id": "S01",
+      "name": "Synthetic Noodle Room",
+      "neighborhood": "East Village",
+      "borough": "Manhattan",
+      "address": "100 Synthetic Ave, New York, NY 10003",
+      "category": "noodles",
+      "priceBand": "$$",
+      "officialUrl": "https://example.invalid/synthetic-noodle",
+      "qlooEntityId": null,
+      "qlooMappingStatus": "rejected",
+      "facts": [
+        {
+          "id": "S01-addr",
+          "field": "address",
+          "value": "100 Synthetic Ave",
+          "state": "confirmed",
+          "sourceUrl": "https://example.invalid/synthetic-noodle",
+          "sourceKind": "synthetic",
+          "observedAt": "2026-10-04T12:00:00.000Z",
+          "expiresAt": null,
+          "note": null
+        },
+        {
+          "id": "S01-step",
+          "field": "step_free",
+          "value": null,
+          "state": "unknown",
+          "sourceUrl": null,
+          "sourceKind": "synthetic",
+          "observedAt": "2026-10-04T12:00:00.000Z",
+          "expiresAt": null,
+          "note": null
+        }
+      ]
+    }
+  ]
+}

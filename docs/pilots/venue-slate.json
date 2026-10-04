@@ -1,0 +1,341 @@
+{
+  "schema_version": 1,
+  "slate_id": "nyc-catchment-v1",
+  "created": "2026-10-04",
+  "observed_date": "2026-10-04",
+  "catchment": "Manhattan south of 59th + Brooklyn Williamsburg / Prospect Heights / Park Slope corridor",
+  "data_mode": "official_site_desk_check",
+  "warning": "Facts are observation-dated desk checks from official pages. Unknown ≠ satisfied. No availability or allergy safety claimed. Approval ≠ booking.",
+  "host_constraints_default": {
+    "group_size_target": "4-8",
+    "budget_band_usd_per_person": "unconfirmed until host brief",
+    "category": "dinner / casual dining",
+    "hard_requirements_placeholder": ["record from host brief"]
+  },
+  "venues": [
+    {
+      "id": "V01",
+      "name": "Joe's Pizza (Carmine Street)",
+      "neighborhood": "West Village",
+      "borough": "Manhattan",
+      "address": "7 Carmine Street, New York, NY 10014",
+      "category": "pizza / quick casual",
+      "price_band_estimate": "$",
+      "official_source": "https://www.joespizzanyc.com/locations-1-1",
+      "menu_source": "https://www.joespizzanyc.com/menus",
+      "facts": [
+        {
+          "claim": "Listed as Greenwich Village original location at 7 Carmine Street",
+          "state": "supported",
+          "source": "https://www.joespizzanyc.com/locations-1-1",
+          "observed": "2026-10-04"
+        },
+        {
+          "claim": "Carmine location currently phone-order only (per official menus page)",
+          "state": "supported",
+          "source": "https://www.joespizzanyc.com/menus",
+          "observed": "2026-10-04"
+        },
+        {
+          "claim": "Seated group dinner for 4–8",
+          "state": "unknown",
+          "source": null,
+          "observed": "2026-10-04",
+          "note": "Slice shop format; host must confirm seating suitability"
+        },
+        {
+          "claim": "Step-free / accessibility",
+          "state": "unknown",
+          "source": null,
+          "observed": "2026-10-04"
+        }
+      ],
+      "group_fit_notes": "Strong familiar/cheap fallback. Weak as a seated multi-course outing."
+    },
+    {
+      "id": "V02",
+      "name": "Xi'an Famous Foods (East Village — Second Ave)",
+      "neighborhood": "East Village",
+      "borough": "Manhattan",
+      "address": "129 Second Ave, New York, NY 10003",
+      "category": "Xi'an Chinese / noodles",
+      "price_band_estimate": "$",
+      "official_source": "https://www.xianfoods.com/locations",
+      "facts": [
+        {
+          "claim": "East Village location listed at 129 Second Ave; hours every day 11:30–9:30",
+          "state": "supported",
+          "source": "https://www.xianfoods.com/locations",
+          "observed": "2026-10-04"
+        },
+        {
+          "claim": "Vegetarian / vegan options exist (FAQ acknowledges vegetarian/vegan questions)",
+          "state": "needs_confirmation",
+          "source": "https://www.xianfoods.com/contact",
+          "observed": "2026-10-04",
+          "note": "FAQ exists; specific dish safety for allergies not verified here"
+        },
+        {
+          "claim": "Reservation for party of 6–8",
+          "state": "unknown",
+          "source": null,
+          "observed": "2026-10-04"
+        }
+      ],
+      "group_fit_notes": "Budget discovery option; table availability unverified."
+    },
+    {
+      "id": "V03",
+      "name": "Momofuku Noodle Bar (East Village)",
+      "neighborhood": "East Village",
+      "borough": "Manhattan",
+      "address": "171 1st Avenue, New York, NY 10003",
+      "category": "noodles / contemporary",
+      "price_band_estimate": "$$",
+      "official_source": "https://www.momofuku.com/restaurants/noodle-bar-east-village",
+      "facts": [
+        {
+          "claim": "Address 171 1st Ave between 10th and 11th",
+          "state": "supported",
+          "source": "https://www.momofuku.com/restaurants/noodle-bar-east-village",
+          "observed": "2026-10-04"
+        },
+        {
+          "claim": "Reservations via OpenTable; limited walk-ins at bar/counter (FAQ)",
+          "state": "supported",
+          "source": "https://www.momofuku.com/restaurants/noodle-bar-east-village/contact",
+          "observed": "2026-10-04"
+        },
+        {
+          "claim": "Menu hours Mon–Thu 5–10pm; Fri–Sat 12–4pm and 5–11pm; Sun 12–4pm and 5–10pm",
+          "state": "supported",
+          "source": "https://www.momofuku.com/restaurants/noodle-bar-east-village/menu",
+          "observed": "2026-10-04"
+        },
+        {
+          "claim": "Full vegetarian coverage for a mixed group",
+          "state": "unknown",
+          "source": null,
+          "observed": "2026-10-04"
+        }
+      ],
+      "group_fit_notes": "Strong cultural landmark candidate; confirm diet coverage per menu date."
+    },
+    {
+      "id": "V04",
+      "name": "Superiority Burger",
+      "neighborhood": "East Village",
+      "borough": "Manhattan",
+      "address": "119 Avenue A, New York, NY 10009",
+      "category": "vegetarian diner",
+      "price_band_estimate": "$$",
+      "official_source": "https://www.superiorityburger.com/contact",
+      "facts": [
+        {
+          "claim": "Address 119 Avenue A; hours listed on official contact page",
+          "state": "supported",
+          "source": "https://www.superiorityburger.com/contact",
+          "observed": "2026-10-04"
+        },
+        {
+          "claim": "Proudly lacto-ovo vegetarian with sizable vegan options",
+          "state": "supported",
+          "source": "https://www.superiorityburger.com/about",
+          "observed": "2026-10-04"
+        },
+        {
+          "claim": "Primarily walk-in with limited Resy reservations (third-party Resy copy)",
+          "state": "needs_confirmation",
+          "source": "https://resy.com/cities/new-york-ny/venues/superiority-burger",
+          "observed": "2026-10-04"
+        }
+      ],
+      "group_fit_notes": "Hard-requirement friend for vegetarian groups; meat-preferring members may reject."
+    },
+    {
+      "id": "V05",
+      "name": "The Odeon",
+      "neighborhood": "Tribeca",
+      "borough": "Manhattan",
+      "address": "145 West Broadway, New York, NY 10013",
+      "category": "American / French brasserie",
+      "price_band_estimate": "$$$",
+      "official_source": "https://www.theodeonrestaurant.com/location/the-odeon/",
+      "facts": [
+        {
+          "claim": "Address and dinner hours published on official location page",
+          "state": "supported",
+          "source": "https://www.theodeonrestaurant.com/location/the-odeon/",
+          "observed": "2026-10-04"
+        },
+        {
+          "claim": "Does not accept reservations for parties larger than 6",
+          "state": "supported",
+          "source": "https://www.theodeonrestaurant.com/contact/",
+          "observed": "2026-10-04"
+        },
+        {
+          "claim": "OpenTable parties up to 6",
+          "state": "supported",
+          "source": "https://www.opentable.com/the-odeon",
+          "observed": "2026-10-04"
+        }
+      ],
+      "group_fit_notes": "HARD FAIL for group size 7–8 unless host splits tables. Keep on slate to test constraint enforcement."
+    },
+    {
+      "id": "V06",
+      "name": "Katz's Delicatessen",
+      "neighborhood": "Lower East Side",
+      "borough": "Manhattan",
+      "address": "205 East Houston Street, New York, NY 10002",
+      "category": "Jewish deli",
+      "price_band_estimate": "$$",
+      "official_source": "https://katzsdelicatessen.com/address",
+      "facts": [
+        {
+          "claim": "Hours Mon–Thu 8am–11pm; Fri 8am through Sun 11pm (weekend 24hr noted)",
+          "state": "supported",
+          "source": "https://katzsdelicatessen.com/address",
+          "observed": "2026-10-04"
+        },
+        {
+          "claim": "Group reservations only for parties greater than 10",
+          "state": "supported",
+          "source": "https://katzsdelicatessen.com/group-reservations",
+          "observed": "2026-10-04"
+        },
+        {
+          "claim": "Table hold for party of 4–8 without group reservation program",
+          "state": "unknown",
+          "source": null,
+          "observed": "2026-10-04",
+          "note": "Host must assume walk-in / call verification"
+        }
+      ],
+      "group_fit_notes": "Iconic; reservation path awkward for 4–8. Good unfamiliarity/familiarity test."
+    },
+    {
+      "id": "V07",
+      "name": "Clinton St. Baking Co.",
+      "neighborhood": "Lower East Side",
+      "borough": "Manhattan",
+      "address": "4 Clinton Street, New York, NY 10002",
+      "category": "American / bakery restaurant",
+      "price_band_estimate": "$$",
+      "official_source": "https://clintonstreetbaking.com/pages/contact",
+      "facts": [
+        {
+          "claim": "Brunch daily 9am–4pm; dinner Wed–Sat 5:30–10pm",
+          "state": "supported",
+          "source": "https://clintonstreetbaking.com/pages/contact",
+          "observed": "2026-10-04"
+        },
+        {
+          "claim": "Dinner reservations via Resy; walk-ins not guaranteed",
+          "state": "supported",
+          "source": "https://clintonstreetbaking.com/pages/contact",
+          "observed": "2026-10-04"
+        },
+        {
+          "claim": "Sunday dinner service",
+          "state": "unsupported",
+          "source": "https://clintonstreetbaking.com/pages/contact",
+          "observed": "2026-10-04",
+          "note": "Official page lists dinner Wed–Sat only"
+        }
+      ],
+      "group_fit_notes": "Strong weekend brunch option; fail Sunday dinner if that is the outing."
+    },
+    {
+      "id": "V08",
+      "name": "Lilia",
+      "neighborhood": "Williamsburg",
+      "borough": "Brooklyn",
+      "address": "567 Union Avenue, Brooklyn, NY 11222",
+      "category": "Italian",
+      "price_band_estimate": "$$$",
+      "official_source": "https://www.lilianewyork.com/",
+      "facts": [
+        {
+          "claim": "Hours listed Mon–Thu 5–9:30pm; Fri–Sun 4–9:30pm on homepage (location page shows slightly wider closing)",
+          "state": "needs_confirmation",
+          "source": "https://www.lilianewyork.com/",
+          "observed": "2026-10-04",
+          "note": "Homepage vs location page disagree on close time; host should re-check day-of"
+        },
+        {
+          "claim": "Reservations via Resy or reservations@lilianewyork.com",
+          "state": "supported",
+          "source": "https://www.lilianewyork.com/",
+          "observed": "2026-10-04"
+        },
+        {
+          "claim": "Party of 8 accommodatable",
+          "state": "unknown",
+          "source": null,
+          "observed": "2026-10-04"
+        }
+      ],
+      "group_fit_notes": "Premium Brooklyn corridor candidate; budget and party size need host confirmation."
+    },
+    {
+      "id": "V09",
+      "name": "Peter Luger Steak House (Brooklyn)",
+      "neighborhood": "Williamsburg",
+      "borough": "Brooklyn",
+      "address": "178 Broadway, Brooklyn, NY 11211",
+      "category": "steakhouse",
+      "price_band_estimate": "$$$$",
+      "official_source": "https://peterluger.com/pages/locations-reservations",
+      "facts": [
+        {
+          "claim": "Brooklyn reservations online via Resy; parties ≤10 call 718-387-7400",
+          "state": "supported",
+          "source": "https://peterluger.com/pages/locations-reservations",
+          "observed": "2026-10-04"
+        },
+        {
+          "claim": "No credit cards at Brooklyn location (house account / US check / debit / cash)",
+          "state": "supported",
+          "source": "https://peterluger.com/pages/brooklyn-menu",
+          "observed": "2026-10-04"
+        },
+        {
+          "claim": "Vegetarian-friendly for a mixed group",
+          "state": "unknown",
+          "source": null,
+          "observed": "2026-10-04",
+          "note": "Steakhouse; treat vegetarian hard-req as likely fail until host verifies sides-only path"
+        }
+      ],
+      "group_fit_notes": "Famous; payment and diet friction are feature tests, not bugs."
+    },
+    {
+      "id": "V10",
+      "name": "Xi'an Famous Foods (Williamsburg — N 8th)",
+      "neighborhood": "Williamsburg",
+      "borough": "Brooklyn",
+      "address": "209 N. 8th St., Brooklyn, NY 11211",
+      "category": "Xi'an Chinese / noodles",
+      "price_band_estimate": "$",
+      "official_source": "https://www.xianfoods.com/locations",
+      "facts": [
+        {
+          "claim": "Williamsburg N 8th listed; every day 11:30–9:00",
+          "state": "supported",
+          "source": "https://www.xianfoods.com/locations",
+          "observed": "2026-10-04"
+        },
+        {
+          "claim": "Greenpoint Manhattan Ave location CLOSED due to repairs",
+          "state": "supported",
+          "source": "https://www.xianfoods.com/locations",
+          "observed": "2026-10-04",
+          "note": "Do not recommend the closed address"
+        }
+      ],
+      "group_fit_notes": "Brooklyn budget twin of V02; use one Xi'an location per plan to avoid duplicate-brand shortlist."
+    }
+  ]
+}

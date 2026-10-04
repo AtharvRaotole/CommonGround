@@ -1,6 +1,6 @@
 # P07 — Implement scoped storage and capability sessions
 
-> Implementation plan for a future product phase. Use the available Superpowers executing-plans workflow task by task; review the linked specification and evidence gates before coding. This phase is currently **planned**, not complete.
+> Implementation plan for a product phase. This phase is currently **complete** (2026-10-04). Free-tier D1 + Workers only.
 
 **Goal:** Persist events securely without paid authentication or exposing member data.
 
@@ -33,20 +33,20 @@ Consumes the completed evidence and contracts from P06. Produces the artifacts b
 
 ## Work steps
 
-- [ ] Create event/member/session/claim tables and scoped indexes with foreign-key constraints.
-- [ ] Generate 32-byte random capability secrets, hash at rest, exchange one-time fragments, set secure cookies and clear URL fragments.
-- [ ] Add Origin/CSRF checks, role-filtered DTOs, expiry, host recovery-code handling, invite rotation and revocation.
-- [ ] Implement authorization helpers requiring event scope as well as row identity for every child lookup.
-- [ ] Write cross-event, cross-member, replay and simultaneous-claim failures before implementing the success paths.
-- [ ] Document capability sharing and recovery limitations in the UI; test migration on an empty and populated disposable database.
+- [x] Create event/member/session/claim tables and scoped indexes with foreign-key constraints.
+- [x] Generate 32-byte random capability secrets, hash at rest, exchange one-time fragments, set secure cookies and clear URL fragments.
+- [x] Add Origin/CSRF checks, role-filtered DTOs, expiry, host recovery-code handling, invite rotation and revocation.
+- [x] Implement authorization helpers requiring event scope as well as row identity for every child lookup.
+- [x] Write cross-event, cross-member, replay and simultaneous-claim failures before implementing the success paths.
+- [x] Document capability sharing and recovery limitations in the UI; test migration on an empty and populated disposable database.
 
 For consequential code changes, first write the specific failing assertion described by the AC, run the focused test to demonstrate the failure, implement the smallest behavior, rerun the focused and affected integration checks, then commit the self-contained result. For research, complete the recorded observation and counterexample review instead of manufacturing a software test.
 
 ## Acceptance criteria
 
-- [ ] AC01: AUTH-01 through AUTH-05 pass; a host DTO never exposes another person’s seeds.
-- [ ] AC02: Exactly one concurrent claim succeeds; rotated/expired tokens cannot write.
-- [ ] AC03: No token is stored in plaintext in D1/logs or included in participant-visible host links.
+- [x] AC01: AUTH-01 through AUTH-05 pass; a host DTO never exposes another person’s seeds.
+- [x] AC02: Exactly one concurrent claim succeeds; rotated/expired tokens cannot write.
+- [x] AC03: No token is stored in plaintext in D1/logs or included in participant-visible host links.
 
 ## CI and verification
 

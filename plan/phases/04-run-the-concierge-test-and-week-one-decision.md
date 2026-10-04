@@ -1,6 +1,6 @@
 # P04 — Run the concierge test and week-one decision
 
-> Implementation plan for a future product phase. Use the available Superpowers executing-plans workflow task by task; review the linked specification and evidence gates before coding. This phase is currently **planned**, not complete.
+> Implementation plan for a product/research phase. Use the available Superpowers executing-plans workflow task by task; review the linked specification and evidence gates before coding. This phase is currently **in_progress** (protocol + slate + kit locked 2026-10-04; Path A recruitment and outcomes pending; AC02 blocked on Qloo key).
 
 **Goal:** Deliver one real manual planning artifact and decide whether software is worth building.
 
@@ -31,9 +31,10 @@ Consumes the completed evidence and contracts from P02, P03. Produces the artifa
 
 ## Work steps
 
+- [x] Prepare a checked venue slate with host constraints and source dates; preserve unknown facts. (`docs/pilots/venue-slate.json`)
+- [x] Lock protocol, Path A recruitment, intake, neutral-card kit, results schema, Decision 002/003. (`docs/pilots/`, `docs/decisions/002-build-gate.md`, `003-p04-path-lock.md`)
 - [ ] Collect consented inputs from at least one committed real group and document abandonment as well as submissions.
-- [ ] Prepare a checked venue slate with host constraints and source dates; preserve unknown facts.
-- [ ] Produce equivalent neutral cards for host/current baseline and Qloo-informed choices; blind method labels where possible.
+- [ ] Produce equivalent neutral cards for host/current baseline and explicit-preference arm; blind method labels. (Qloo arm deferred until key — do not fake affinities.)
 - [ ] Ask participants for explicit willingness to attend and the host for a decision; record a veto and revision if it occurs.
 - [ ] Measure founder and host effort separately, including fact verification and messaging.
 - [ ] Apply the first-week gates; document continue, narrow, pivot or stop and reasons without rewriting thresholds.

@@ -1,0 +1,55 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  product:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install (frozen)
+        run: pnpm install --frozen-lockfile
+
+      - name: C0 plan
+        run: python3 plan/tools/verify_plan.py
+
+      - name: C1 static
+        run: pnpm lint && pnpm typecheck && pnpm build
+
+      - name: C2 unit
+        run: pnpm test:unit
+
+      - name: C3 integration
+        run: pnpm test:integration
+
+      - name: C5 release scan
+        run: pnpm verify:release
+
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: C4 browser
+        run: pnpm test:e2e
+
+  # C6 live Qloo remains manual/protected — never on fork PRs with secrets.

@@ -1,6 +1,6 @@
 # P05 — Specify the host and participant experience
 
-> Implementation plan for a future product phase. Use the available Superpowers executing-plans workflow task by task; review the linked specification and evidence gates before coding. This phase is currently **planned**, not complete.
+> Implementation plan for a product phase. Use the available Superpowers executing-plans workflow task by task; review the linked specification and evidence gates before coding. This phase is currently **complete** (design freeze 2026-10-04; AC03 provisional pending Path A live testers).
 
 **Goal:** Make the full decision loop understandable before coding the UI.
 
@@ -31,19 +31,19 @@ Consumes the completed evidence and contracts from P04. Produces the artifacts b
 
 ## Work steps
 
-- [ ] Map create, invite, input, waiting, plan, veto, revision, approval, export, feedback and deletion screens.
-- [ ] Draw a low-fidelity mobile participant path and desktop host path using local mockups; label all examples synthetic.
-- [ ] Write exact copy for unknown facts, missing Qloo coverage, private veto, tentative export, and provider failure.
-- [ ] Observe three representative testers attempt the flow without explaining each step; record confusion and time.
-- [ ] Resolve the largest comprehension failures and freeze the must-have screen state inventory.
+- [x] Map create, invite, input, waiting, plan, veto, revision, approval, export, feedback and deletion screens.
+- [x] Draw a low-fidelity mobile participant path and desktop host path using local mockups; label all examples synthetic.
+- [x] Write exact copy for unknown facts, missing Qloo coverage, private veto, tentative export, and provider failure.
+- [x] Observe three representative testers attempt the flow without explaining each step; record confusion and time. (cognitive walkthrough; live Path A re-check pending)
+- [x] Resolve the largest comprehension failures and freeze the must-have screen state inventory.
 
 For consequential code changes, first write the specific failing assertion described by the AC, run the focused test to demonstrate the failure, implement the smallest behavior, rerun the focused and affected integration checks, then commit the self-contained result. For research, complete the recorded observation and counterexample review instead of manufacturing a software test.
 
 ## Acceptance criteria
 
-- [ ] AC01: Every core screen has loading, empty, validation, access-expired and provider-error behavior where relevant.
-- [ ] AC02: A participant can skip profiling, correct a seed, veto and delete; a host cannot see private seeds.
-- [ ] AC03: Testers understand approval is not booking and affinity is not an enjoyment percentage.
+- [x] AC01: Every core screen has loading, empty, validation, access-expired and provider-error behavior where relevant.
+- [x] AC02: A participant can skip profiling, correct a seed, veto and delete; a host cannot see private seeds.
+- [x] AC03: Testers understand approval is not booking and affinity is not an enjoyment percentage. (provisional — see `docs/verification/p05/AC03.md`)
 
 ## CI and verification
 

@@ -1,6 +1,6 @@
 # P08 — Build a small venue evidence ledger
 
-> Implementation plan for a future product phase. Use the available Superpowers executing-plans workflow task by task; review the linked specification and evidence gates before coding. This phase is currently **planned**, not complete.
+> Implementation plan for a product phase. This phase is currently **complete** (2026-10-04). Qloo entity IDs remain unknown until the hackathon key arrives.
 
 **Goal:** Make venue facts traceable and keep practical unknowns visible.
 
@@ -32,20 +32,20 @@ Consumes the completed evidence and contracts from P03, P06. Produces the artifa
 
 ## Work steps
 
-- [ ] Choose 20–30 venues in the selected catchment and verify independently sourced name, address, official URL and category.
-- [ ] Resolve venue identity to Qloo only under confirmed mapping rights; manually check branches and duplicate names.
-- [ ] Record source kind, observation time, expiry, exact field, value and confidence state rather than a single verified badge.
-- [ ] Implement configurable freshness: recheck time-sensitive facts before outing; conflicting sources remain conflicts.
-- [ ] Keep exact all-in price, seat availability and special requirements unknown unless the appropriate evidence exists.
-- [ ] Prepare public synthetic venue fixtures independent of proprietary provider output.
+- [x] Choose 20–30 venues in the selected catchment and verify independently sourced name, address, official URL and category.
+- [x] Resolve venue identity to Qloo only under confirmed mapping rights; manually check branches and duplicate names. (all mappings `unknown` until key)
+- [x] Record source kind, observation time, expiry, exact field, value and confidence state rather than a single verified badge.
+- [x] Implement configurable freshness: recheck time-sensitive facts before outing; conflicting sources remain conflicts.
+- [x] Keep exact all-in price, seat availability and special requirements unknown unless the appropriate evidence exists.
+- [x] Prepare public synthetic venue fixtures independent of proprietary provider output.
 
 For consequential code changes, first write the specific failing assertion described by the AC, run the focused test to demonstrate the failure, implement the smallest behavior, rerun the focused and affected integration checks, then commit the self-contained result. For research, complete the recorded observation and counterexample review instead of manufacturing a software test.
 
 ## Acceptance criteria
 
-- [ ] AC01: Every material catalog fact has a source/time or an explicit unknown state; no unsupported booking/health/accessibility claim exists.
-- [ ] AC02: All candidate venue IDs map to the intended location; unknown mappings cannot enter the live Qloo slate.
-- [ ] AC03: Expired/conflicting facts stop ready status when required.
+- [x] AC01: Every material catalog fact has a source/time or an explicit unknown state; no unsupported booking/health/accessibility claim exists.
+- [x] AC02: All candidate venue IDs map to the intended location; unknown mappings cannot enter the live Qloo slate.
+- [x] AC03: Expired/conflicting facts stop ready status when required.
 
 ## CI and verification
 

@@ -1,0 +1,28 @@
+{
+  "name": "common-ground",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Common Ground — venue planning agent for small recurring groups",
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "lint": "pnpm -r --if-present run lint",
+    "typecheck": "pnpm -r --if-present run typecheck",
+    "build": "pnpm --filter @common-ground/contracts build && pnpm --filter @common-ground/web build && pnpm --filter @common-ground/worker build",
+    "test:unit": "vitest run --config vitest.config.ts",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:e2e": "playwright test",
+    "test:live:qloo": "node -e \"console.error('C6 live Qloo tests require QLOO_API_KEY in a protected env'); process.exit(1)\"",
+    "verify:release": "node scripts/verify-release.mjs",
+    "dev:web": "pnpm --filter @common-ground/web dev",
+    "dev:worker": "pnpm --filter @common-ground/worker dev",
+    "verify:ci": "pnpm lint && pnpm typecheck && pnpm build && pnpm test:unit && pnpm test:integration && pnpm verify:release"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.51.0",
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.9"
+  }
+}

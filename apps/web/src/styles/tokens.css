@@ -1,0 +1,53 @@
+:root {
+  --ink: #14181c;
+  --paper: #e8ecf0;
+  --paper-deep: #cfd8e2;
+  --copper: #b85c38;
+  --copper-ink: #fff8f4;
+  --moss: #2f5d50;
+  --line: #9aa8b5;
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Source Serif 4", Georgia, serif;
+  --font-ui: "IBM Plex Sans", system-ui, sans-serif;
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-body);
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #f7fafc 0%, transparent 55%),
+    linear-gradient(165deg, var(--paper) 0%, var(--paper-deep) 55%, #b7c4d1 100%);
+  background-attachment: fixed;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--moss);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
