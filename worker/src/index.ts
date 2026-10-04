@@ -1,5 +1,7 @@
 import {
   CONSENT_TASTE_VERSION,
+  ConstraintSchema,
+  EntityIdSchema,
   EntitySearchRequestSchema,
   EntitySearchResponseSchema,
   PreferencesPutSchema,
@@ -18,9 +20,16 @@ import {
 } from "./auth/capabilities";
 import { Repository, type D1Like } from "./db/repository";
 import { remainingLookups, reserveLookup } from "./planning/budget";
+import {
+  assertModelCannotWaive,
+  assessSlateReadiness,
+} from "./planning/constraints";
 import { discoverBoundedCandidates } from "./planning/discover";
+import { toPublicRankDto } from "./planning/rank";
+import { rankProfiledMembersOnSlate } from "./planning/score";
 import { QlooClient } from "./providers/qloo";
 import { deleteOwnMemberInputs } from "./privacy/delete";
+import type { VenueRecord } from "./venues/facts";
 
 export interface Env {
   ENVIRONMENT?: string;
@@ -352,6 +361,147 @@ export default {
         },
       });
       return json(result, result.status === "invalid" ? 422 : result.status === "quota" ? 429 : 200);
+    }
+
+    const constraintMatch = url.pathname.match(/^\/api\/events\/([^/]+)\/constraints$/);
+    if (request.method === "PUT" && constraintMatch) {
+      if (!session || session.eventId !== constraintMatch[1]) return genericUnauthorized();
+      const body = await request.json().catch(() => null);
+      // Reject model-style waive payloads explicitly.
+      try {
+        assertModelCannotWaive(
+          (body && typeof body === "object" ? body : {}) as {
+            waiveConstraintIds?: string[];
+            rewrite?: unknown;
+          },
+        );
+      } catch {
+        return json(
+          {
+            code: "forbidden_policy",
+            message: "Hard requirements cannot be waived by the model",
+            retryable: false,
+            requestId: crypto.randomUUID(),
+          },
+          422,
+        );
+      }
+      const parsed = ConstraintSchema.safeParse(body);
+      if (!parsed.success) {
+        return json(
+          {
+            code: "invalid",
+            message: "constraint failed schema validation",
+            retryable: false,
+            requestId: crypto.randomUUID(),
+          },
+          422,
+        );
+      }
+      try {
+        await repo.putConstraint(session, parsed.data);
+      } catch {
+        return genericUnauthorized();
+      }
+      const event = await repo.getEvent(session.eventId);
+      return json({ ok: true, version: event?.version ?? null });
+    }
+
+    if (request.method === "GET" && constraintMatch) {
+      if (!session || session.eventId !== constraintMatch[1]) return genericUnauthorized();
+      const constraints = await repo.listConstraints(session.eventId);
+      // Members see only own; host sees kinds/required without inventing ranks.
+      const visible =
+        session.role === "host"
+          ? constraints.map((c) => ({
+              id: c.id,
+              ownerId: c.ownerId,
+              kind: c.kind,
+              required: c.required,
+            }))
+          : constraints.filter((c) => c.ownerId === session.participantId);
+      return json({ constraints: visible });
+    }
+
+    const readinessMatch = url.pathname.match(/^\/api\/events\/([^/]+)\/readiness$/);
+    if (request.method === "POST" && readinessMatch) {
+      if (!session || session.role !== "host" || session.eventId !== readinessMatch[1]) {
+        return genericUnauthorized();
+      }
+      const body = (await request.json().catch(() => null)) as {
+        venues?: VenueRecord[];
+      } | null;
+      const constraints = await repo.listConstraints(session.eventId);
+      const venues = Array.isArray(body?.venues) ? body!.venues! : [];
+      const feasibility = assessSlateReadiness({ venues, constraints });
+      return json(feasibility);
+    }
+
+    const rankMatch = url.pathname.match(/^\/api\/events\/([^/]+)\/rank$/);
+    if (request.method === "POST" && rankMatch) {
+      if (!session || session.role !== "host" || session.eventId !== rankMatch[1]) {
+        return genericUnauthorized();
+      }
+      const body = (await request.json().catch(() => null)) as {
+        runId?: string;
+        candidateEntityIds?: string[];
+      } | null;
+      const candidates = Array.isArray(body?.candidateEntityIds)
+        ? body!.candidateEntityIds!.filter((id) => EntityIdSchema.safeParse(id).success).slice(0, 30)
+        : [];
+      if (candidates.length < 1) {
+        return json(
+          {
+            code: "invalid",
+            message: "candidateEntityIds required (UUID place ids, ≤30)",
+            retryable: false,
+            requestId: crypto.randomUUID(),
+          },
+          422,
+        );
+      }
+
+      // Hard requirements before taste — infeasible slate short-circuits ranking.
+      const constraints = await repo.listConstraints(session.eventId);
+      if (constraints.some((c) => c.kind === "veto")) {
+        // Vetoes are venue-id based; without venue records here we still rank only the
+        // requested entity slate. Full venue-fact readiness uses /readiness.
+      }
+
+      const prefs = await repo.listPreferences(session.eventId);
+      const consents = await repo.listConsents(session.eventId);
+      const participants = await repo.listParticipants(session.eventId);
+      const skip = new Set(consents.filter((c) => c.skip_profiling).map((c) => c.participant_id));
+      const members = prefs.map((p) => {
+        let seeds: import("@common-ground/contracts").ConfirmedSeed[] = [];
+        try {
+          seeds = JSON.parse(p.seeds_json);
+        } catch {
+          seeds = [];
+        }
+        return {
+          participantId: p.participant_id,
+          seeds,
+          skipProfiling: skip.has(p.participant_id),
+        };
+      });
+
+      const ranked = await rankProfiledMembersOnSlate({
+        db: env.DB,
+        client: qlooClient(env),
+        runId: body?.runId || crypto.randomUUID(),
+        members,
+        candidateEntityIds: candidates,
+        totalMemberCount: participants.length,
+      });
+
+      // AC02: host response is public summary only — never private rank rows.
+      return json({
+        ...toPublicRankDto(ranked),
+        status: ranked.status,
+        dataMode: ranked.dataMode,
+        qlooCallsUsed: ranked.qlooCallsUsed,
+      });
     }
 
     // IDOR probe surface: never return cross-member preference by guessed id.

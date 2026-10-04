@@ -150,3 +150,131 @@ export function evaluateRequiredFact(input: {
   if (input.matches === true) return "pass";
   return "needs_confirmation";
 }
+
+/** Coverage gates for common-slate ranking (product policy, versioned). */
+export const RANK_COVERAGE_POLICY = {
+  version: "2026-10-04-v1",
+  minSharedFullyRanked: 8,
+  minSubmittedCoverage: 0.8,
+  maxSlateSize: 30,
+} as const;
+
+export const RankCellSchema = z
+  .object({
+    memberId: z.string().min(8).max(64),
+    venueId: EntityIdSchema,
+    rank: z.number().positive().nullable(),
+    slateSize: z.number().int().positive().max(30),
+    status: z.enum(["ranked", "missing", "opted_out"]),
+    queryFingerprint: z.string().min(8).max(128),
+    source: z.enum(["qloo", "explicit_preference"]),
+  })
+  .strict();
+export type RankCell = z.infer<typeof RankCellSchema>;
+
+export const ConstraintKindSchema = z.enum([
+  "budget",
+  "radius",
+  "time",
+  "access",
+  "dietary",
+  "category",
+  "veto",
+]);
+
+export const ConstraintSchema = z.discriminatedUnion("kind", [
+  z
+    .object({
+      id: z.string().min(8).max(64),
+      ownerId: z.string().min(8).max(64),
+      kind: z.literal("budget"),
+      required: z.boolean(),
+      value: z
+        .object({
+          maxCents: z.number().int().nonnegative(),
+          currency: z.string().length(3),
+          includesTaxTipDrinks: z.enum(["included", "excluded", "unknown"]),
+        })
+        .strict(),
+    })
+    .strict(),
+  z
+    .object({
+      id: z.string().min(8).max(64),
+      ownerId: z.string().min(8).max(64),
+      kind: z.literal("radius"),
+      required: z.boolean(),
+      value: z
+        .object({
+          centerLat: z.number().gte(-90).lte(90),
+          centerLon: z.number().gte(-180).lte(180),
+          maxMeters: z.number().positive().max(80_000),
+          /** Straight-line only — never travel time. */
+          distanceKind: z.literal("straight_line"),
+        })
+        .strict(),
+    })
+    .strict(),
+  z
+    .object({
+      id: z.string().min(8).max(64),
+      ownerId: z.string().min(8).max(64),
+      kind: z.literal("time"),
+      required: z.boolean(),
+      value: z
+        .object({
+          localDateTime: z.string().min(10).max(40),
+          timezone: z.string().min(1).max(64),
+        })
+        .strict(),
+    })
+    .strict(),
+  z
+    .object({
+      id: z.string().min(8).max(64),
+      ownerId: z.string().min(8).max(64),
+      kind: z.literal("access"),
+      required: z.boolean(),
+      value: z
+        .object({
+          field: z.string().min(1).max(64),
+          expected: z.union([z.boolean(), z.string(), z.number()]),
+        })
+        .strict(),
+    })
+    .strict(),
+  z
+    .object({
+      id: z.string().min(8).max(64),
+      ownerId: z.string().min(8).max(64),
+      kind: z.literal("dietary"),
+      required: z.boolean(),
+      value: z
+        .object({
+          tags: z.array(z.string().min(1).max(40)).max(12),
+          /** Dietary tags never confirm allergy/medication safety. */
+          allergySafeClaim: z.literal(false),
+        })
+        .strict(),
+    })
+    .strict(),
+  z
+    .object({
+      id: z.string().min(8).max(64),
+      ownerId: z.string().min(8).max(64),
+      kind: z.literal("category"),
+      required: z.boolean(),
+      value: z.object({ categories: z.array(z.string().min(1).max(40)).min(1).max(8) }).strict(),
+    })
+    .strict(),
+  z
+    .object({
+      id: z.string().min(8).max(64),
+      ownerId: z.string().min(8).max(64),
+      kind: z.literal("veto"),
+      required: z.literal(true),
+      value: z.object({ venueId: z.string().min(1).max(64) }).strict(),
+    })
+    .strict(),
+]);
+export type Constraint = z.infer<typeof ConstraintSchema>;

@@ -6,7 +6,12 @@ import {
   sha256Hex,
 } from "../auth/capabilities";
 import type { Role, SessionContext } from "../auth/authorize";
-import { CONSENT_TASTE_VERSION, type ConfirmedSeed } from "@common-ground/contracts";
+import {
+  CONSENT_TASTE_VERSION,
+  ConstraintSchema,
+  type ConfirmedSeed,
+  type Constraint,
+} from "@common-ground/contracts";
 
 export type D1Like = {
   prepare(query: string): {
@@ -411,6 +416,79 @@ export class Repository {
         accepted_at: string;
       }>();
     return results;
+  }
+
+  async listConstraints(eventId: string): Promise<Constraint[]> {
+    const { results } = await this.db
+      .prepare(
+        `SELECT id, owner_participant_id, kind, required, value_json
+         FROM constraints WHERE event_id = ?`,
+      )
+      .bind(eventId)
+      .all<{
+        id: string;
+        owner_participant_id: string;
+        kind: string;
+        required: number;
+        value_json: string;
+      }>();
+    const out: Constraint[] = [];
+    for (const row of results) {
+      let value: unknown = null;
+      try {
+        value = JSON.parse(row.value_json);
+      } catch {
+        continue;
+      }
+      const parsed = ConstraintSchema.safeParse({
+        id: row.id,
+        ownerId: row.owner_participant_id,
+        kind: row.kind,
+        required: !!row.required,
+        value,
+      });
+      if (parsed.success) out.push(parsed.data);
+    }
+    return out;
+  }
+
+  /**
+   * Owner-authorized constraint upsert. Increments event version and invalidates results.
+   * Models cannot call this without a participant session.
+   */
+  async putConstraint(session: SessionContext, constraint: Constraint): Promise<void> {
+    const parsed = ConstraintSchema.parse(constraint);
+    if (parsed.ownerId !== session.participantId && session.role !== "host") {
+      throw new Error("constraint owner mismatch");
+    }
+    // Members may only write their own; hosts may write host-owned constraints.
+    if (session.role === "member" && parsed.ownerId !== session.participantId) {
+      throw new Error("members may only own their constraints");
+    }
+    const ownerId = session.role === "host" ? parsed.ownerId : session.participantId;
+    const ts = nowIso();
+    await this.db
+      .prepare(
+        `INSERT INTO constraints (id, event_id, owner_participant_id, kind, required, value_json, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?)
+         ON CONFLICT(id) DO UPDATE SET
+           kind = excluded.kind,
+           required = excluded.required,
+           value_json = excluded.value_json
+         WHERE constraints.event_id = excluded.event_id
+           AND constraints.owner_participant_id = excluded.owner_participant_id`,
+      )
+      .bind(
+        parsed.id,
+        session.eventId,
+        ownerId,
+        parsed.kind,
+        parsed.required ? 1 : 0,
+        JSON.stringify(parsed.value),
+        ts,
+      )
+      .run();
+    await this.invalidateEventResults(session.eventId);
   }
 
   /**

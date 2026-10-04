@@ -1,6 +1,6 @@
 # P12 — Create comparable per-member venue rankings
 
-> Implementation plan for a future product phase. Use the available Superpowers executing-plans workflow task by task; review the linked specification and evidence gates before coding. This phase is currently **planned**, not complete.
+> Implementation plan executed **2026-10-04**. Ordinal common-slate ranking + coverage gates green (synthetic); live C6 awaits Qloo key.
 
 **Goal:** Obtain honest ordinal evidence for every included member on one common slate.
 

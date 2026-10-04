@@ -377,6 +377,164 @@ export class QlooClient {
       return { status: "unavailable", dataMode: "live", entityIds: [], callCount: 1 };
     }
   }
+
+  /**
+   * Score one profiled member against a frozen candidate slate (≤30).
+   * Same filter.results.entities must be passed for every member.
+   * Missing returned IDs stay unknown — never fabricated as affinity 0.
+   */
+  async scoreCommonSlate(input: {
+    seedEntityIds: string[];
+    candidateEntityIds: string[];
+  }): Promise<ScoreSlateOutcome> {
+    const slate = [...new Set(input.candidateEntityIds)].slice(0, 30);
+    if (!input.seedEntityIds.length || !slate.length) {
+      return {
+        status: "invalid",
+        dataMode: this.apiKey ? "live" : "synthetic",
+        affinities: {},
+        returnedIds: [],
+        callCount: 0,
+      };
+    }
+
+    const params: Record<string, string> = {
+      "filter.type": "urn:entity:place",
+      "signal.interests.entities": input.seedEntityIds.join(","),
+      "filter.results.entities": slate.join(","),
+      take: String(Math.min(Math.max(slate.length, 1), 50)),
+      "feature.explainability": "true",
+    };
+    const allow = assertAllowlist(params, DISCOVERY_PARAM_ALLOWLIST);
+    if (!allow.ok) {
+      return {
+        status: "invalid",
+        dataMode: this.apiKey ? "live" : "synthetic",
+        affinities: {},
+        returnedIds: [],
+        callCount: 0,
+        detail: `unsupported param ${allow.bad}`,
+      };
+    }
+
+    if (!this.apiKey) {
+      const affinities: Record<string, number> = {};
+      for (const id of slate) {
+        // Deterministic synthetic affinity in (0,1) — labeled synthetic, not live evidence.
+        affinities[id] = syntheticAffinity(input.seedEntityIds.join(","), id);
+      }
+      return {
+        status: "ok",
+        dataMode: "synthetic",
+        affinities,
+        returnedIds: slate,
+        callCount: 1,
+      };
+    }
+
+    const qs = new URLSearchParams(params);
+    const url = `${this.baseUrl}/v2/insights?${qs}`;
+    try {
+      const res = await this.fetchImpl(url, {
+        method: "GET",
+        headers: {
+          "X-Api-Key": this.apiKey,
+          Accept: "application/json",
+        },
+      });
+      const status = this.forceStatus ?? res.status;
+      if (status === 401 || status === 403) {
+        return { status: "auth", dataMode: "live", affinities: {}, returnedIds: [], callCount: 1 };
+      }
+      if (status === 429) {
+        return {
+          status: "rate_limited",
+          dataMode: "live",
+          affinities: {},
+          returnedIds: [],
+          callCount: 1,
+        };
+      }
+      if (status < 200 || status >= 300) {
+        return {
+          status: "unavailable",
+          dataMode: "live",
+          affinities: {},
+          returnedIds: [],
+          callCount: 1,
+        };
+      }
+      const json = (await res.json()) as {
+        results?: {
+          entities?: Array<{
+            entity_id?: string;
+            id?: string;
+            query?: { affinity?: number };
+          }>;
+        };
+        entities?: Array<{
+          entity_id?: string;
+          id?: string;
+          query?: { affinity?: number };
+        }>;
+      };
+      const list = json.results?.entities ?? json.entities ?? [];
+      const affinities: Record<string, number> = {};
+      const returnedIds: string[] = [];
+      const allowed = new Set(slate);
+      for (const row of Array.isArray(list) ? list : []) {
+        const id = row.entity_id ?? row.id;
+        if (!id || !allowed.has(id)) continue;
+        const affinity = row.query?.affinity;
+        if (typeof affinity !== "number" || !Number.isFinite(affinity)) continue;
+        affinities[id] = affinity;
+        returnedIds.push(id);
+      }
+      // Do not invent zeros for missing slate members.
+      if (!returnedIds.length) {
+        return {
+          status: "no_results",
+          dataMode: "live",
+          affinities: {},
+          returnedIds: [],
+          callCount: 1,
+        };
+      }
+      return { status: "ok", dataMode: "live", affinities, returnedIds, callCount: 1 };
+    } catch {
+      return {
+        status: "unavailable",
+        dataMode: "live",
+        affinities: {},
+        returnedIds: [],
+        callCount: 1,
+      };
+    }
+  }
+}
+
+export type ScoreSlateOutcome =
+  | {
+      status: "ok";
+      dataMode: "synthetic" | "live";
+      affinities: Record<string, number>;
+      returnedIds: string[];
+      callCount: number;
+    }
+  | {
+      status: "no_results" | "unavailable" | "auth" | "rate_limited" | "invalid";
+      dataMode: "synthetic" | "live";
+      affinities: Record<string, never> | Record<string, number>;
+      returnedIds: [];
+      callCount: number;
+      detail?: string;
+    };
+
+function syntheticAffinity(seedKey: string, venueId: string): number {
+  let h = 0;
+  const s = `${seedKey}|${venueId}`;
+  for (let i = 0; i < s.length; i++) h = (h * 33 + s.charCodeAt(i)) >>> 0;
+  return ((h % 997) + 1) / 1000;
 }
 
 /** Reject unexpected identities: only allow IDs present in the checked catalog. */
