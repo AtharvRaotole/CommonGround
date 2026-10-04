@@ -6,6 +6,7 @@ import {
   sha256Hex,
 } from "../auth/capabilities";
 import type { Role, SessionContext } from "../auth/authorize";
+import { CONSENT_TASTE_VERSION, type ConfirmedSeed } from "@common-ground/contracts";
 
 export type D1Like = {
   prepare(query: string): {
@@ -236,7 +237,7 @@ export class Repository {
   async getEvent(eventId: string) {
     return this.db
       .prepare(
-        `SELECT id, title, group_size, state, version, area FROM events WHERE id = ?`,
+        `SELECT id, title, group_size, state, version, area, results_invalid_at FROM events WHERE id = ?`,
       )
       .bind(eventId)
       .first<{
@@ -246,7 +247,54 @@ export class Repository {
         state: string;
         version: number;
         area: string | null;
+        results_invalid_at: string | null;
       }>();
+  }
+
+  async listParticipants(eventId: string) {
+    const { results } = await this.db
+      .prepare(
+        `SELECT id, event_id, display_label, role FROM participants WHERE event_id = ?`,
+      )
+      .bind(eventId)
+      .all<{
+        id: string;
+        event_id: string;
+        display_label: string;
+        role: Role;
+      }>();
+    return results;
+  }
+
+  async listConfirmedCatalogEntityIds(): Promise<string[]> {
+    const { results } = await this.db
+      .prepare(
+        `SELECT qloo_entity_id FROM venues
+         WHERE qloo_mapping_status = 'confirmed' AND qloo_entity_id IS NOT NULL`,
+      )
+      .bind()
+      .all<{ qloo_entity_id: string }>();
+    return results.map((r) => r.qloo_entity_id).filter(Boolean);
+  }
+
+  async listAllCatalogEntityIds(): Promise<string[]> {
+    const { results } = await this.db
+      .prepare(
+        `SELECT qloo_entity_id FROM venues WHERE qloo_entity_id IS NOT NULL AND qloo_entity_id != ''`,
+      )
+      .bind()
+      .all<{ qloo_entity_id: string }>();
+    return results.map((r) => r.qloo_entity_id).filter(Boolean);
+  }
+
+  async invalidateEventResults(eventId: string): Promise<void> {
+    const ts = nowIso();
+    await this.db
+      .prepare(
+        `UPDATE events SET results_invalid_at = ?, version = version + 1, updated_at = ? WHERE id = ?`,
+      )
+      .bind(ts, ts, eventId)
+      .run();
   }
 
   async listPreferences(eventId: string) {
@@ -266,9 +314,13 @@ export class Repository {
 
   async putOwnPreferences(
     session: SessionContext,
-    seeds: unknown[],
+    seeds: ConfirmedSeed[],
     consentTaste: boolean,
+    opts?: { skipProfiling?: boolean; consentVersion?: string },
   ): Promise<void> {
+    const ts = nowIso();
+    const skip = !!opts?.skipProfiling;
+    const storedSeeds = skip ? [] : seeds;
     await this.db
       .prepare(
         `INSERT INTO preferences (participant_id, event_id, seeds_json, consent_taste, updated_at)
@@ -281,11 +333,33 @@ export class Repository {
       .bind(
         session.participantId,
         session.eventId,
-        JSON.stringify(seeds).slice(0, 4000),
-        consentTaste ? 1 : 0,
-        nowIso(),
+        JSON.stringify(storedSeeds).slice(0, 4000),
+        consentTaste && !skip ? 1 : 0,
+        ts,
       )
       .run();
+
+    await this.db
+      .prepare(
+        `INSERT INTO consents (participant_id, event_id, consent_version, taste_opt_in, skip_profiling, accepted_at)
+         VALUES (?, ?, ?, ?, ?, ?)
+         ON CONFLICT(participant_id) DO UPDATE SET
+           consent_version = excluded.consent_version,
+           taste_opt_in = excluded.taste_opt_in,
+           skip_profiling = excluded.skip_profiling,
+           accepted_at = excluded.accepted_at`,
+      )
+      .bind(
+        session.participantId,
+        session.eventId,
+        opts?.consentVersion ?? CONSENT_TASTE_VERSION,
+        consentTaste && !skip ? 1 : 0,
+        skip ? 1 : 0,
+        ts,
+      )
+      .run();
+
+    await this.invalidateEventResults(session.eventId);
   }
 
   /** Child lookup always requires event_id scope (AUTH IDOR guard). */
@@ -302,5 +376,65 @@ export class Repository {
         seeds_json: string;
         consent_taste: number;
       }>();
+  }
+
+  async getConsentScoped(eventId: string, participantId: string) {
+    return this.db
+      .prepare(
+        `SELECT participant_id, event_id, consent_version, taste_opt_in, skip_profiling, accepted_at
+         FROM consents WHERE event_id = ? AND participant_id = ?`,
+      )
+      .bind(eventId, participantId)
+      .first<{
+        participant_id: string;
+        event_id: string;
+        consent_version: string;
+        taste_opt_in: number;
+        skip_profiling: number;
+        accepted_at: string;
+      }>();
+  }
+
+  async listConsents(eventId: string) {
+    const { results } = await this.db
+      .prepare(
+        `SELECT participant_id, event_id, consent_version, taste_opt_in, skip_profiling, accepted_at
+         FROM consents WHERE event_id = ?`,
+      )
+      .bind(eventId)
+      .all<{
+        participant_id: string;
+        event_id: string;
+        consent_version: string;
+        taste_opt_in: number;
+        skip_profiling: number;
+        accepted_at: string;
+      }>();
+    return results;
+  }
+
+  /**
+   * DATA-01: remove own preferences/consent/constraints, revoke session.
+   * Does not delete the participant row (they remain in group coverage counts).
+   */
+  async deleteOwnInputs(session: SessionContext): Promise<void> {
+    const ts = nowIso();
+    await this.db
+      .prepare(`DELETE FROM preferences WHERE event_id = ? AND participant_id = ?`)
+      .bind(session.eventId, session.participantId)
+      .run();
+    await this.db
+      .prepare(`DELETE FROM consents WHERE event_id = ? AND participant_id = ?`)
+      .bind(session.eventId, session.participantId)
+      .run();
+    await this.db
+      .prepare(`DELETE FROM constraints WHERE event_id = ? AND owner_participant_id = ?`)
+      .bind(session.eventId, session.participantId)
+      .run();
+    await this.db
+      .prepare(`UPDATE sessions SET revoked_at = ? WHERE id = ? AND event_id = ?`)
+      .bind(ts, session.sessionId, session.eventId)
+      .run();
+    await this.invalidateEventResults(session.eventId);
   }
 }

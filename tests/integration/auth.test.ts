@@ -3,6 +3,14 @@ import { toEventDto } from "../../worker/src/auth/authorize";
 import { Repository } from "../../worker/src/db/repository";
 import { openTestDb } from "../helpers/test-db";
 import { sha256Hex } from "../../worker/src/auth/capabilities";
+import type { ConfirmedSeed } from "../../packages/contracts/src/index";
+
+const seed: ConfirmedSeed = {
+  entityId: "00000000-0000-4000-8000-0000000000a1",
+  name: "Synthetic Artist Alpha",
+  type: "urn:entity:artist",
+  confirmedAt: "2026-10-04T12:00:00.000Z",
+};
 
 describe("AUTH capability sessions", () => {
   it("AUTH-01: guessed other-member preferences return no foreign seeds", async () => {
@@ -18,25 +26,25 @@ describe("AUTH capability sessions", () => {
     expect(memberClaim.ok).toBe(true);
     if (!memberClaim.ok) return;
 
-    await repo.putOwnPreferences(memberClaim.session, [{ name: "Radiohead" }], true);
+    await repo.putOwnPreferences(memberClaim.session, [seed], true);
 
-    // Host must not read member seeds via scoped helper pretending to be cross-id without ownership.
     const foreign = await repo.getPreferenceScoped(
       created.eventId,
       memberClaim.session.participantId,
     );
-    // Row exists in DB, but DTO path must strip it for hosts:
     const event = await repo.getEvent(created.eventId);
     const prefs = await repo.listPreferences(created.eventId);
+    const participants = await repo.listParticipants(created.eventId);
     const hostDto = toEventDto({
       event: event!,
       viewer: hostClaim.session,
       preferences: prefs,
+      participants,
     });
-    expect(JSON.stringify(hostDto)).not.toContain("Radiohead");
+    expect(JSON.stringify(hostDto)).not.toContain("Synthetic Artist Alpha");
     expect(hostDto).not.toHaveProperty("preferences");
     expect((hostDto.me as { seeds: unknown[] }).seeds).toEqual([]);
-    expect(foreign?.seeds_json).toContain("Radiohead"); // raw row exists; DTO is what matters for API
+    expect(foreign?.seeds_json).toContain("Synthetic Artist Alpha");
   });
 
   it("AUTH-02: host event DTO never exposes nested private seeds", async () => {
@@ -48,15 +56,28 @@ describe("AUTH capability sessions", () => {
     const invite = await repo.createMemberInvite(created.eventId);
     const member = await repo.consumeClaim(invite.claimSecret);
     if (!member.ok) throw new Error("member claim");
-    await repo.putOwnPreferences(member.session, [{ name: "Spirited Away", type: "film" }], true);
+    await repo.putOwnPreferences(
+      member.session,
+      [
+        {
+          ...seed,
+          entityId: "00000000-0000-4000-8000-0000000000b1",
+          name: "Synthetic Film Mira",
+          type: "urn:entity:movie",
+        },
+      ],
+      true,
+    );
     const event = await repo.getEvent(created.eventId);
     const dto = toEventDto({
       event: event!,
       viewer: host.session,
       preferences: await repo.listPreferences(created.eventId),
+      participants: await repo.listParticipants(created.eventId),
     });
-    expect(JSON.stringify(dto)).not.toMatch(/Spirited Away/);
+    expect(JSON.stringify(dto)).not.toMatch(/Synthetic Film Mira/);
     expect(dto.membersProfiled).toBe(1);
+    expect(dto.membersTotal).toBe(2);
   });
 
   it("AUTH-03: concurrent claim consumption yields exactly one session", async () => {

@@ -1,6 +1,6 @@
 # P10 — Collect private member inputs end to end
 
-> Implementation plan for a future product phase. Use the available Superpowers executing-plans workflow task by task; review the linked specification and evidence gates before coding. This phase is currently **planned**, not complete.
+> Implementation plan executed **2026-10-04**. Join/waiting UI + DATA-01 delete verified under free-tier Worker/D1.
 
 **Goal:** Let real group members join and provide voluntary preferences with privacy and deletion.
 

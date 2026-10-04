@@ -19,6 +19,117 @@ export const HealthResponseSchema = z
   .strict();
 export type HealthResponse = z.infer<typeof HealthResponseSchema>;
 
+/** Consent copy version recorded with every taste opt-in / skip. */
+export const CONSENT_TASTE_VERSION = "2026-10-04-v1";
+
+export const EntityTypeSchema = z.enum([
+  "urn:entity:artist",
+  "urn:entity:movie",
+  "urn:entity:book",
+  "urn:entity:place",
+]);
+export type EntityType = z.infer<typeof EntityTypeSchema>;
+
+export const EntityIdSchema = z
+  .string()
+  .regex(
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+    "entityId must be a UUID",
+  );
+
+export const EntityCandidateSchema = z
+  .object({
+    entityId: EntityIdSchema,
+    name: z.string().trim().min(1).max(200),
+    type: EntityTypeSchema,
+    context: z.string().trim().max(400).optional(),
+  })
+  .strict();
+export type EntityCandidate = z.infer<typeof EntityCandidateSchema>;
+
+export const ConfirmedSeedSchema = z
+  .object({
+    entityId: EntityIdSchema,
+    name: z.string().trim().min(1).max(200),
+    type: EntityTypeSchema,
+    context: z.string().trim().max(400).optional(),
+    confirmedAt: z.string().datetime(),
+  })
+  .strict();
+export type ConfirmedSeed = z.infer<typeof ConfirmedSeedSchema>;
+
+export const EntitySearchRequestSchema = z
+  .object({
+    query: z.string().trim().min(2).max(80),
+    types: z.array(EntityTypeSchema).min(1).max(4).optional(),
+  })
+  .strict();
+export type EntitySearchRequest = z.infer<typeof EntitySearchRequestSchema>;
+
+export const EntitySearchResponseSchema = z
+  .object({
+    status: z.enum(["ok", "no_match", "timeout", "quota", "unavailable"]),
+    dataMode: z.enum(["synthetic", "live"]),
+    candidates: z.array(EntityCandidateSchema).max(10),
+    budgets: z
+      .object({
+        memberRemaining: z.number().int().nonnegative(),
+        eventRemaining: z.number().int().nonnegative(),
+      })
+      .strict(),
+  })
+  .strict();
+export type EntitySearchResponse = z.infer<typeof EntitySearchResponseSchema>;
+
+export const PreferencesPutSchema = z
+  .object({
+    seeds: z.array(ConfirmedSeedSchema).max(3),
+    consentTaste: z.boolean(),
+    skipProfiling: z.boolean().optional(),
+    consentVersion: z.literal(CONSENT_TASTE_VERSION),
+  })
+  .strict();
+export type PreferencesPut = z.infer<typeof PreferencesPutSchema>;
+
+/** Application lookup caps (retries count). */
+export const LOOKUP_CAPS = {
+  perMemberDay: 20,
+  perEventDay: 60,
+  globalDay: 200,
+} as const;
+
+/** Qloo call ceiling for one planning run (discovery + scoring + retries). */
+export const QLOO_RUN_CALL_CEILING = 24;
+
+/** Validated discovery request — never built from unvalidated model text. */
+export const DiscoverCandidatesInputSchema = z
+  .object({
+    eventId: z.string().min(8).max(64),
+    runId: z.string().min(8).max(64),
+    profiledMemberIds: z.array(z.string().min(8).max(64)).min(1).max(8),
+    catalogEntityIds: z.array(EntityIdSchema).max(30),
+    locationWkt: z
+      .string()
+      .regex(/^POINT\s*\(\s*-?\d+(?:\.\d+)?\s+-?\d+(?:\.\d+)?\s*\)$/i)
+      .optional(),
+    radiusMeters: z.number().positive().max(80_000).optional(),
+  })
+  .strict();
+export type DiscoverCandidatesInput = z.infer<typeof DiscoverCandidatesInputSchema>;
+
+export const DiscoverCandidatesOutputSchema = z
+  .object({
+    status: z.enum(["ok", "no_coverage", "unavailable", "quota", "invalid"]),
+    dataMode: z.enum(["synthetic", "live"]),
+    candidateEntityIds: z.array(EntityIdSchema),
+    catalogFallbackIds: z.array(EntityIdSchema),
+    rejectedUnexpectedIds: z.array(z.string()).max(50),
+    missingCoverageMemberIds: z.array(z.string()),
+    qlooCallsUsed: z.number().int().nonnegative(),
+  })
+  .strict();
+export type DiscoverCandidatesOutput = z.infer<typeof DiscoverCandidatesOutputSchema>;
+
 export type RequiredFactEval =
   | "pass"
   | "needs_confirmation"

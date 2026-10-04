@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "data_mode": "synthetic",
+  "warning": "Fabricated entities for parser/UI tests only. Not live Qloo evidence.",
+  "entities": [
+    {
+      "entityId": "00000000-0000-4000-8000-0000000000a1",
+      "name": "Synthetic Artist Alpha",
+      "type": "urn:entity:artist",
+      "context": "SYNTHETIC — indie rock band (not a real Qloo entity)"
+    },
+    {
+      "entityId": "00000000-0000-4000-8000-0000000000a2",
+      "name": "Synthetic Artist Alpha (Cover Band)",
+      "type": "urn:entity:artist",
+      "context": "Ambiguous name case for UI confirmation"
+    },
+    {
+      "entityId": "00000000-0000-4000-8000-0000000000b1",
+      "name": "Synthetic Film Mira",
+      "type": "urn:entity:movie",
+      "context": "SYNTHETIC — 2019 drama"
+    },
+    {
+      "entityId": "00000000-0000-4000-8000-0000000000b2",
+      "name": "Synthetic Film Mira (Remake)",
+      "type": "urn:entity:movie",
+      "context": "SYNTHETIC — 2024 remake; pick deliberately"
+    },
+    {
+      "entityId": "00000000-0000-4000-8000-0000000000c1",
+      "name": "Synthetic Book Kappa",
+      "type": "urn:entity:book",
+      "context": "SYNTHETIC — essay collection"
+    },
+    {
+      "entityId": "00000000-0000-4000-8000-0000000000d1",
+      "name": "Synthetic Place Pier",
+      "type": "urn:entity:place",
+      "context": "SYNTHETIC — East Village cafe"
+    },
+    {
+      "entityId": "00000000-0000-4000-8000-0000000000d2",
+      "name": "Synthetic Place Pier Brooklyn",
+      "type": "urn:entity:place",
+      "context": "SYNTHETIC — Williamsburg branch; not the Manhattan one"
+    }
+  ]
+}

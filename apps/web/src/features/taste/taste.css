@@ -1,0 +1,132 @@
+.taste {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.taste__lede {
+  margin: 0;
+  color: color-mix(in srgb, var(--ink) 78%, transparent);
+  font-size: 0.98rem;
+}
+
+.taste__seeds {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.taste__seeds li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
+}
+
+.taste__seeds strong {
+  display: block;
+  font-family: var(--font-display);
+}
+
+.taste__seeds em,
+.taste__candidates em {
+  display: block;
+  font-style: normal;
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--moss);
+}
+
+.taste__seeds small,
+.taste__candidates small {
+  display: block;
+  margin-top: 0.2rem;
+  color: color-mix(in srgb, var(--ink) 65%, transparent);
+}
+
+.taste__seeds button {
+  font-family: var(--font-ui);
+  border: 1px solid var(--line);
+  background: transparent;
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+}
+
+.taste__search {
+  display: grid;
+  gap: 0.35rem;
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+}
+
+.taste__search input {
+  font: inherit;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, white 70%, var(--paper));
+}
+
+.taste__candidates {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+  animation: taste-rise 280ms ease-out;
+}
+
+.taste__candidates button {
+  width: 100%;
+  text-align: left;
+  border: 1px solid transparent;
+  background: color-mix(in srgb, white 55%, var(--paper));
+  padding: 0.75rem 0.85rem;
+  cursor: pointer;
+  font: inherit;
+  display: grid;
+  gap: 0.15rem;
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+
+.taste__candidates button.is-active,
+.taste__candidates button:hover,
+.taste__candidates button:focus-visible {
+  border-color: var(--moss);
+  transform: translateX(2px);
+}
+
+.taste__confirm {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--copper);
+}
+
+.taste__note {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 0.88rem;
+}
+
+.taste__error {
+  margin: 0;
+  font-family: var(--font-ui);
+  color: #8a2f2f;
+}
+
+@keyframes taste-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

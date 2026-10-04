@@ -1,4 +1,11 @@
 import {
+  CONSENT_TASTE_VERSION,
+  EntitySearchRequestSchema,
+  EntitySearchResponseSchema,
+  PreferencesPutSchema,
+  HealthResponseSchema,
+} from "@common-ground/contracts";
+import {
   assertSameOrigin,
   genericUnauthorized,
   toEventDto,
@@ -10,12 +17,17 @@ import {
   parseCookies,
 } from "./auth/capabilities";
 import { Repository, type D1Like } from "./db/repository";
-import { HealthResponseSchema } from "@common-ground/contracts";
+import { remainingLookups, reserveLookup } from "./planning/budget";
+import { discoverBoundedCandidates } from "./planning/discover";
+import { QlooClient } from "./providers/qloo";
+import { deleteOwnMemberInputs } from "./privacy/delete";
 
 export interface Env {
   ENVIRONMENT?: string;
   GIT_SHA?: string;
   ALLOWED_ORIGINS?: string;
+  QLOO_API_KEY?: string;
+  QLOO_BASE_URL?: string;
   ASSETS?: Fetcher;
   DB: D1Like;
 }
@@ -58,6 +70,13 @@ function allowedOrigins(env: Env, requestUrl: URL): string[] {
 
 function secureCookies(requestUrl: URL): boolean {
   return requestUrl.protocol === "https:";
+}
+
+function qlooClient(env: Env): QlooClient {
+  return new QlooClient({
+    apiKey: env.QLOO_API_KEY,
+    baseUrl: env.QLOO_BASE_URL,
+  });
 }
 
 export default {
@@ -107,7 +126,6 @@ export default {
       return json(
         {
           eventId: created.eventId,
-          // Host recovery shown once — never embed in participant invite URLs.
           hostRecoverySecret: created.hostRecoverySecret,
           hostClaimSecret: created.hostClaimSecret,
           notice:
@@ -120,7 +138,12 @@ export default {
     if (request.method === "POST" && url.pathname === "/api/claims") {
       const body = (await request.json().catch(() => null)) as { secret?: string } | null;
       const secret = body?.secret?.trim();
-      if (!secret) return json({ code: "invalid", message: "secret required", retryable: false, requestId: crypto.randomUUID() }, 422);
+      if (!secret) {
+        return json(
+          { code: "invalid", message: "secret required", retryable: false, requestId: crypto.randomUUID() },
+          422,
+        );
+      }
       const result = await repo.consumeClaim(secret);
       if (!result.ok) {
         return result.reason === "conflict"
@@ -139,7 +162,9 @@ export default {
       );
     }
 
-    const session = await repo.sessionFromToken(parseCookies(request.headers.get("cookie"))[SESSION_COOKIE]);
+    const session = await repo.sessionFromToken(
+      parseCookies(request.headers.get("cookie"))[SESSION_COOKIE],
+    );
 
     const inviteMatch = url.pathname.match(/^\/api\/events\/([^/]+)\/invites$/);
     if (request.method === "POST" && inviteMatch) {
@@ -149,7 +174,6 @@ export default {
       const invite = await repo.createMemberInvite(session.eventId);
       return json({
         claimSecret: invite.claimSecret,
-        // Fragment-style client usage recommended; server never puts host recovery here.
         claimPath: `/join#${invite.claimSecret}`,
         expiresInSec: 72 * 3600,
       });
@@ -161,29 +185,184 @@ export default {
       const event = await repo.getEvent(session.eventId);
       if (!event) return genericUnauthorized();
       const preferences = await repo.listPreferences(session.eventId);
-      return json(toEventDto({ event, viewer: session, preferences }));
+      const participants = await repo.listParticipants(session.eventId);
+      const consents = await repo.listConsents(session.eventId);
+      return json(
+        toEventDto({
+          event,
+          viewer: session,
+          preferences,
+          participants,
+          consents,
+        }),
+      );
+    }
+
+    const searchMatch = url.pathname.match(/^\/api\/events\/([^/]+)\/me\/entity-search$/);
+    if (request.method === "POST" && searchMatch) {
+      if (!session || session.eventId !== searchMatch[1]) return genericUnauthorized();
+      const body = await request.json().catch(() => null);
+      const parsed = EntitySearchRequestSchema.safeParse(body);
+      if (!parsed.success) {
+        return json(
+          {
+            code: "invalid",
+            message: "query (2–80 chars) and optional types required",
+            retryable: false,
+            requestId: crypto.randomUUID(),
+          },
+          422,
+        );
+      }
+
+      const reserved = await reserveLookup({
+        db: env.DB,
+        memberId: session.participantId,
+        eventId: session.eventId,
+      });
+      if (!reserved.ok) {
+        const budgets = await remainingLookups({
+          db: env.DB,
+          memberId: session.participantId,
+          eventId: session.eventId,
+        });
+        const payload = EntitySearchResponseSchema.parse({
+          status: "quota" as const,
+          dataMode: env.QLOO_API_KEY ? ("live" as const) : ("synthetic" as const),
+          candidates: [],
+          budgets,
+        });
+        return json(payload, 429);
+      }
+
+      const client = qlooClient(env);
+      const outcome = await client.searchEntities({
+        query: parsed.data.query,
+        types: parsed.data.types,
+      });
+      const payload = EntitySearchResponseSchema.parse({
+        status: outcome.status === "unavailable" ? "unavailable" : outcome.status,
+        dataMode: outcome.dataMode,
+        candidates: outcome.candidates,
+        budgets: {
+          memberRemaining: reserved.memberRemaining,
+          eventRemaining: reserved.eventRemaining,
+        },
+      });
+      if (outcome.status === "unavailable") return json(payload, 503);
+      if (outcome.status === "timeout") return json(payload, 504);
+      return json(payload);
     }
 
     const prefsMatch = url.pathname.match(/^\/api\/events\/([^/]+)\/me\/preferences$/);
     if (request.method === "PUT" && prefsMatch) {
       if (!session || session.eventId !== prefsMatch[1]) return genericUnauthorized();
+      const body = await request.json().catch(() => null);
+      const parsed = PreferencesPutSchema.safeParse(body);
+      if (!parsed.success) {
+        return json(
+          {
+            code: "invalid",
+            message:
+              "seeds must be ≤3 confirmed entities with UUID ids; consentVersion required; wrong-type/malformed ids rejected",
+            retryable: false,
+            requestId: crypto.randomUUID(),
+          },
+          422,
+        );
+      }
+      if (parsed.data.skipProfiling) {
+        await repo.putOwnPreferences(session, [], false, {
+          skipProfiling: true,
+          consentVersion: parsed.data.consentVersion,
+        });
+      } else {
+        await repo.putOwnPreferences(session, parsed.data.seeds, parsed.data.consentTaste, {
+          skipProfiling: false,
+          consentVersion: parsed.data.consentVersion,
+        });
+      }
+      return json({
+        ok: true,
+        consentVersion: CONSENT_TASTE_VERSION,
+        skipProfiling: !!parsed.data.skipProfiling,
+      });
+    }
+
+    const deleteMe = url.pathname.match(/^\/api\/events\/([^/]+)\/me$/);
+    if (request.method === "DELETE" && deleteMe) {
+      if (!session || session.eventId !== deleteMe[1]) return genericUnauthorized();
+      await deleteOwnMemberInputs(repo, session);
+      return json(
+        { ok: true },
+        200,
+        {
+          "set-cookie": cookieHeader(SESSION_COOKIE, "", {
+            maxAgeSec: 0,
+            secure: secureCookies(url),
+          }),
+        },
+      );
+    }
+
+    const discoverMatch = url.pathname.match(/^\/api\/events\/([^/]+)\/discover$/);
+    if (request.method === "POST" && discoverMatch) {
+      if (!session || session.role !== "host" || session.eventId !== discoverMatch[1]) {
+        return genericUnauthorized();
+      }
       const body = (await request.json().catch(() => null)) as {
-        seeds?: unknown[];
-        consentTaste?: boolean;
+        runId?: string;
+        profiledMemberIds?: string[];
+        locationWkt?: string;
+        radiusMeters?: number;
       } | null;
-      const seeds = Array.isArray(body?.seeds) ? body!.seeds!.slice(0, 3) : [];
-      await repo.putOwnPreferences(session, seeds, !!body?.consentTaste);
-      return json({ ok: true });
+      const prefs = await repo.listPreferences(session.eventId);
+      const consents = await repo.listConsents(session.eventId);
+      const consentSkip = new Set(
+        consents.filter((c) => c.skip_profiling).map((c) => c.participant_id),
+      );
+      const members = prefs.map((p) => {
+        let seeds: import("@common-ground/contracts").ConfirmedSeed[] = [];
+        try {
+          seeds = JSON.parse(p.seeds_json);
+        } catch {
+          seeds = [];
+        }
+        return {
+          participantId: p.participant_id,
+          seeds,
+          skipProfiling: consentSkip.has(p.participant_id),
+        };
+      });
+      // Live candidates require confirmed mappings; unknown mappings stay out of live slates (P08).
+      const catalogEntityIds = await repo.listConfirmedCatalogEntityIds();
+      const result = await discoverBoundedCandidates({
+        db: env.DB,
+        client: qlooClient(env),
+        members,
+        raw: {
+          eventId: session.eventId,
+          runId: body?.runId || crypto.randomUUID(),
+          profiledMemberIds:
+            body?.profiledMemberIds ||
+            members.filter((m) => m.seeds.length && !m.skipProfiling).map((m) => m.participantId),
+          catalogEntityIds,
+          locationWkt: body?.locationWkt,
+          radiusMeters: body?.radiusMeters,
+        },
+      });
+      return json(result, result.status === "invalid" ? 422 : result.status === "quota" ? 429 : 200);
     }
 
     // IDOR probe surface: never return cross-member preference by guessed id.
-    const otherPrefs = url.pathname.match(/^\/api\/events\/([^/]+)\/participants\/([^/]+)\/preferences$/);
+    const otherPrefs = url.pathname.match(
+      /^\/api\/events\/([^/]+)\/participants\/([^/]+)\/preferences$/,
+    );
     if (request.method === "GET" && otherPrefs) {
       if (!session || session.eventId !== otherPrefs[1]) return genericUnauthorized();
       if (session.participantId !== otherPrefs[2] && session.role !== "host") {
         return genericUnauthorized();
       }
-      // Hosts still must not read seeds — only the owner can.
       if (session.participantId !== otherPrefs[2]) return genericUnauthorized();
       const row = await repo.getPreferenceScoped(session.eventId, session.participantId);
       return json({
