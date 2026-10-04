@@ -1,0 +1,474 @@
+{
+  "research_date": "2026-10-03",
+  "sources": [
+    {
+      "url": "https://blog.cobot.me/coworking-at-numa-bengaluru/",
+      "contexts": [
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://developers.cloudflare.com/d1/platform/limits/",
+      "contexts": [
+        "05-free-tier-and-costs.md",
+        "research/qloo-feasibility.md"
+      ]
+    },
+    {
+      "url": "https://developers.cloudflare.com/d1/platform/pricing/",
+      "contexts": [
+        "05-free-tier-and-costs.md",
+        "research/qloo-feasibility.md"
+      ]
+    },
+    {
+      "url": "https://developers.cloudflare.com/d1/platform/release-notes/",
+      "contexts": [
+        "05-free-tier-and-costs.md",
+        "research/qloo-feasibility.md"
+      ]
+    },
+    {
+      "url": "https://developers.cloudflare.com/labs/workers",
+      "contexts": [
+        "05-free-tier-and-costs.md",
+        "research/qloo-feasibility.md"
+      ]
+    },
+    {
+      "url": "https://developers.cloudflare.com/workers/configuration/routing/workers-dev/",
+      "contexts": [
+        "05-free-tier-and-costs.md",
+        "research/qloo-feasibility.md"
+      ]
+    },
+    {
+      "url": "https://developers.cloudflare.com/workers/platform/limits/",
+      "contexts": [
+        "05-free-tier-and-costs.md",
+        "research/qloo-feasibility.md"
+      ]
+    },
+    {
+      "url": "https://developers.cloudflare.com/workers/static-assets/billing-and-limitations/",
+      "contexts": [
+        "05-free-tier-and-costs.md",
+        "research/qloo-feasibility.md"
+      ]
+    },
+    {
+      "url": "https://developers.openai.com/api/docs/guides/function-calling",
+      "contexts": [
+        "04-architecture-and-data.md"
+      ]
+    },
+    {
+      "url": "https://developers.openai.com/api/docs/guides/structured-outputs",
+      "contexts": [
+        "04-architecture-and-data.md"
+      ]
+    },
+    {
+      "url": "https://developers.openai.com/api/docs/guides/your-data",
+      "contexts": [
+        "04-architecture-and-data.md"
+      ]
+    },
+    {
+      "url": "https://devpost.com/software/axiom-2bn391",
+      "contexts": [
+        "research/startup-critique.md"
+      ]
+    },
+    {
+      "url": "https://devpost.com/software/duddle",
+      "contexts": [
+        "01-opportunity-and-competition.md",
+        "06-startup-score-and-validation.md",
+        "12-research-method-and-claim-register.md",
+        "research/opportunity-research.md",
+        "research/startup-critique.md"
+      ]
+    },
+    {
+      "url": "https://devpost.com/software/geotaste-your-agentic-qloo-taste-business-consultant",
+      "contexts": [
+        "research/startup-critique.md"
+      ]
+    },
+    {
+      "url": "https://docs.github.com/en/billing/concepts/product-billing/github-actions",
+      "contexts": [
+        "05-free-tier-and-costs.md",
+        "research/qloo-feasibility.md"
+      ]
+    },
+    {
+      "url": "https://docs.qloo.com/docs/interpreting-affinity-scores",
+      "contexts": [
+        "03-qloo-and-ranking.md",
+        "12-research-method-and-claim-register.md",
+        "research/qloo-feasibility.md"
+      ]
+    },
+    {
+      "url": "https://docs.qloo.com/reference/analysis-compare",
+      "contexts": [
+        "03-qloo-and-ranking.md",
+        "research/qloo-feasibility.md"
+      ]
+    },
+    {
+      "url": "https://docs.qloo.com/reference/get-search",
+      "contexts": [
+        "research/qloo-feasibility.md"
+      ]
+    },
+    {
+      "url": "https://docs.qloo.com/reference/get-tags-1",
+      "contexts": [
+        "research/qloo-feasibility.md"
+      ]
+    },
+    {
+      "url": "https://docs.qloo.com/reference/insights-api-deep-dive",
+      "contexts": [
+        "03-qloo-and-ranking.md",
+        "12-research-method-and-claim-register.md",
+        "research/qloo-feasibility.md"
+      ]
+    },
+    {
+      "url": "https://docs.qloo.com/reference/parameters",
+      "contexts": [
+        "03-qloo-and-ranking.md",
+        "research/qloo-feasibility.md"
+      ]
+    },
+    {
+      "url": "https://docs.qloo.com/reference/qloo-llm-hackathon-developer-guide",
+      "contexts": [
+        "03-qloo-and-ranking.md",
+        "05-free-tier-and-costs.md",
+        "12-research-method-and-claim-register.md",
+        "research/qloo-feasibility.md"
+      ]
+    },
+    {
+      "url": "https://docs.qloo.com/reference/taste-analysis",
+      "contexts": [
+        "research/qloo-feasibility.md"
+      ]
+    },
+    {
+      "url": "https://duve.com/how-edgar-suites-leverages-duveai-to-automate-80-of-guest-inquiries/",
+      "contexts": [
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://forones.co/",
+      "contexts": [
+        "01-opportunity-and-competition.md",
+        "12-research-method-and-claim-register.md",
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://hackathon.api.qloo.com",
+      "contexts": [
+        "03-qloo-and-ranking.md",
+        "research/qloo-feasibility.md"
+      ]
+    },
+    {
+      "url": "https://help.meetup.com/hc/en-us/articles/28677808413197-Organizer-Subscription-prices-overview",
+      "contexts": [
+        "research/startup-critique.md"
+      ]
+    },
+    {
+      "url": "https://help.meetup.com/hc/en-us/articles/39790436736525-Creating-an-event",
+      "contexts": [
+        "01-opportunity-and-competition.md",
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://help.partiful.com/en-us/articles/15525422-can-i-poll-or-survey-my-guests",
+      "contexts": [
+        "01-opportunity-and-competition.md",
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://help.wanderlog.com/hc/en-us/articles/4625495771163-Add-friends-to-plan-together",
+      "contexts": [
+        "01-opportunity-and-competition.md",
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://livezoku.com/paris/events/community-dinner-members-only/",
+      "contexts": [
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://luma.com/pricing",
+      "contexts": [
+        "06-startup-score-and-validation.md",
+        "research/startup-critique.md"
+      ]
+    },
+    {
+      "url": "https://mailchimp.com/resources/mcadenver-boosted-email-performance/",
+      "contexts": [
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://manchester-chamber.org/taco-tour-manchester-2025-date-announced/",
+      "contexts": [
+        "01-opportunity-and-competition.md",
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://mindtrip.ai/business/hotels",
+      "contexts": [
+        "01-opportunity-and-competition.md",
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://mindtrip.ai/stays",
+      "contexts": [
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://partiful.com/",
+      "contexts": [
+        "06-startup-score-and-validation.md",
+        "research/opportunity-research.md",
+        "research/startup-critique.md"
+      ]
+    },
+    {
+      "url": "https://partiful.com/ticketing",
+      "contexts": [
+        "01-opportunity-and-competition.md",
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://partners.222.place/",
+      "contexts": [
+        "01-opportunity-and-competition.md",
+        "06-startup-score-and-validation.md",
+        "12-research-method-and-claim-register.md",
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://qloo-hackathon.devpost.com/project-gallery",
+      "contexts": [
+        "research/startup-critique.md"
+      ]
+    },
+    {
+      "url": "https://qloo.devpost.com/",
+      "contexts": [
+        "10-demo-release-and-operations.md",
+        "12-research-method-and-claim-register.md",
+        "research/qloo-feasibility.md"
+      ]
+    },
+    {
+      "url": "https://qloo.devpost.com/rules",
+      "contexts": [
+        "06-startup-score-and-validation.md",
+        "10-demo-release-and-operations.md",
+        "12-research-method-and-claim-register.md",
+        "research/qloo-feasibility.md",
+        "research/startup-critique.md"
+      ]
+    },
+    {
+      "url": "https://resources.mindtrip.ai/travelers/travel-tips/choosing-the-right-stay-for-a-group",
+      "contexts": [
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://theaudienceagency.org/en/news/audience-spectrum-now-digs-deeper",
+      "contexts": [
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://timeleft.com/about/",
+      "contexts": [
+        "06-startup-score-and-validation.md",
+        "12-research-method-and-claim-register.md",
+        "research/startup-critique.md"
+      ]
+    },
+    {
+      "url": "https://timeleft.com/blog/how-does-timeleft-work/",
+      "contexts": [
+        "01-opportunity-and-competition.md",
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://timeleft.com/blog/how-timeleft-matches-you/",
+      "contexts": [
+        "research/startup-critique.md"
+      ]
+    },
+    {
+      "url": "https://timeleft.com/dinners-with-strangers/",
+      "contexts": [
+        "01-opportunity-and-competition.md",
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://wallacefoundation.org/report/audience-building-and-financial-health-nonprofit-arts?p=1",
+      "contexts": [
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://wallacefoundation.org/report/search-magic-bullet-results-building-audiences-sustainability-initiative-results-building",
+      "contexts": [
+        "01-opportunity-and-competition.md",
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://www.coworks.com/blog/top-5-coworking-community-manager-problems",
+      "contexts": [
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://www.everythingcoworking.com/everything-coworking-blog/5-steps-to-creating-a-coworking-member-event-program",
+      "contexts": [
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://www.hijiffy.com/success-stories/kabannas",
+      "contexts": [
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://www.meetup.com/meetup-group-yyedoizw/",
+      "contexts": [
+        "01-opportunity-and-competition.md",
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://www.nivassoc.org/statements/2025/independent-stages-generate-1531-billion-in-economic-investment-across-us-based-on-new-national-independent-venue-association-niva-research-study",
+      "contexts": [
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://www.nivassoc.org/stateoflive",
+      "contexts": [
+        "01-opportunity-and-competition.md"
+      ]
+    },
+    {
+      "url": "https://www.qloo.com/capabilities",
+      "contexts": [
+        "06-startup-score-and-validation.md",
+        "research/startup-critique.md"
+      ]
+    },
+    {
+      "url": "https://www.qloo.com/capabilities/recommendations",
+      "contexts": [
+        "01-opportunity-and-competition.md",
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://www.qloo.com/capabilities/taste-analysis",
+      "contexts": [
+        "01-opportunity-and-competition.md",
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://www.qloo.com/legal/terms",
+      "contexts": [
+        "05-free-tier-and-costs.md",
+        "06-startup-score-and-validation.md",
+        "08-business-and-go-to-market.md",
+        "research/qloo-feasibility.md",
+        "research/startup-critique.md"
+      ]
+    },
+    {
+      "url": "https://www.qloo.com/resources/netflix-and-qloo-elevate-merchandising-with-ai-driven-audience-insights",
+      "contexts": [
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://www.qloo.com/team-spotlights/tala-khoury",
+      "contexts": [
+        "06-startup-score-and-validation.md",
+        "research/startup-critique.md"
+      ]
+    },
+    {
+      "url": "https://www.qloo.com/use-cases/overcome-cold-start-challenges",
+      "contexts": [
+        "06-startup-score-and-validation.md",
+        "research/startup-critique.md"
+      ]
+    },
+    {
+      "url": "https://www.skillsdirectory.com/skills/neotherapper-evaluate",
+      "contexts": [
+        "06-startup-score-and-validation.md",
+        "research/startup-critique.md"
+      ]
+    },
+    {
+      "url": "https://www.sponsorpitch.com/discover-sponsorpitch-cc",
+      "contexts": [
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://www.sponsorpitch.com/how-it-works",
+      "contexts": [
+        "01-opportunity-and-competition.md",
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://www.sponsorunited.com/insights/building-meaningful-sponsorships-in-the-performing-arts-space",
+      "contexts": [
+        "research/opportunity-research.md"
+      ]
+    },
+    {
+      "url": "https://www.table315.com/",
+      "contexts": [
+        "01-opportunity-and-competition.md",
+        "12-research-method-and-claim-register.md",
+        "research/opportunity-research.md"
+      ]
+    }
+  ]
+}

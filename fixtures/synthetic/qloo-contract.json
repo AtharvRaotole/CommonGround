@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "data_mode": "synthetic",
+  "warning": "Fabricated for parser/CPU tests only. Not a live Qloo response. Do not treat IDs, affinities, or entity names as provider evidence.",
+  "created": "2026-10-03",
+  "base_url_documented": "https://hackathon.api.qloo.com",
+  "auth_header_documented": "X-Api-Key",
+  "search_example": {
+    "request": {
+      "method": "GET",
+      "path": "/search",
+      "query": {
+        "query": "Synthetic Artist Alpha",
+        "types": "urn:entity:artist",
+        "take": "3"
+      }
+    },
+    "response": {
+      "success": true,
+      "results": [
+        {
+          "entity_id": "00000000-0000-4000-8000-0000000000a1",
+          "name": "Synthetic Artist Alpha",
+          "types": ["urn:entity:artist"],
+          "properties": {
+            "short_description": "SYNTHETIC — not a real Qloo entity"
+          }
+        },
+        {
+          "entity_id": "00000000-0000-4000-8000-0000000000a2",
+          "name": "Synthetic Artist Alpha (Cover Band)",
+          "types": ["urn:entity:artist"],
+          "properties": {
+            "short_description": "Ambiguous name case for UI confirmation"
+          }
+        }
+      ]
+    }
+  },
+  "insights_candidate_restricted_example": {
+    "request": {
+      "method": "GET",
+      "path": "/v2/insights",
+      "query": {
+        "filter.type": "urn:entity:place",
+        "signal.interests.entities": "00000000-0000-4000-8000-0000000000a1",
+        "filter.results.entities": "00000000-0000-4000-8000-0000000000b1,00000000-0000-4000-8000-0000000000b2,00000000-0000-4000-8000-0000000000b3",
+        "take": "30",
+        "feature.explainability": "true"
+      }
+    },
+    "response": {
+      "success": true,
+      "results": {
+        "entities": [
+          {
+            "entity_id": "00000000-0000-4000-8000-0000000000b2",
+            "name": "Synthetic Venue Beta",
+            "type": "urn:entity:place",
+            "query": {
+              "affinity": 0.81,
+              "rank": 1,
+              "explainability": {
+                "warning": "synthetic explainability stub"
+              }
+            }
+          },
+          {
+            "entity_id": "00000000-0000-4000-8000-0000000000b1",
+            "name": "Synthetic Venue Alpha",
+            "type": "urn:entity:place",
+            "query": {
+              "affinity": 0.55,
+              "rank": 2
+            }
+          }
+        ]
+      }
+    },
+    "contract_observations_to_assert_on_live": [
+      "Returned entity_id set must be subset of requested filter.results.entities (detect extras).",
+      "Missing requested IDs must be marked unknown, never score 0.",
+      "Affinity is per-query 0–1 context; do not average across members as calibrated utility.",
+      "Invalid filter parameters may be silently ignored — probe with a contradictory filter."
+    ]
+  },
+  "oversized_parse_probe": {
+    "purpose": "Local CPU/size rehearsal approximating verbose place payloads (no field projection per hackathon guide).",
+    "entity_count": 30,
+    "padding_chars_per_entity": 4000,
+    "note": "Generated at runtime by spikes/qloo-contract.ts; not stored as a giant blob in git."
+  }
+}

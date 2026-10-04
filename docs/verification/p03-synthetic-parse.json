@@ -1,0 +1,23 @@
+{
+  "data_mode": "synthetic",
+  "bytes": 126585,
+  "entity_count": 30,
+  "parse_and_trim_cpu_ms": 0.086,
+  "workers_free_cpu_budget_ms": 10,
+  "within_budget_on_this_machine": true,
+  "note": "Local Node CPU ≠ Cloudflare isolate; deploy C7 probe still required after key+wrangler.",
+  "top3": [
+    {
+      "id": "00000000-0000-4000-8000-000000000000",
+      "affinity": 1
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000001",
+      "affinity": 0.9666666666666667
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000002",
+      "affinity": 0.9333333333333333
+    }
+  ]
+}

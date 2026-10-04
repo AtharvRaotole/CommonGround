@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "created": "2026-10-03",
+  "owner": "founder",
+  "phase": "P01",
+  "status": "frozen_pre_interview",
+  "notes": "Numerical thresholds are targets/estimates/scenarios. No assumption below is treated as proven customer or live-provider evidence.",
+  "capacity": {
+    "id": "A-CAPACITY",
+    "statement": "Founder can sustain approximately 30 hours/week for eight relative weeks (240 hours total).",
+    "label": "operating_assumption_locked",
+    "owner": "founder",
+    "status": "locked_2026-10-03",
+    "planned_hours": 192,
+    "contingency_hours": 48,
+    "lock_note": "Owner judgment lock during P02; revise only via dated decision if calendar reality breaks it.",
+    "falsification_test": "If sustained capacity is materially below ~30 h/week, cut scope per roadmap or extend calendar before P06 broad build.",
+    "evidence_required": "Operating lock recorded in docs/decisions/001-scope.md and this file."
+  },
+  "city_access": {
+    "id": "A-CITY",
+    "statement": "New York City (Manhattan south of 59th + Brooklyn Williamsburg/Prospect Heights/Park Slope) is the first catchment; public operator density supports venue verification and recruitment attempts.",
+    "label": "locked_decision",
+    "owner": "founder",
+    "status": "locked_2026-10-03_screen_passed_recruitment_unproven",
+    "selected_city": "New York City",
+    "catchment": "Manhattan south of 59th + Brooklyn Williamsburg/Prospect Heights/Park Slope",
+    "falsification_test": "If live recruitment fails entirely after authorized outreach, or venue facts cannot be verified for a 20–30 catalog, change city and propagate.",
+    "evidence_required": "docs/research/hosts-private.json screen (≥5 near-ICP). Live host commitments still missing."
+  },
+  "assumptions": [
+    {
+      "id": "A-KEY",
+      "name": "Qloo hackathon key and applicable terms",
+      "statement": "An approved Qloo hackathon (or equivalent) API key will be issued in time, and the actual terms permit the intended demo processing (entity search, place insights, candidate-filtered rankings) for the public demo path.",
+      "label": "assumption",
+      "owner": "founder",
+      "status": "key_requested_2026-10-03_awaiting_email",
+      "key_request": "Official form submitted; confirmation page received. No key in Gmail yet.",
+      "falsification_test": "P03 live probe: authenticated entity lookup + candidate-restricted ranking on real IDs fails, is denied, or terms forbid required processing/display/persistence → narrow domain/city or stop Qloo-dependent concept; never fabricate live fixtures.",
+      "evidence_required": "Redacted capability matrix, applicable terms references, unanswered provider questions (P03)."
+    },
+    {
+      "id": "A-COVERAGE",
+      "name": "Local place and seed-type coverage",
+      "statement": "Qloo can resolve representative voluntary seed types and produce usable rankings over a bounded NYC venue slate that intersects a 20–30 venue checked catalog.",
+      "label": "assumption",
+      "owner": "founder",
+      "status": "unverified",
+      "related_targets": {
+        "catalog_size": { "value": "20-30", "label": "target" },
+        "shared_eligible_venues_gate": { "value": 8, "label": "target" },
+        "submitted_slate_coverage_gate": { "value": 0.8, "label": "target" }
+      },
+      "falsification_test": "P03/P11/P12: missing/extra candidate IDs, silently ignored filters, or failure to meet pre-registered coverage gates on real queries → host-pool mode, revise gates openly with versioned policy, or fail the capability gate.",
+      "evidence_required": "Capability matrix and discovery/rank coverage reports with honest denominators."
+    },
+    {
+      "id": "A-WTP",
+      "name": "Willingness to pay",
+      "statement": "At least some qualified budget owners will take a meaningful commercial next step (dated nonbinding exact-offer intent or budget-approver commitment) for a bounded planning offer; pricing hypothesis e.g. $19/month organizer offer is experimental only.",
+      "label": "assumption",
+      "owner": "founder",
+      "status": "unverified",
+      "related_targets": {
+        "week_one_commercial_signal": { "value": "≥1 of early hosts", "label": "target" },
+        "exact_offer_intents": { "value": 5, "label": "target" },
+        "pricing_hypothesis_usd_per_month": { "value": 19, "label": "scenario" },
+        "contribution_margin_gate": { "value": 0.7, "label": "target" }
+      },
+      "falsification_test": "After concrete offer presentation (P04/P28), zero budget-owner exact-offer or approver commitments and persistent rejection reasons that planning software is not valued → do not claim validated monetization; pivot offer/buyer or stop commercial thesis.",
+      "evidence_required": "Private nonbinding intent records with offer, price, usage cap, owner, start condition; no payment before commercial rights."
+    },
+    {
+      "id": "A-INTAKE",
+      "name": "Voluntary member intake completion",
+      "statement": "Opt-in group members will complete voluntary taste/constraint intake (or explicit skip) without researcher data entry at a rate that makes the workflow usable.",
+      "label": "assumption",
+      "owner": "founder",
+      "status": "unverified",
+      "related_targets": {
+        "seeds_per_participant_max": { "value": 3, "label": "scope_rule" },
+        "group_size": { "value": "4-8", "label": "scope_rule" },
+        "intake_without_researcher_entry": { "value": "≥10 of 12 groups", "label": "target" }
+      },
+      "falsification_test": "Concierge/pilot intake: high abandonment, refusal to share seeds, or hosts unwilling to ask guests → reduce questions before optimizing ranking; if signals remain unavailable, stop or change wedge.",
+      "evidence_required": "Submission/abandonment counts, consented notes, multi-session intake tests (P04/P10/P26)."
+    },
+    {
+      "id": "A-FREE-RUNTIME",
+      "name": "Free-tier runtime fit",
+      "statement": "The bounded Worker + D1 + static assets architecture can complete representative planning sessions within Cloudflare Free CPU/subrequest limits and proposed latency targets without a paid hosting upgrade.",
+      "label": "assumption",
+      "owner": "founder",
+      "status": "unverified",
+      "related_targets": {
+        "typical_recommendation_seconds": { "value": 20, "label": "target" },
+        "p95_seconds": { "value": 30, "label": "target" },
+        "qloo_attempts_per_run_ceiling": { "value": 24, "label": "target" },
+        "staging_sessions_sample": { "value": 30, "label": "target" }
+      },
+      "falsification_test": "P03 probe and P23 measurement: Free CPU/quota errors persist after reducing stage/input/catalog size → do not promise this architecture; choose a verified free alternative or stop the live release; never silently upgrade paid plan to force fit.",
+      "evidence_required": "Deployed CPU/latency/payload samples (P03) and runtime report (P23)."
+    }
+  ],
+  "week_one_gates_frozen": {
+    "interview_pain": {
+      "rule": "≥3 of 5 qualified interviews substantiate recurring planning/rework pain with recent example",
+      "label": "target"
+    },
+    "pilot_commitments": {
+      "rule": "≥3 operators commit real outing + voluntary inputs; ≥1 commercial next step (nonbinding exact-offer or budget approver)",
+      "label": "target"
+    },
+    "qloo_capability": {
+      "rule": "Live entity lookup + candidate-restricted ranking under confirmed demo-processing rights, or explicit narrow/stop",
+      "label": "gate"
+    },
+    "do_not_rewrite_after_results": true
+  },
+  "scope_lock": {
+    "first_customer": "paid_local_dinner_cultural_community_host",
+    "primary_job": "outside_venue_agreement_with_less_back_and_forth",
+    "city": "New York City",
+    "group_size": "4-8",
+    "max_seeds_per_participant": 3
+  }
+}

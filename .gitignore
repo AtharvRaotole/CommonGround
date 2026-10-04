@@ -1,0 +1,10 @@
+.env
+.env.*
+!.env.example
+docs/verification/p03-private/
+*.pem
+node_modules/
+.DS_Store
+
+.DS_Store
+output/

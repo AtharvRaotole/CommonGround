@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "created": "2026-10-03",
+  "phase": "P01",
+  "owner": "founder",
+  "purpose": "Trace external factual assertions used to lock scope. Inclusion is not endorsement or proof of demand for Common Ground.",
+  "plan_source_index": "plan/SOURCES.md",
+  "plan_sources_machine": "plan/sources.json",
+  "assertions": [
+    {
+      "id": "S01",
+      "claim": "Independent paid small-group dinner services that choose external restaurants exist in/near NYC.",
+      "claim_type": "direct_operational_evidence",
+      "supports": "first_customer_existence_not_demand",
+      "sources": [
+        {
+          "url": "https://forones.co/",
+          "what_it_shows": "Advertises recurring NYC dinners for 4–6 at named restaurants; observed listed prices $50/$65 on research date.",
+          "does_not_show": "Planning pain, SaaS budget, profitability, or need for Common Ground."
+        },
+        {
+          "url": "https://www.table315.com/",
+          "what_it_shows": "Independent dinner-club format across restaurants; 4–6 person tables.",
+          "does_not_show": "≥2 outings/month (monthly cadence fails frequency screener); demand for planning software."
+        },
+        {
+          "url": "https://www.meetup.com/meetup-group-yyedoizw/",
+          "what_it_shows": "Organizer self-description of small local food meetups.",
+          "does_not_show": "Customer validation for this product."
+        }
+      ],
+      "status": "desk_checked_2026-10-03"
+    },
+    {
+      "id": "S02",
+      "claim": "Serious substitutes already combine people, restaurants, and/or group recommendations.",
+      "claim_type": "competitive_coverage",
+      "supports": "differentiation_must_be_proven",
+      "sources": [
+        {
+          "url": "https://timeleft.com/dinners-with-strangers/",
+          "what_it_shows": "Consumer dinners-with-strangers product surface.",
+          "does_not_show": "That Common Ground cannot help independent hosts."
+        },
+        {
+          "url": "https://timeleft.com/blog/how-does-timeleft-work/",
+          "what_it_shows": "Described workflow includes group/partner-venue selection elements.",
+          "does_not_show": "Independent causal superiority of Timeleft for our buyer."
+        },
+        {
+          "url": "https://partners.222.place/",
+          "what_it_shows": "Partner offering: AI matching groups of six, reservations, venue feedback, partner economics.",
+          "does_not_show": "Open integrations available to this project."
+        },
+        {
+          "url": "https://devpost.com/software/duddle",
+          "what_it_shows": "Prior Qloo hackathon project: preferences → group restaurant suggestions + Claude explanations.",
+          "does_not_show": "That operator veto/feasibility workflow is solved."
+        },
+        {
+          "url": "https://partiful.com/ticketing",
+          "what_it_shows": "Organizer event operations including ticketing.",
+          "does_not_show": "Venue compromise agent features."
+        },
+        {
+          "url": "https://help.partiful.com/en-us/articles/15525422-can-i-poll-or-survey-my-guests",
+          "what_it_shows": "Hosts can poll/survey guests.",
+          "does_not_show": "Cross-domain taste ranking."
+        },
+        {
+          "url": "https://www.qloo.com/capabilities/taste-analysis",
+          "what_it_shows": "Qloo markets taste analysis including group-relevant capabilities.",
+          "does_not_show": "A generic Qloo UI is a defensible business."
+        },
+        {
+          "url": "https://www.qloo.com/capabilities/recommendations",
+          "what_it_shows": "Qloo recommendations cover travel/events-style use cases.",
+          "does_not_show": "Hackathon commercial SaaS rights."
+        }
+      ],
+      "status": "desk_checked_2026-10-03"
+    },
+    {
+      "id": "S03",
+      "claim": "Rejected wedges have identifiable buyers or sector pressure, but worse eight-week fit than the retained host wedge.",
+      "claim_type": "mixed_desk_and_inference",
+      "supports": "concept_selection",
+      "sources": [
+        {
+          "url": "https://mindtrip.ai/business/hotels",
+          "what_it_shows": "Hotel concierge/trip product with named small-team testimonial (vendor-hosted).",
+          "does_not_show": "Independent ROI study; that boutique hotels want Qloo venue tooling."
+        },
+        {
+          "url": "https://www.nivassoc.org/stateoflive",
+          "what_it_shows": "Sector context for independent live entertainment economics.",
+          "does_not_show": "Demand for Common Ground."
+        },
+        {
+          "url": "https://wallacefoundation.org/report/search-magic-bullet-results-building-audiences-sustainability-initiative-results-building",
+          "what_it_shows": "Audience-building is complex/slow in studied nonprofit contexts.",
+          "does_not_show": "Our venue-audience wedge would work in eight weeks."
+        },
+        {
+          "url": "https://manchester-chamber.org/taco-tour-manchester-2025-date-announced/",
+          "what_it_shows": "Named sponsorship activity exists.",
+          "does_not_show": "Affinity shortlists close sponsorships."
+        },
+        {
+          "url": "https://www.sponsorpitch.com/how-it-works",
+          "what_it_shows": "Incumbent sponsorship intelligence/contacts product.",
+          "does_not_show": "Free public data replicates their asset."
+        },
+        {
+          "url": "https://livezoku.com/paris/events/community-dinner-members-only/",
+          "what_it_shows": "Recurring community dinner hosted at the property itself.",
+          "does_not_show": "Coworking/community managers need external venue tools by default."
+        }
+      ],
+      "status": "desk_checked_2026-10-03",
+      "inference_note": "Ranking of wedges is founder/plan design judgment under solo eight-week constraints, not customer interview evidence."
+    },
+    {
+      "id": "S04",
+      "claim": "Public Qloo terms alone do not establish commercial SaaS permission; accuracy is disclaimed; additional terms may apply.",
+      "claim_type": "provider_legal_public_page",
+      "supports": "A-KEY_and_commercial_gates",
+      "sources": [
+        {
+          "url": "https://www.qloo.com/legal/terms",
+          "what_it_shows": "Public terms reference bespoke/additional agreements; restrictions on resale/redistribution/charging for access; data accuracy disclaimers (as summarized in plan ch.06).",
+          "does_not_show": "That the hackathon key agreement matches the public page or permits paid Common Ground."
+        }
+      ],
+      "status": "desk_checked_2026-10-03"
+    },
+    {
+      "id": "S05",
+      "claim": "Published hackathon cutoff exists separately from the relative eight-week planning horizon.",
+      "claim_type": "event_calendar_footnote",
+      "supports": "schedule_honesty",
+      "sources": [
+        {
+          "url": "https://qloo.devpost.com/rules",
+          "what_it_shows": "Published rules/cutoff for the event (plan records Oct 30, 2026 cutoff; judging Nov 2–16 as of research date).",
+          "does_not_show": "That the eight-week relative schedule equals the event deadline."
+        }
+      ],
+      "status": "desk_checked_2026-10-03"
+    },
+    {
+      "id": "S06",
+      "claim": "Exact 'rate my startup' skill was unavailable; 4.7/10 uses an explicitly labeled replacement rubric.",
+      "claim_type": "method_limitation",
+      "supports": "score_honesty",
+      "sources": [
+        {
+          "url": "https://www.skillsdirectory.com/skills/neotherapper-evaluate",
+          "what_it_shows": "Related skill containing similar trigger language; not installed or silently substituted.",
+          "does_not_show": "That 4.7 is an external objective rating."
+        }
+      ],
+      "status": "recorded_in_plan_ch06"
+    }
+  ],
+  "numerical_targets_referenced_not_results": [
+    { "name": "week_one_interview_pain", "value": "≥3/5", "label": "target" },
+    { "name": "pilot_outing_commitments", "value": 3, "label": "target" },
+    { "name": "interview_host_target", "value": 12, "label": "target" },
+    { "name": "qloo_group_improvement", "value": "≥8/12 groups", "label": "target" },
+    { "name": "median_paired_rating_lift", "value": 0.5, "label": "target" },
+    { "name": "voluntary_return", "value": "≥8/12 hosts", "label": "target" },
+    { "name": "host_time_reduction", "value": "≥20% median paired", "label": "target" },
+    { "name": "exact_offer_intents", "value": 5, "label": "target" },
+    { "name": "pricing_hypothesis_usd_month", "value": 19, "label": "scenario" },
+    { "name": "contribution_margin", "value": 0.7, "label": "target" },
+    { "name": "planned_hours", "value": 192, "label": "estimate" },
+    { "name": "contingency_hours", "value": 48, "label": "estimate" },
+    { "name": "hours_per_week_assumption", "value": 30, "label": "assumption" },
+    { "name": "current_rubric_score", "value": 4.7, "label": "editorial_judgment_on_current_evidence" },
+    { "name": "graduation_score_target", "value": 9.0, "label": "target" }
+  ],
+  "invented_claims_prohibited": [
+    "customer_count",
+    "market_size_tam",
+    "measured_uplift",
+    "revenue",
+    "live_qloo_success"
+  ]
+}

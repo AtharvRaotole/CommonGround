@@ -1,0 +1,1363 @@
+{
+  "schema_version": 1,
+  "status": "planned",
+  "assumptions": {
+    "weeks": 8,
+    "hours_per_week": 30,
+    "planned_hours": 192,
+    "contingency_hours": 48
+  },
+  "phases": [
+    {
+      "id": "P01",
+      "number": 1,
+      "title": "Lock the hypothesis and evidence rules",
+      "week": 1,
+      "hours": 2,
+      "depends_on": [],
+      "goal": "Make the customer, claim boundaries, and eight-week scope explicit before spending build time.",
+      "files": [
+        "docs/decisions/001-scope.md",
+        "docs/research/source-ledger.json",
+        "docs/research/assumptions.json"
+      ],
+      "steps": [
+        "Read chapters 00, 01 and 06; write one buyer/job statement and record the founder\u2019s real weekly capacity.",
+        "Record the five competing concepts and why each was rejected or retained; distinguish a design opinion from customer evidence.",
+        "Assign an owner and falsification test to key, coverage, willingness-to-pay, intake, and free-runtime assumptions.",
+        "Choose one accessible city; record whether the founder can personally verify venues and recruit qualified hosts.",
+        "Freeze the score weights and first-week continuation thresholds before seeing any interview results."
+      ],
+      "ac": [
+        "AC01: Exactly one first customer, one primary job and one city assumption are named; group size is 4\u20138 and seeds are at most three per participant.",
+        "AC02: Every numerical target is labeled target/estimate/scenario; no invented customers, market size or measured uplift appears.",
+        "AC03: The 192-hour work budget plus 48-hour contingency is reconciled to actual capacity; missing capacity information remains an explicit assumption."
+      ],
+      "checks": [
+        "C0 plan validation; manually trace every external factual assertion to a source.",
+        "Manual product review: identify a result that would cause us to stop. If none exists, the hypothesis is not falsifiable."
+      ],
+      "evidence": [
+        "Scope decision with date/owner",
+        "Source and assumption registers",
+        "Frozen initial scoring rubric"
+      ],
+      "risk": "If founder access contradicts NYC, change city now and propagate the change; do not buy data or invent access.",
+      "status": "planned",
+      "file": "phases/01-lock-the-hypothesis-and-evidence-rules.md"
+    },
+    {
+      "id": "P02",
+      "number": 2,
+      "title": "Interview the buyer and recruit real pilots",
+      "week": 1,
+      "hours": 8,
+      "depends_on": [
+        "P01"
+      ],
+      "goal": "Find whether recurring venue choice is a painful paid-host job rather than a plausible story.",
+      "files": [
+        "docs/research/hosts-private.json",
+        "docs/research/interview-notes/",
+        "docs/research/discovery-decision.md"
+      ],
+      "steps": [
+        "Screen 15 publicly identifiable operators against the five customer conditions; keep source URL and reason for inclusion.",
+        "Founder sends or explicitly authorizes the prepared outreach; track attempted, replied, qualified and interviewed separately.",
+        "Complete at least five behavior interviews for the first gate; continue toward the 12-host evidence target during the pilot period.",
+        "Ask to reconstruct the last event and view redacted planning artifacts; separate venue-selection pain from attendee acquisition and booking.",
+        "Seek three real upcoming outings with opt-in participants, a date and a responsible host; record rejections.",
+        "Ask budget ownership after discussing actual behavior; seek a nonbinding commercial next step, never an unauthorized payment."
+      ],
+      "ac": [
+        "AC01: At least three of five qualified first interviews substantiate recurring planning/rework pain with a concrete recent example.",
+        "AC02: At least three operators commit a real outing and voluntary input collection; at least one identifies a budget approver or exact-offer intent.",
+        "AC03: Notes explicitly cover the strongest disconfirming evidence, channel bias and whether the current workaround is sufficient."
+      ],
+      "checks": [
+        "C0 verifies artifact structure only; customer truth is a manual evidence gate.",
+        "Audit one interview against original consented notes. Do not count friends, synthetic personas or unqualified hosts as target buyers."
+      ],
+      "evidence": [
+        "De-identified interview synthesis",
+        "Private consent/commitment records",
+        "Recruitment funnel with denominators and objections"
+      ],
+      "risk": "If recruitment or pain gate fails, spend the week-one reserve on one revised customer hypothesis; pause broad implementation rather than adjusting thresholds after the fact.",
+      "status": "planned",
+      "file": "phases/02-interview-the-buyer-and-recruit-real-pilots.md"
+    },
+    {
+      "id": "P03",
+      "number": 3,
+      "title": "Verify Qloo access rights and deployed feasibility",
+      "week": 1,
+      "hours": 8,
+      "depends_on": [
+        "P01"
+      ],
+      "goal": "Prove the technical and permission assumptions with the actual approved account before treating Qloo as usable infrastructure.",
+      "files": [
+        "spikes/qloo-contract.ts",
+        "docs/verification/qloo-capability-matrix.md",
+        "docs/vendor-rights.md",
+        "fixtures/synthetic/qloo-contract.json"
+      ],
+      "steps": [
+        "Request a hackathon key through the official form if needed; the founder submits account details and retains the actual applicable terms.",
+        "Use the documented hackathon host, GET and X-Api-Key; test search disambiguation and place Insights with confirmed real IDs.",
+        "Resolve representative seed types and a preliminary venue slate; measure returned/missing candidate IDs and contradictory filter probes.",
+        "Run one candidate-restricted query per test member on the same slate; inspect actual schema, affinity meaning and optional explainability.",
+        "Deploy a tiny free Worker probe and measure response size, parse CPU, latency and failure behavior without logging seeds/keys.",
+        "Record numerical quotas only when issued; clarify public display, temporary state, normalized output, exports, OpenAI processing and commercial use in a draft question list the founder can send."
+      ],
+      "ac": [
+        "AC01: Redacted live evidence proves entity lookup and candidate-restricted rankings; missing/extra rows and silently ignored filters are detected.",
+        "AC02: A representative provider response can be parsed within Free Worker limits or a smaller workable configuration is demonstrated.",
+        "AC03: Demo-processing rights and required persistence are confirmed or explicitly block the dependent implementation; commercial rights are not assumed.",
+        "AC04: No API secret or proprietary response has entered public fixtures, logs or git."
+      ],
+      "checks": [
+        "Bounded C6 live contract; C7 deployed CPU probe; no brute-force quota test.",
+        "Manual rights review against the actual issued terms, with unresolved items and owner. Test synthetics cannot establish live access."
+      ],
+      "evidence": [
+        "Capability matrix with dates and tested IDs redacted as required",
+        "Observed latency/CPU/payload sample",
+        "Applicable terms references and unanswered provider questions"
+      ],
+      "risk": "Key delays are elapsed-time blockers. Continue discovery/design in parallel, but never replace missing live evidence with fabricated fixtures or pay for access silently.",
+      "status": "planned",
+      "file": "phases/03-verify-qloo-access-rights-and-deployed-feasibility.md"
+    },
+    {
+      "id": "P04",
+      "number": 4,
+      "title": "Run the concierge test and week-one decision",
+      "week": 1,
+      "hours": 6,
+      "depends_on": [
+        "P02",
+        "P03"
+      ],
+      "goal": "Deliver one real manual planning artifact and decide whether software is worth building.",
+      "files": [
+        "docs/pilots/concierge-protocol.md",
+        "docs/pilots/concierge-results-private.json",
+        "docs/decisions/002-build-gate.md"
+      ],
+      "steps": [
+        "Collect consented inputs from at least one committed real group and document abandonment as well as submissions.",
+        "Prepare a checked venue slate with host constraints and source dates; preserve unknown facts.",
+        "Produce equivalent neutral cards for host/current baseline and Qloo-informed choices; blind method labels where possible.",
+        "Ask participants for explicit willingness to attend and the host for a decision; record a veto and revision if it occurs.",
+        "Measure founder and host effort separately, including fact verification and messaging.",
+        "Apply the first-week gates; document continue, narrow, pivot or stop and reasons without rewriting thresholds."
+      ],
+      "ac": [
+        "AC01: At least one actual upcoming group receives an actionable evidence-backed plan and returns explicit feedback; no fake completed pilot is counted.",
+        "AC02: Candidate changes caused by Qloo are observed, and whether humans value those changes is recorded\u2014even if negative.",
+        "AC03: Week-one memo states which gates passed, failed or remain unresolved; broad build depends on an explicit continue/narrow decision."
+      ],
+      "checks": [
+        "C0 and manual paired-card/provenance review; small sample is exploratory only.",
+        "Verify the plan does not promise availability, allergy safety or a completed reservation."
+      ],
+      "evidence": [
+        "Completed manual plan with permitted data",
+        "Time ledger and feedback",
+        "Signed week-one go/no-go memo"
+      ],
+      "risk": "If venue checking consumes all saved effort or the baseline is equally good, change the hypothesis; the startup score cannot rise merely because the prototype looks appealing.",
+      "status": "planned",
+      "file": "phases/04-run-the-concierge-test-and-week-one-decision.md"
+    },
+    {
+      "id": "P05",
+      "number": 5,
+      "title": "Specify the host and participant experience",
+      "week": 2,
+      "hours": 6,
+      "depends_on": [
+        "P04"
+      ],
+      "goal": "Make the full decision loop understandable before coding the UI.",
+      "files": [
+        "docs/design/flows.md",
+        "docs/design/screen-states.md",
+        "docs/design/content.md"
+      ],
+      "steps": [
+        "Map create, invite, input, waiting, plan, veto, revision, approval, export, feedback and deletion screens.",
+        "Draw a low-fidelity mobile participant path and desktop host path using local mockups; label all examples synthetic.",
+        "Write exact copy for unknown facts, missing Qloo coverage, private veto, tentative export, and provider failure.",
+        "Observe three representative testers attempt the flow without explaining each step; record confusion and time.",
+        "Resolve the largest comprehension failures and freeze the must-have screen state inventory."
+      ],
+      "ac": [
+        "AC01: Every core screen has loading, empty, validation, access-expired and provider-error behavior where relevant.",
+        "AC02: A participant can skip profiling, correct a seed, veto and delete; a host cannot see private seeds.",
+        "AC03: Testers understand approval is not booking and affinity is not an enjoyment percentage."
+      ],
+      "checks": [
+        "C0 plus manual usability observations; no A/B uplift claim from three testers.",
+        "Review screen copy against product invariants and all proposed roles."
+      ],
+      "evidence": [
+        "Screen-state map",
+        "Annotated usability observations",
+        "Content and accessibility checklist"
+      ],
+      "risk": "Cut decoration or secondary screens if core controls are unclear; do not add voice/chat to hide an unresolved flow.",
+      "status": "planned",
+      "file": "phases/05-specify-the-host-and-participant-experience.md"
+    },
+    {
+      "id": "P06",
+      "number": 6,
+      "title": "Create the product repository and honest CI",
+      "week": 2,
+      "hours": 4,
+      "depends_on": [
+        "P03",
+        "P05"
+      ],
+      "goal": "Establish a reproducible local and preview build with secret-free default checks.",
+      "files": [
+        "package.json",
+        "pnpm-lock.yaml",
+        "apps/web/",
+        "worker/src/index.ts",
+        "wrangler.jsonc",
+        ".github/workflows/ci.yml",
+        ".env.example",
+        "LICENSE"
+      ],
+      "steps": [
+        "Pin supported runtime/dependency versions after a compatibility check; use one package manager and commit the lockfile.",
+        "Create the minimal React/Vite asset app and Worker health route; isolate preview and production configuration.",
+        "Define lint, typecheck, build, unit, integration and browser scripts; add the first meaningful health/access smoke.",
+        "Configure C1\u2013C4 on a standard public Linux runner, minimal permissions and no secrets on fork PRs.",
+        "Add an app-code license and dependency notices; document vendor data and third-party assets are not relicensed.",
+        "Run a clean install/build locally and preview deployment from written setup instructions."
+      ],
+      "ac": [
+        "AC01: A fresh checkout installs with the frozen lockfile and builds using documented commands.",
+        "AC02: Default CI needs no paid service or live API key; an intentionally broken type or core test fails the job.",
+        "AC03: Empty environment examples and compiled assets contain no secret; the preview health route returns the intended revision."
+      ],
+      "checks": [
+        "C1, initial C2/C3/C4 and C5 secret scan; manually verify CI failure propagation.",
+        "Live checks remain a separate protected/manual workflow with a bounded budget."
+      ],
+      "evidence": [
+        "Clean build log",
+        "CI green and intentional-failure evidence",
+        "Preview URL and tested SHA"
+      ],
+      "risk": "Do not upgrade the hosting plan to make scaffolding work. Keep only dependencies used by the product.",
+      "status": "planned",
+      "file": "phases/06-create-the-product-repository-and-honest-ci.md"
+    },
+    {
+      "id": "P07",
+      "number": 7,
+      "title": "Implement scoped storage and capability sessions",
+      "week": 2,
+      "hours": 8,
+      "depends_on": [
+        "P06"
+      ],
+      "goal": "Persist events securely without paid authentication or exposing member data.",
+      "files": [
+        "migrations/0001_core.sql",
+        "worker/src/auth/capabilities.ts",
+        "worker/src/auth/authorize.ts",
+        "worker/src/db/repository.ts",
+        "tests/integration/auth.test.ts"
+      ],
+      "steps": [
+        "Create event/member/session/claim tables and scoped indexes with foreign-key constraints.",
+        "Generate 32-byte random capability secrets, hash at rest, exchange one-time fragments, set secure cookies and clear URL fragments.",
+        "Add Origin/CSRF checks, role-filtered DTOs, expiry, host recovery-code handling, invite rotation and revocation.",
+        "Implement authorization helpers requiring event scope as well as row identity for every child lookup.",
+        "Write cross-event, cross-member, replay and simultaneous-claim failures before implementing the success paths.",
+        "Document capability sharing and recovery limitations in the UI; test migration on an empty and populated disposable database."
+      ],
+      "ac": [
+        "AC01: AUTH-01 through AUTH-05 pass; a host DTO never exposes another person\u2019s seeds.",
+        "AC02: Exactly one concurrent claim succeeds; rotated/expired tokens cannot write.",
+        "AC03: No token is stored in plaintext in D1/logs or included in participant-visible host links."
+      ],
+      "checks": [
+        "C1\u2013C3, with tests/integration/auth.test.ts; C4 invite claim smoke.",
+        "Inspect network responses for hidden private fields, not just rendered UI."
+      ],
+      "evidence": [
+        "Migration and auth test logs",
+        "Threat-model notes",
+        "Role/DTO access matrix"
+      ],
+      "risk": "Any cross-tenant disclosure blocks all pilot access. Revoke all disposable tokens before retesting after a fix.",
+      "status": "planned",
+      "file": "phases/07-implement-scoped-storage-and-capability-sessions.md"
+    },
+    {
+      "id": "P08",
+      "number": 8,
+      "title": "Build a small venue evidence ledger",
+      "week": 2,
+      "hours": 6,
+      "depends_on": [
+        "P03",
+        "P06"
+      ],
+      "goal": "Make venue facts traceable and keep practical unknowns visible.",
+      "files": [
+        "worker/src/venues/facts.ts",
+        "docs/data/venue-policy.md",
+        "data/venues-private.json",
+        "tests/unit/venue-facts.test.ts"
+      ],
+      "steps": [
+        "Choose 20\u201330 venues in the selected catchment and verify independently sourced name, address, official URL and category.",
+        "Resolve venue identity to Qloo only under confirmed mapping rights; manually check branches and duplicate names.",
+        "Record source kind, observation time, expiry, exact field, value and confidence state rather than a single verified badge.",
+        "Implement configurable freshness: recheck time-sensitive facts before outing; conflicting sources remain conflicts.",
+        "Keep exact all-in price, seat availability and special requirements unknown unless the appropriate evidence exists.",
+        "Prepare public synthetic venue fixtures independent of proprietary provider output."
+      ],
+      "ac": [
+        "AC01: Every material catalog fact has a source/time or an explicit unknown state; no unsupported booking/health/accessibility claim exists.",
+        "AC02: All candidate venue IDs map to the intended location; unknown mappings cannot enter the live Qloo slate.",
+        "AC03: Expired/conflicting facts stop ready status when required."
+      ],
+      "checks": [
+        "C1/C2 fact-state tests and manual audit of five sampled venues.",
+        "Verify rights ledger permits every retained/displayed field."
+      ],
+      "evidence": [
+        "Catalog coverage summary",
+        "Five-venue source audit",
+        "Freshness policy and synthetic provenance"
+      ],
+      "risk": "If 20 credible venues cannot be sourced in scope, narrow categories or select a better-covered catchment; do not scrape around blocked sources.",
+      "status": "planned",
+      "file": "phases/08-build-a-small-venue-evidence-ledger.md"
+    },
+    {
+      "id": "P09",
+      "number": 9,
+      "title": "Resolve voluntary taste inputs precisely",
+      "week": 3,
+      "hours": 6,
+      "depends_on": [
+        "P07",
+        "P08"
+      ],
+      "goal": "Convert user selections into confirmed Qloo identities without hidden inference.",
+      "files": [
+        "apps/web/src/features/taste/",
+        "worker/src/providers/qloo.ts",
+        "tests/integration/entity-search.test.ts"
+      ],
+      "steps": [
+        "Add debounced, minimum-length search and type filters from the documented lookup contract.",
+        "Display candidates with distinguishing type/name/context, and require explicit confirmation.",
+        "Enforce up to three active seeds, bounded text length, per-member and per-event lookup budgets, and edit/remove.",
+        "Keep no-match as unresolved and offer skip or another query; never invent UUIDs or auto-map a brand into a diagnosis.",
+        "Record consent version and keep lookup/provider errors free of secrets and raw query logs."
+      ],
+      "ac": [
+        "AC01: Ambiguous names require a choice; wrong-type or malformed IDs are rejected server-side.",
+        "AC02: No-match, timeout and quota states preserve the user\u2019s ability to edit or skip.",
+        "AC03: Search respects 20/member/day and 60/event/day application caps including retries, plus the configured global cap."
+      ],
+      "checks": [
+        "C1\u2013C3 entity-search tests; C4 keyboard selection/remove/no-match cases.",
+        "One bounded C6 lookup smoke verifies current endpoint behavior."
+      ],
+      "evidence": [
+        "Disambiguation UI recording with synthetic data",
+        "Budget and no-match test logs",
+        "Redacted live lookup result"
+      ],
+      "risk": "Entity-resolution friction can invalidate the value proposition. Measure completion instead of adding more cultural categories.",
+      "status": "planned",
+      "file": "phases/09-resolve-voluntary-taste-inputs-precisely.md"
+    },
+    {
+      "id": "P10",
+      "number": 10,
+      "title": "Collect private member inputs end to end",
+      "week": 3,
+      "hours": 6,
+      "depends_on": [
+        "P07",
+        "P09"
+      ],
+      "goal": "Let real group members join and provide voluntary preferences with privacy and deletion.",
+      "files": [
+        "apps/web/src/routes/join.tsx",
+        "apps/web/src/routes/waiting.tsx",
+        "worker/src/privacy/delete.ts",
+        "tests/e2e/member-intake.spec.ts"
+      ],
+      "steps": [
+        "Implement invitation claim, explicit consent, optional seeds and structured practical requirements.",
+        "Show aggregate completion counts to the host and only the member\u2019s own profile to that member.",
+        "Add a skip-profiling mode that uses explicit votes/preferences and remains in coverage counts.",
+        "Implement edit/delete and derived-result invalidation; never infer acceptance from nonresponse.",
+        "Test two browser identities and a host simultaneously using separate contexts."
+      ],
+      "ac": [
+        "AC01: Four synthetic participants can join independently; host sees counts without taste lists or individual objection reasons.",
+        "AC02: Opt-out participants remain in the group and are not assigned invented ranks.",
+        "AC03: Delete removes own input and invalidates dependent results; unrelated members are unaffected."
+      ],
+      "checks": [
+        "C1\u2013C4 including DATA-01 and AUTH-02; inspect server JSON for privacy leaks.",
+        "Manual mobile and keyboard intake walkthrough."
+      ],
+      "evidence": [
+        "Multi-session browser report",
+        "Deletion verification",
+        "Consent text version"
+      ],
+      "risk": "If private inputs leak, stop group testing. If intake is too burdensome, reduce questions before optimizing ranking.",
+      "status": "planned",
+      "file": "phases/10-collect-private-member-inputs-end-to-end.md"
+    },
+    {
+      "id": "P11",
+      "number": 11,
+      "title": "Discover bounded Qloo venue candidates",
+      "week": 3,
+      "hours": 6,
+      "depends_on": [
+        "P08",
+        "P09",
+        "P10"
+      ],
+      "goal": "Retrieve relevant place candidates while retaining a trustworthy bounded inventory.",
+      "files": [
+        "worker/src/providers/qloo.ts",
+        "worker/src/planning/contracts.ts",
+        "tests/integration/qloo-discovery.test.ts"
+      ],
+      "steps": [
+        "Define an allowlist of documented query parameters for place discovery; validate location units and coordinate order.",
+        "Call once per profiled member within budget, merge unique candidates and intersect with the checked catalog.",
+        "Keep independently feasible catalog options so discovery truncation does not eliminate all familiar alternatives.",
+        "Reject unexpected identities and record missing coverage; trim vendor response before application output.",
+        "Test ignored filters, schema additions, absent fields, 401/403/429 and no-results behavior."
+      ],
+      "ac": [
+        "AC01: Every surfaced live candidate is both a real resolved place and an allowed checked-catalog entry.",
+        "AC02: No parameter is silently constructed from unvalidated model text; no result is fabricated on failure.",
+        "AC03: Discovery consumes at most the member count in normal calls and counts retries toward the 24-call run ceiling."
+      ],
+      "checks": [
+        "C1\u2013C3 QLOO-01 to QLOO-05 and bounded C6 contrasting-filter test.",
+        "Check provider logs contain only permitted redacted metadata."
+      ],
+      "evidence": [
+        "Normalized contract fixtures authored synthetically",
+        "Live discovery coverage summary",
+        "Per-run call trace"
+      ],
+      "risk": "Poor coverage triggers host-pool mode or a gate failure. Expanding unchecked geographic inventory is not a legitimate fix.",
+      "status": "planned",
+      "file": "phases/11-discover-bounded-qloo-venue-candidates.md"
+    },
+    {
+      "id": "P12",
+      "number": 12,
+      "title": "Create comparable per-member venue rankings",
+      "week": 3,
+      "hours": 6,
+      "depends_on": [
+        "P11"
+      ],
+      "goal": "Obtain honest ordinal evidence for every included member on one common slate.",
+      "files": [
+        "worker/src/planning/rank.ts",
+        "worker/src/providers/qloo.ts",
+        "tests/unit/rank-coverage.test.ts"
+      ],
+      "steps": [
+        "Freeze an eligible candidate UUID set of at most 30 and pass the same filter.results.entities list to each profiled member query.",
+        "Validate returned identity/order and preserve missing candidates as unknown, never score zero.",
+        "Compute a fully ranked common comparison set and reindex each person\u2019s order on it; preserve tie handling.",
+        "Apply the proposed gate of at least eight shared eligible venues and 80% submitted-slate coverage.",
+        "Separate full and mixed taste modes: compute rank coverage over the opted-in cohort, display profiled/total counts, block any failed profiled query, and require every member\u2019s explicit acceptance before readiness."
+      ],
+      "ac": [
+        "AC01: RANK-03 to RANK-07 pass, and no person is silently dropped to improve coverage.",
+        "AC02: Coverage below either gate yields needs-input/data-coverage state; mixed mode is explicit, all-member acceptance is required, and host cannot see private rank rows.",
+        "AC03: Raw scores across separate queries never enter an arithmetic satisfaction average."
+      ],
+      "checks": [
+        "C1\u2013C3 rank-coverage tests and one bounded C6 identical-slate check.",
+        "Manual review compares requested/returned IDs and documents absent explainability."
+      ],
+      "evidence": [
+        "Coverage report with honest denominator",
+        "Ordinal transformation tests",
+        "Private/public DTO audit"
+      ],
+      "risk": "If an 8-venue/80% gate is unrealistic, revise it openly with new evidence and version the policy before the human study; do not quietly lower it per run.",
+      "status": "planned",
+      "file": "phases/12-create-comparable-per-member-venue-rankings.md"
+    },
+    {
+      "id": "P13",
+      "number": 13,
+      "title": "Enforce hard requirements before recommendations",
+      "week": 4,
+      "hours": 6,
+      "depends_on": [
+        "P08",
+        "P12"
+      ],
+      "goal": "Make practical feasibility deterministic and auditable.",
+      "files": [
+        "worker/src/planning/constraints.ts",
+        "tests/unit/constraints.test.ts",
+        "tests/integration/readiness.test.ts"
+      ],
+      "steps": [
+        "Implement discriminated schemas for budget, radius, time, category, access, dietary requirements and veto.",
+        "Separate required vs optional and confirmed vs unknown/conflicting/expired facts.",
+        "Apply the strictest participant-owned hard constraints; require the owner to authorize changes.",
+        "Block ready status for unknown material facts and present a specific confirmation request.",
+        "Test price levels versus exact cost, daylight-saving times, expired hours and all-candidate infeasibility."
+      ],
+      "ac": [
+        "AC01: FACT-01 through FACT-03 and the documented budget/access examples pass.",
+        "AC02: The model cannot waive or rewrite hard requirements; owner changes increment version.",
+        "AC03: No feasible result is a valid explicit state with no fabricated backup venue."
+      ],
+      "checks": [
+        "C1\u2013C3 constraints and readiness suites; property-test veto exclusion and required-unknown rejection.",
+        "Manual sample review against actual evidence record."
+      ],
+      "evidence": [
+        "Constraint decision table",
+        "Failing-then-passing negative tests",
+        "Infeasible-state screenshot"
+      ],
+      "risk": "Any hard-constraint bypass blocks release regardless of overall test pass rate.",
+      "status": "planned",
+      "file": "phases/13-enforce-hard-requirements-before-recommendations.md"
+    },
+    {
+      "id": "P14",
+      "number": 14,
+      "title": "Implement and explain the compromise policy",
+      "week": 4,
+      "hours": 6,
+      "depends_on": [
+        "P12",
+        "P13"
+      ],
+      "goal": "Choose useful group alternatives without claiming calibrated happiness or guaranteed fairness.",
+      "files": [
+        "worker/src/planning/rank.ts",
+        "tests/unit/compromise.test.ts",
+        "docs/decisions/003-ranking-policy.md"
+      ],
+      "steps": [
+        "Sort feasible common candidates by lowest worst-member rank, then mean rank, checked suitability and stable ID.",
+        "Create a second mean-rank alternative and a genuinely familiar fallback only when the inputs justify those labels.",
+        "Keep results unique; show fewer than three when fewer are supported.",
+        "Test participant permutation, monotonic score transformations, exact ties, all-veto, one candidate and candidate-set changes.",
+        "Version the policy and publish its limitations; do not display individual rank vectors to the host."
+      ],
+      "ac": [
+        "AC01: RANK-01 to RANK-07 pass on explicit matrices including [1,1,1,12] versus [5,5,5,5].",
+        "AC02: Identical inputs and policy version produce identical venue ordering; identity order cannot alter it.",
+        "AC03: Copy describes relative compromise and uncertainty, never a percent likelihood or an unqualified fairness guarantee."
+      ],
+      "checks": [
+        "C1\u2013C3 deterministic/property tests and manual explanation review.",
+        "Compare output against hand-calculated synthetic cases, not snapshots of current implementation."
+      ],
+      "evidence": [
+        "Policy decision record",
+        "Property-test results",
+        "Hand-calculated reference cases"
+      ],
+      "risk": "Ordinal ranking loses preference intensity. Participant acceptance can override an inferred order; do not force the algorithm\u2019s top result.",
+      "status": "planned",
+      "file": "phases/14-implement-and-explain-the-compromise-policy.md"
+    },
+    {
+      "id": "P15",
+      "number": 15,
+      "title": "Build the bounded agent state machine",
+      "week": 4,
+      "hours": 8,
+      "depends_on": [
+        "P07",
+        "P11",
+        "P13",
+        "P14"
+      ],
+      "goal": "Turn recommendation into a resumable tool-using workflow with enforceable budgets and approvals.",
+      "files": [
+        "worker/src/planning/machine.ts",
+        "worker/src/planning/tools.ts",
+        "worker/src/planning/budget.ts",
+        "tests/integration/run-machine.test.ts"
+      ],
+      "steps": [
+        "Implement typed state transitions and stage outputs, event versions, deadlines, idempotency and cancellation.",
+        "Register the seven allowlisted tools, including request_missing_input. In agent mode, require one real schema-validated model tool choice from permitted current-state actions, with at most two model rounds; enforce role/consent independently. Label the model-off fallback guided planning.",
+        "Slice work into at most two external requests per step and at most three active provider calls globally per run.",
+        "Reserve budgets atomically before each outbound call; keep unknown outcomes charged pending reconciliation.",
+        "Persist only permitted normalized state; stop if necessary storage/display rights are unresolved.",
+        "Expose real stage/count progress and resume only still-current, unexpired runs."
+      ],
+      "ac": [
+        "AC01: FLOW-01 through FLOW-06 pass under concurrent and retry scenarios.",
+        "AC02: 24 Qloo attempts/run includes retries; deadline and global quotas cannot be bypassed by extra step requests.",
+        "AC03: State machine cannot approve, send, book or charge from a model output; cancellation stops new outbound calls."
+      ],
+      "checks": [
+        "C1\u2013C4, concurrency/fault tests and code review of every external call site.",
+        "Inspect a real redacted trace to distinguish executed tools from decorative status text."
+      ],
+      "evidence": [
+        "Transition table and trace",
+        "Atomic-budget concurrency test",
+        "Resume/cancel browser recording"
+      ],
+      "risk": "If free runtime cannot support a durable stage, reduce the stage/input size; never add unbounded background work or a paid queue unnoticed.",
+      "status": "planned",
+      "file": "phases/15-build-the-bounded-agent-state-machine.md"
+    },
+    {
+      "id": "P16",
+      "number": 16,
+      "title": "Render provenance-backed shortlists",
+      "week": 4,
+      "hours": 4,
+      "depends_on": [
+        "P05",
+        "P14",
+        "P15"
+      ],
+      "goal": "Explain the decision clearly without inventing reasons or exposing individual preferences.",
+      "files": [
+        "apps/web/src/features/planning/shortlist.tsx",
+        "worker/src/providers/openai.ts",
+        "tests/integration/explanations.test.ts"
+      ],
+      "steps": [
+        "Render neutral venue cards with verified facts, timestamps, source links and unresolved items.",
+        "Implement template explanations first; add at most two optional schema-constrained OpenAI rounds for language if testing justifies them.",
+        "Permit only validated candidate/evidence IDs in generated output; reject invented claims and personal inferences.",
+        "Show each participant their own relative ranking privately and only an aggregate compromise summary to the host.",
+        "Label live vs synthetic mode persistently; keep a usable plain explanation when the model fails."
+      ],
+      "ac": [
+        "AC01: LLM-01 through LLM-04 pass; every factual explanation clause has evidence or is removed.",
+        "AC02: Host card contains no name-linked taste, rank matrix, objection reason or sensitive inference.",
+        "AC03: OpenAI failure leaves a valid Qloo result usable with a deterministic explanation."
+      ],
+      "checks": [
+        "C1\u2013C4 and manual provenance/copy audit of five outputs.",
+        "No LLM-as-judge alone can pass factual correctness."
+      ],
+      "evidence": [
+        "Explanation schema and rejection logs",
+        "Source-linked card screenshots",
+        "Language-off comparison"
+      ],
+      "risk": "Attractive prose must not change the evaluated venue selection or imply unsupported causal affinity explanations.",
+      "status": "planned",
+      "file": "phases/16-render-provenance-backed-shortlists.md"
+    },
+    {
+      "id": "P17",
+      "number": 17,
+      "title": "Handle private vetoes and honest replanning",
+      "week": 5,
+      "hours": 6,
+      "depends_on": [
+        "P15",
+        "P16"
+      ],
+      "goal": "Demonstrate an agent that revises a shared decision when a person objects.",
+      "files": [
+        "worker/src/planning/machine.ts",
+        "apps/web/src/features/planning/revisions.tsx",
+        "tests/e2e/veto-replan.spec.ts"
+      ],
+      "steps": [
+        "Store veto ownership and private reason category; generic group summaries reveal neither identity nor reason.",
+        "Invalidate old approval and recompute after veto without reintroducing vetoed venues.",
+        "Reindex ranks on a changed common set; fetch again only when required and within a new explicitly initiated run budget.",
+        "Show concise added/removed/changed information and preserve previous permitted revision metadata.",
+        "Handle all-veto/no-feasible-candidate with an explicit participant-approved constraint-change request."
+      ],
+      "ac": [
+        "AC01: Two-member simultaneous vetoes remain effective; neither is lost in a last-write race.",
+        "AC02: Vetoed venue never appears in revised card, explanation or export until its owner withdraws the veto.",
+        "AC03: Replanning exposes what changed and requires host review on the new version."
+      ],
+      "checks": [
+        "C1\u2013C4; RANK-01, FLOW-01/02 and private DTO integration cases.",
+        "Cold observer sees a real change in venue choices, not merely rewritten prose."
+      ],
+      "evidence": [
+        "Versioned veto/replan trace",
+        "Concurrency test",
+        "No-feasible-state observation"
+      ],
+      "risk": "Small-group inference can reveal who objected despite generic copy; disclose this privacy limit and avoid detailed aggregate breakdowns.",
+      "status": "planned",
+      "file": "phases/17-handle-private-vetoes-and-honest-replanning.md"
+    },
+    {
+      "id": "P18",
+      "number": 18,
+      "title": "Approve and export a usable event handoff",
+      "week": 5,
+      "hours": 5,
+      "depends_on": [
+        "P17"
+      ],
+      "goal": "Finish the host job without unauthorized booking, messaging or calendar mutation.",
+      "files": [
+        "worker/src/export/ics.ts",
+        "apps/web/src/routes/export.tsx",
+        "tests/unit/ics.test.ts",
+        "tests/e2e/approval-export.spec.ts"
+      ],
+      "steps": [
+        "Require an exact current revision and explicit acceptance of the selected venue from every member; recheck all readiness predicates and invalidate acceptances on material changes.",
+        "Generate a summary with date, timezone, venue, source links, budget basis and reservation-unconfirmed status.",
+        "Create a tentative export path that visibly preserves unknown required facts and does not mark the plan ready.",
+        "Escape ICS text/line breaks, fold lines correctly and resolve timezone/DST explicitly.",
+        "Make copy/download user-clicked; test two calendar import clients manually using synthetic events.",
+        "Begin exploratory alpha usability pilots, recording baseline/support effort separately; exclude their outcomes from formal comparisons frozen later in P24."
+      ],
+      "ac": [
+        "AC01: Stale approval returns conflict and cannot export an old ready plan.",
+        "AC02: EXPORT-01 through EXPORT-03 pass; calendar file imports as one correct event.",
+        "AC03: No outbound invitation, reservation or payment occurs; tentative and ready states remain distinct."
+      ],
+      "checks": [
+        "C1\u2013C4 calendar/approval checks and two-client import verification.",
+        "Manual pilot-ready core smoke from a fresh browser."
+      ],
+      "evidence": [
+        "Validated ICS sample",
+        "Cold-start core walkthrough",
+        "First product pilot enrollment record"
+      ],
+      "risk": "Do not add provider booking links that imply available inventory. The host owns final verification and reservation.",
+      "status": "planned",
+      "file": "phases/18-approve-and-export-a-usable-event-handoff.md"
+    },
+    {
+      "id": "P19",
+      "number": 19,
+      "title": "Collect outcomes and support a repeat event",
+      "week": 5,
+      "hours": 6,
+      "depends_on": [
+        "P18"
+      ],
+      "goal": "Learn from explicit participant feedback and make recurring use possible without hidden profile retention.",
+      "files": [
+        "apps/web/src/features/feedback/",
+        "worker/src/privacy/delete.ts",
+        "tests/integration/feedback-repeat.test.ts"
+      ],
+      "steps": [
+        "Collect attended, actual fit and planning experience as separate optional responses.",
+        "Record host active planning minutes and support/verification effort without using attendance as automatic satisfaction.",
+        "Duplicate host settings into a new event with new member consent; reuse seeds only with explicit choice and valid retention.",
+        "Offer simple avoid-recently-visited behavior based on explicit event history; keep advanced longitudinal fairness out of core.",
+        "Implement expiry and deletion across feedback, preferences, sessions and affected derived outputs."
+      ],
+      "ac": [
+        "AC01: A second event can be created without copying private seed data by default.",
+        "AC02: Missing feedback stays missing; no-show is not converted to dislike.",
+        "AC03: DATA-01/02 pass and expired vendor-derived outputs disappear within the permitted interval."
+      ],
+      "checks": [
+        "C1\u2013C4 repeat/deletion path and manual retention audit.",
+        "Check metrics count unique hosts/events, not repeated refreshes or synthetic users."
+      ],
+      "evidence": [
+        "Feedback schema",
+        "Repeat-event browser test",
+        "Retention/deletion report"
+      ],
+      "risk": "Researcher-scheduled repeat trials are not voluntary retention; label the two separately in analytics and claims.",
+      "status": "planned",
+      "file": "phases/19-collect-outcomes-and-support-a-repeat-event.md"
+    },
+    {
+      "id": "P20",
+      "number": 20,
+      "title": "Polish mobile usability and accessibility",
+      "week": 5,
+      "hours": 7,
+      "depends_on": [
+        "P16",
+        "P18",
+        "P19"
+      ],
+      "goal": "Make the complete experience usable and coherent enough for unassisted participants.",
+      "files": [
+        "apps/web/src/styles/",
+        "apps/web/src/components/",
+        "tests/e2e/accessibility.spec.ts",
+        "docs/design/usability-round-two.md"
+      ],
+      "steps": [
+        "Apply consistent typography, spacing, one accent and meaningful motion to the approved flow.",
+        "Check 360px and 1280px layouts, 200% zoom, touch targets and no horizontal trapping.",
+        "Run axe-core and then keyboard/screen-reader walkthroughs for invite, seed selection, plan and export.",
+        "Observe three new testers; prioritize confusing privacy, unknown-fact and approval states.",
+        "Replace unauthorized imagery with text/original CSS or properly licensed assets and record provenance."
+      ],
+      "ac": [
+        "AC01: UI-01 to UI-03 pass for the primary journey; automated critical/serious issues are fixed and manual findings logged.",
+        "AC02: No key action requires hover, color alone, fine pointer accuracy or a voice/chat response.",
+        "AC03: Content consistently distinguishes preference, verified fact, unknown and actual action."
+      ],
+      "checks": [
+        "C1/C4 plus manual assistive-technology observations.",
+        "Visual regression is reviewed for meaning, not accepted solely by snapshot update."
+      ],
+      "evidence": [
+        "Desktop/mobile screenshots",
+        "Accessibility audit",
+        "Usability fixes with observed rationale"
+      ],
+      "risk": "If behind schedule, reduce visual novelty; do not cut legibility, keyboard access or privacy controls.",
+      "status": "planned",
+      "file": "phases/20-polish-mobile-usability-and-accessibility.md"
+    },
+    {
+      "id": "P21",
+      "number": 21,
+      "title": "Harden public access privacy and spend caps",
+      "week": 6,
+      "hours": 8,
+      "depends_on": [
+        "P07",
+        "P15",
+        "P19"
+      ],
+      "goal": "Make a bounded public demo resistant to accidental leakage and uncontrolled provider usage.",
+      "files": [
+        "worker/src/auth/",
+        "worker/src/planning/budget.ts",
+        "worker/src/telemetry/events.ts",
+        "tests/integration/abuse.test.ts",
+        "docs/security/threat-model.md"
+      ],
+      "steps": [
+        "Trace every private field from intake through storage/provider/log/browser and delete unnecessary copies.",
+        "Add global/event/session usage reservations, finite request bodies, rate limits, Origin controls and no-referrer policy.",
+        "Test host/member token theft scenarios, guessed IDs, duplicate/replayed operations and mutation races.",
+        "Use server-side secrets only, no arbitrary URL fetcher, and strict rendering/ICS escaping.",
+        "Scan source/history/build artifacts and review dependencies/actions; rotate any disposable test secret that leaked.",
+        "Write the actual privacy notice and user deletion procedure from the implemented data flow."
+      ],
+      "ac": [
+        "AC01: Auth/private-data/CSRF tests pass; no raw key/profile appears in network-visible unauthorized output or log.",
+        "AC02: Concurrent requests cannot exceed configured provider caps; quota exhaustion fails before outbound calls.",
+        "AC03: The privacy notice matches observed behavior and does not promise zero vendor retention."
+      ],
+      "checks": [
+        "C1\u2013C5, abuse concurrency suite and manual threat review.",
+        "Run a cold untrusted-browser test against preview with disposable data."
+      ],
+      "evidence": [
+        "Threat model and mitigation table",
+        "Secret-scan logs",
+        "Spend-cap concurrency proof"
+      ],
+      "risk": "Any confirmed secret/private-input exposure blocks public release and triggers revocation plus incident review.",
+      "status": "planned",
+      "file": "phases/21-harden-public-access-privacy-and-spend-caps.md"
+    },
+    {
+      "id": "P22",
+      "number": 22,
+      "title": "Rehearse provider and data failures",
+      "week": 6,
+      "hours": 4,
+      "depends_on": [
+        "P15",
+        "P17",
+        "P21"
+      ],
+      "goal": "Prove failure states preserve honesty and allow recovery.",
+      "files": [
+        "tests/integration/provider-faults.test.ts",
+        "tests/e2e/outages.spec.ts",
+        "docs/operations/provider-failures.md"
+      ],
+      "steps": [
+        "Inject Qloo 401,403,429,500, timeout, malformed JSON, extra candidates and empty rankings.",
+        "Inject OpenAI refusal, schema failure, excessive text and timeout; exercise template fallback.",
+        "Expire venue evidence during a run and revoke a member before approval.",
+        "Exhaust budgets and cancel while calls are in flight; verify no later automatic outbound work.",
+        "Reopen the browser after interruption and verify stale/current run handling."
+      ],
+      "ac": [
+        "AC01: OPS-01 to OPS-03 and LLM failure cases pass with correct retry/stop behavior.",
+        "AC02: Failed or synthetic paths never display live-success claims.",
+        "AC03: Uncertain spend remains counted; retries cannot loop indefinitely."
+      ],
+      "checks": [
+        "C2\u2013C4 fault suite; manual check of user-facing recovery messages.",
+        "Inspect bounded call trace for every fault, not just response status."
+      ],
+      "evidence": [
+        "Fault matrix",
+        "Per-failure call counts",
+        "Recovery screenshots"
+      ],
+      "risk": "Avoid hiding provider failure behind an unrelated generic recommendation; that invalidates the Qloo differentiator.",
+      "status": "planned",
+      "file": "phases/22-rehearse-provider-and-data-failures.md"
+    },
+    {
+      "id": "P23",
+      "number": 23,
+      "title": "Measure and fit the free runtime",
+      "week": 6,
+      "hours": 6,
+      "depends_on": [
+        "P18",
+        "P21",
+        "P22"
+      ],
+      "goal": "Verify real CPU latency and quota use under realistic small-pilot behavior.",
+      "files": [
+        "scripts/measure-runtime.ts",
+        "docs/verification/runtime-report.md",
+        "worker/src/planning/machine.ts"
+      ],
+      "steps": [
+        "Run at least 30 representative bounded staging sessions with permitted data and record timing distribution/sample composition.",
+        "Measure dynamic requests, Qloo attempts including lookups/retries, OpenAI tokens, D1 scans/writes/storage and Worker CPU.",
+        "Include eight-member/30-venue input, empty responses, verbose payloads, replan and concurrent sessions.",
+        "Reduce response take, stage size, libraries or catalog size when CPU fails; retest affected cases.",
+        "Set measured pilot global caps below confirmed provider ceilings, with owner-approved OpenAI monetary envelope.",
+        "Verify normal static asset delivery does not unnecessarily invoke the Worker."
+      ],
+      "ac": [
+        "AC01: Selected configuration meets Free CPU and subrequest limits with no quota error in tested workload.",
+        "AC02: Typical recommendation target under 20s and provisional p95 under 30s are met or honestly revised with evidence before release.",
+        "AC03: Cost ledger includes all attempts and lookups; no paid upgrade or unapproved overage exists."
+      ],
+      "checks": [
+        "C7 deployed measurement plus C1\u2013C4 after any optimization change.",
+        "Review report as a bounded sample, not an internet-scale load guarantee."
+      ],
+      "evidence": [
+        "Runtime/cost measurements",
+        "Chosen operating caps",
+        "Measured-versus-target decision"
+      ],
+      "risk": "If Free CPU remains insufficient after reducing scope, do not promise this architecture is viable; choose a verified free alternative or stop the live release.",
+      "status": "planned",
+      "file": "phases/23-measure-and-fit-the-free-runtime.md"
+    },
+    {
+      "id": "P24",
+      "number": 24,
+      "title": "Instrument and freeze the evaluation harness",
+      "week": 6,
+      "hours": 6,
+      "depends_on": [
+        "P19",
+        "P23"
+      ],
+      "goal": "Make Qloo-value and workflow claims testable without bias or circular metrics.",
+      "files": [
+        "eval/manifest.json",
+        "eval/run.ts",
+        "eval/report.ts",
+        "docs/evaluation/protocol.md",
+        "tests/unit/eval-analysis.test.ts"
+      ],
+      "steps": [
+        "Freeze the same-slate LLM baseline, Qloo condition, policy version, neutral cards and primary human metric.",
+        "Record group as the independent unit; repeated occasions and members do not inflate sample size.",
+        "Randomize display order, deduplicate repeated venues for rating, and store consented labels separately from provider outputs.",
+        "Define missing inputs, ties, losses, exclusions, withdrawals and technical failures before data collection.",
+        "Implement descriptive paired group analysis and uncertainty reporting; never use Qloo score increase as outcome improvement.",
+        "Add event telemetry for started/completed/intake/dropout/replan/approval/export/return with synthetic/live separation."
+      ],
+      "ac": [
+        "AC01: Manifest fixes models/prompts/slate/metric before outcomes; deviations are logged.",
+        "AC02: Report includes every enrolled group, ties/losses/missing outcomes and clustered repeats.",
+        "AC03: Test data with known differences produces the hand-calculated result; zero data yields no uplift claim."
+      ],
+      "checks": [
+        "C1/C2 plus C8 on clearly synthetic analysis fixtures only.",
+        "Independent manual review of baseline information parity and rating-card neutrality."
+      ],
+      "evidence": [
+        "Pre-registered protocol",
+        "Analysis unit tests",
+        "Telemetry data dictionary"
+      ],
+      "risk": "Persuasive explanation differences, weaker baseline facts or excluded failures can invalidate the study. Fix design before recruiting more groups.",
+      "status": "planned",
+      "file": "phases/24-instrument-and-freeze-the-evaluation-harness.md"
+    },
+    {
+      "id": "P25",
+      "number": 25,
+      "title": "Run the controlled Qloo comparison",
+      "week": 7,
+      "hours": 8,
+      "depends_on": [
+        "P24"
+      ],
+      "goal": "Find whether cultural ranking improves human decisions against a competent baseline.",
+      "files": [
+        "eval/private/ratings.json",
+        "docs/evaluation/ranking-results.md",
+        "docs/evaluation/deviations.md"
+      ],
+      "steps": [
+        "Recruit toward 12 independent eligible groups with voluntary participants; continue missing interviews toward the 12-host target.",
+        "Run neutral randomized same-slate comparisons using frozen baseline and Qloo versions.",
+        "Collect venue willingness-to-attend ratings once per venue and compute the lowest member score per group/method.",
+        "Aggregate repeated occasions within group before comparing; show individual group differences, wins, ties and losses.",
+        "Log technical/coverage failures and missing responses without removing them to improve headline results.",
+        "Apply the chapter06 gate and record whether result is supportive, inconclusive or negative."
+      ],
+      "ac": [
+        "AC01: Every reported rating is actual consented human data; study size/conditions/exclusions are visible.",
+        "AC02: Graduation signal requires improvement in at least 8/12 groups and median paired improvement at least 0.5 on the 1\u20135 external rating, with no hard-constraint regression.",
+        "AC03: Failure to reach the sample or threshold is reported as incomplete/inconclusive/negative, not rounded into success."
+      ],
+      "checks": [
+        "C8 report integrity; manual blinded-protocol audit and consent check.",
+        "No CI job can fabricate or approve customer ratings."
+      ],
+      "evidence": [
+        "Private raw ratings and de-identified aggregate",
+        "Condition randomization record",
+        "Results with uncertainty and limitations"
+      ],
+      "risk": "If Qloo offers no lift, inspect signal quality once under a newly registered iteration; repeated failure kills the central thesis.",
+      "status": "planned",
+      "file": "phases/25-run-the-controlled-qloo-comparison.md"
+    },
+    {
+      "id": "P26",
+      "number": 26,
+      "title": "Operate the full workflow pilots",
+      "week": 7,
+      "hours": 6,
+      "depends_on": [
+        "P18",
+        "P24"
+      ],
+      "goal": "Observe the actual host/member flow over real events including friction and practical verification.",
+      "files": [
+        "docs/pilots/workflow-ledger-private.json",
+        "docs/pilots/host-time-study.md",
+        "docs/pilots/support-log.md"
+      ],
+      "steps": [
+        "Continue recruitment from the early alpha, but start formal comparative enrollment only after P24; seek 12 independent groups and two eligible occasions where practical. Do not pool earlier alpha outcomes.",
+        "Counterbalance current workaround and product use where possible; record differing group/event conditions.",
+        "Time host activity and founder support/fact maintenance separately; keep abandoned sessions in the ledger.",
+        "Observe whether members complete intake without researcher data entry and whether host can export unassisted.",
+        "Collect actual attendance and optional post-event fit separately from intention to attend."
+      ],
+      "ac": [
+        "AC01: Measured active time includes checking, correction and troubleshooting, not just clicking generate.",
+        "AC02: Workflow target is at least 20% median paired host-time reduction without lower acceptance; at least 10/12 groups complete intake without researcher entry.",
+        "AC03: Actual venue use, predicted preference and stated intention are separate fields with missing values preserved."
+      ],
+      "checks": [
+        "C8 data integrity and manual observation audit.",
+        "If code changes during trial, version the condition and report results separately."
+      ],
+      "evidence": [
+        "Workflow timing ledger",
+        "Intake/dropout denominator",
+        "Support effort and practical-failure cases"
+      ],
+      "risk": "External calendars can exceed eight weeks. Keep the launch assessment honest if repeat events have not yet happened.",
+      "status": "planned",
+      "file": "phases/26-operate-the-full-workflow-pilots.md"
+    },
+    {
+      "id": "P27",
+      "number": 27,
+      "title": "Fix observed friction and measure voluntary return",
+      "week": 7,
+      "hours": 6,
+      "depends_on": [
+        "P25",
+        "P26"
+      ],
+      "goal": "Improve demonstrated failures and test whether hosts choose to use the product again.",
+      "files": [
+        "docs/pilots/repeat-use.md",
+        "docs/decisions/004-pilot-fixes.md",
+        "tests/e2e/regressions.spec.ts"
+      ],
+      "steps": [
+        "Rank observed problems by affected real users and severity; select at most three changes that address evidence.",
+        "Write regressions for consequential failures and rerun affected suites after each fix.",
+        "Offer hosts a normal opportunity to plan another event without mandatory study instructions or founder doing the input.",
+        "Count scheduled research sessions separately from voluntary product returns.",
+        "Re-score impacted rubric categories with traceable evidence and record unchanged weaknesses."
+      ],
+      "ac": [
+        "AC01: Each change cites an observed problem and measured resolution; no unrelated scope expansion.",
+        "AC02: Return gate is 8/12 hosts voluntarily starting and completing a subsequent real event; researcher-mandated second trials do not count.",
+        "AC03: If the elapsed window prevents measurement, retention remains unvalidated and score cannot assume success."
+      ],
+      "checks": [
+        "C1\u2013C4 affected regression suite; C8 repeat-use denominator check.",
+        "Manual review of whether researcher effort drove the return."
+      ],
+      "evidence": [
+        "Before/after friction cases",
+        "Voluntary return ledger",
+        "Updated rubric with citations"
+      ],
+      "risk": "Do not spam reminders to manufacture retention. A host who returns only when the founder does the work is a service signal, not self-serve retention.",
+      "status": "planned",
+      "file": "phases/27-fix-observed-friction-and-measure-voluntary-return.md"
+    },
+    {
+      "id": "P28",
+      "number": 28,
+      "title": "Test a commercial offer and provider economics",
+      "week": 7,
+      "hours": 4,
+      "depends_on": [
+        "P25",
+        "P26"
+      ],
+      "goal": "Determine whether a credible payable service exists under actual provider terms.",
+      "files": [
+        "docs/business/offer-test.md",
+        "docs/business/unit-economics.json",
+        "docs/vendor-rights.md"
+      ],
+      "steps": [
+        "Use the pricing anchors to choose one concrete bounded offer informed by measured usage and support.",
+        "Seek five dated nonbinding exact-offer commitments from budget owners, including rejection reasons.",
+        "Obtain actual Qloo commercial permission/pricing through a founder-authorized exchange before charging anything.",
+        "Calculate contribution under typical and heavier measured usage including provider cost, support and venue maintenance.",
+        "Compare results to the provisional 70% contribution target and document unknown inputs instead of zeroing them."
+      ],
+      "ac": [
+        "AC01: Offer, price, usage cap, budget owner and start condition are explicit for every commitment.",
+        "AC02: No payment/deposit occurs before intended use is permitted; intent is not labeled revenue.",
+        "AC03: Economics uses an actual provider quote or remains not calculable; a 9 score cannot bypass this gate."
+      ],
+      "checks": [
+        "C0/manual arithmetic and source audit; no automated purchase or billing flow.",
+        "Verify the score uses actual evidence rather than generic stated interest."
+      ],
+      "evidence": [
+        "Private nonbinding intent records",
+        "Cost sensitivity model",
+        "Commercial rights decision"
+      ],
+      "risk": "If rights/pricing cannot support free-tier prototype or sustainable business, separate the hackathon artifact from the startup thesis and stop commercial claims.",
+      "status": "planned",
+      "file": "phases/28-test-a-commercial-offer-and-provider-economics.md"
+    },
+    {
+      "id": "P29",
+      "number": 29,
+      "title": "Audit release readiness and rehearse rollback",
+      "week": 8,
+      "hours": 6,
+      "depends_on": [
+        "P20",
+        "P21",
+        "P22",
+        "P23",
+        "P27"
+      ],
+      "goal": "Verify the deployed product and operational recovery before inviting broad use.",
+      "files": [
+        "docs/verification/release/",
+        "docs/operations/rollback.md",
+        "scripts/verify-release.ts"
+      ],
+      "steps": [
+        "Run full C1\u2013C5 on the intended release SHA and bounded C6/C7 checks on its preview.",
+        "Exercise the 40-case technical suite, requiring zero hard-constraint bypass and at least 38 correct completions or explicit blocks.",
+        "Have a fresh reviewer install and use the written instructions with synthetic data.",
+        "Rehearse Worker rollback and compatible database restore/migration on a disposable environment.",
+        "Review logs, source, fixtures, bundle, rights ledger, notices and data expiry; fix material findings."
+      ],
+      "ac": [
+        "AC01: All mandatory CI passes on the release SHA; no unresolved critical privacy/constraint defect remains.",
+        "AC02: Required live functionality works under actual permissions; synthetic replay cannot mask a failing live path.",
+        "AC03: Rollback/restoration recovers a known test event and revalidates auth/version/deletion behavior."
+      ],
+      "checks": [
+        "C1\u2013C7 plus manual cold-start/restore evidence.",
+        "Record exact commit and environment for every pass."
+      ],
+      "evidence": [
+        "Release evidence bundle",
+        "Cold-start reviewer notes",
+        "Rollback rehearsal log"
+      ],
+      "risk": "If schema cannot roll back safely, block deploy until a forward recovery path is tested; a git revert alone does not restore data.",
+      "status": "planned",
+      "file": "phases/29-audit-release-readiness-and-rehearse-rollback.md"
+    },
+    {
+      "id": "P30",
+      "number": 30,
+      "title": "Build the guided demo and evidence story",
+      "week": 8,
+      "hours": 6,
+      "depends_on": [
+        "P25",
+        "P26",
+        "P29"
+      ],
+      "goal": "Make the problem, Qloo contribution and full agent loop understandable to a new judge.",
+      "files": [
+        "apps/web/src/routes/demo.tsx",
+        "docs/demo/script.md",
+        "docs/demo/evidence-map.md"
+      ],
+      "steps": [
+        "Create a persistent synthetic-example label and an immediate four-person guided flow.",
+        "Demonstrate resolved inputs, actual bounded tools, practical checks, private veto, changed plan and approved export.",
+        "Add a live-start path that uses genuine provider calls within quotas; show honest unavailable state if blocked.",
+        "Connect each judging criterion to a real artifact, screenshot or measured result.",
+        "Write the concise product description and limitations; include a comparison only if the study supports it."
+      ],
+      "ac": [
+        "AC01: A cold visitor can understand the value and complete example without founder narration.",
+        "AC02: Live and example outputs/traces cannot be confused; timestamps and claims are truthful.",
+        "AC03: No fabricated testimonial, customer logo, uplift, revenue or novelty claim appears."
+      ],
+      "checks": [
+        "C1/C4/C5 plus manual claim-by-claim evidence review.",
+        "Optional walkthrough recording is secondary to the externally hosted working app."
+      ],
+      "evidence": [
+        "Demo observation",
+        "Claim-to-evidence matrix",
+        "Approved release copy"
+      ],
+      "risk": "If the study is inconclusive, show that honestly; a stronger narrative cannot substitute for missing evidence.",
+      "status": "planned",
+      "file": "phases/30-build-the-guided-demo-and-evidence-story.md"
+    },
+    {
+      "id": "P31",
+      "number": 31,
+      "title": "Publish the free hosted release and submission package",
+      "week": 8,
+      "hours": 6,
+      "depends_on": [
+        "P28",
+        "P29",
+        "P30"
+      ],
+      "goal": "Deliver an accessible public application and inspectable source within the confirmed access conditions.",
+      "files": [
+        "README.md",
+        "docs/setup.md",
+        "docs/privacy.md",
+        "docs/submission.md",
+        "docs/operations/production-smoke.md"
+      ],
+      "steps": [
+        "Prepare production config, separate D1, allowed secrets and measured quotas with no paid upgrade.",
+        "Publish code with license, setup, synthetic fixtures and exclusions for proprietary data; founder reviews any external publication.",
+        "Deploy the verified Worker/assets and run cold-browser end-to-end smoke on public URL.",
+        "Verify legitimate judges have usable live access and provider approval lasts for the required testing window.",
+        "Prepare the Devpost fields and source/demo links; actual submission is a reviewed founder action.",
+        "Record the requested hypothetical week-eight schedule separately from the real event deadline."
+      ],
+      "ac": [
+        "AC01: Public URL supports the core live task; repository is inspectable and reproducible with approved keys.",
+        "AC02: No private pilot record, key or proprietary raw response is published; app-code license is visible.",
+        "AC03: Submission package truthfully states measured results and limitations; no claim that the eight-week schedule meets the actual October cutoff."
+      ],
+      "checks": [
+        "C5 plus production synthetic smoke and bounded live smoke.",
+        "Manual new-user/judge access and public-source audit."
+      ],
+      "evidence": [
+        "Public URLs and release SHA",
+        "Production smoke report",
+        "Submission draft and published-state checklist"
+      ],
+      "risk": "If permitted public live access is missing, the project is not submission-ready; do not call a local app or replay-only page compliant.",
+      "status": "planned",
+      "file": "phases/31-publish-the-free-hosted-release-and-submission-package.md"
+    },
+    {
+      "id": "P32",
+      "number": 32,
+      "title": "Make the startup continue pivot or stop decision",
+      "week": 8,
+      "hours": 6,
+      "depends_on": [
+        "P25",
+        "P26",
+        "P27",
+        "P28",
+        "P31"
+      ],
+      "goal": "End the eight weeks with an evidence-based business decision and a focused next investment.",
+      "files": [
+        "docs/business/eight-week-review.md",
+        "docs/business/next-experiment.md",
+        "docs/research/assumptions.json"
+      ],
+      "steps": [
+        "Re-score the same 10-category rubric and link every changed score to evidence; preserve unsupported categories.",
+        "Compare buyer pain, Qloo lift, workflow time, voluntary returns, exact-price intent, rights and contribution gates.",
+        "Separate product delivery from business validation and record which results remain unobserved.",
+        "Choose continue with one next experiment, pivot with a new explicit buyer/job, or stop with preserved learning.",
+        "If continuing, design a 90-day plan only around the demonstrated bottleneck; do not auto-add integrations or cities.",
+        "Review retention/deletion, provider expiry and operating caps so an abandoned demo does not silently retain data or spend."
+      ],
+      "ac": [
+        "AC01: \u22659 is claimed only if weighted score reaches 9 with all hard commercial, customer and technical gates met; otherwise report the actual score.",
+        "AC02: The next action has an owner, time/cost limit, hypothesis and stop rule.",
+        "AC03: All unfinished outcomes remain marked incomplete, and operations/deletion responsibilities are assigned."
+      ],
+      "checks": [
+        "C0/C8 and manual founder evidence review; no automated score inflation.",
+        "Reconcile all phase statuses with actual evidence rather than scheduled week numbers."
+      ],
+      "evidence": [
+        "Eight-week decision memo",
+        "Final rubric and unresolved risks",
+        "Next experiment or shutdown runbook"
+      ],
+      "risk": "A hackathon award cannot replace customer evidence. A failed startup thesis can still leave a useful open-source artifact.",
+      "status": "planned",
+      "file": "phases/32-make-the-startup-continue-pivot-or-stop-decision.md"
+    }
+  ]
+}
