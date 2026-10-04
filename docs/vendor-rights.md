@@ -53,9 +53,20 @@ Channels named by Qloo: Discord `#api-help` / `#qloo-hackathon` (https://discord
 
 **Not assumed.** Public Terms’ anti-resale/charge-for-access language plus “Additional Terms” pattern means a paid Common Ground organizer product needs an explicit commercial path. Hackathon demo ≠ SaaS license.
 
+### P28 commercial decision (2026-10-04)
+
+| Question | Decision |
+|---|---|
+| May we charge organizers while using hackathon Qloo? | **No** until written commercial permission |
+| May we collect nonbinding exact-offer intent? | Yes, privately, with explicit start condition |
+| May we record deposits/payments in-product? | **Blocked** — no billing flow ships |
+| Unit economics / 70% contribution | **not_calculable** — see `docs/business/unit-economics.json` |
+| Separate hackathon artifact from startup thesis if rights fail? | **Yes** |
+
 ## Owner actions remaining
 
 1. Submit API key request form (if not already).  
 2. Retain the key email + any attached terms privately (not in git).  
 3. Send rights questions; paste answers into a private addendum and update this file’s status table.  
 4. Re-run `QLOO_API_KEY=… npx tsx spikes/qloo-contract.ts --live` and fill the capability matrix.
+5. Obtain commercial quote/permission before any paid offer or contribution claim (P28).

@@ -9,6 +9,7 @@ export function LandingPage() {
           Synthetic example available
         </span>
         <nav className="landing__nav" aria-label="Primary">
+          <Link to="/demo">Guided demo</Link>
           <Link to="/example">Walk through</Link>
           <Link to="/privacy">Privacy</Link>
         </nav>
@@ -24,8 +25,8 @@ export function LandingPage() {
           <Link className="btn btn--primary" to="/host/new">
             Plan an outing
           </Link>
-          <Link className="btn btn--ghost" to="/example">
-            See a synthetic plan
+          <Link className="btn btn--ghost" to="/demo">
+            Guided demo
           </Link>
         </div>
         <p className="landing__footnote">

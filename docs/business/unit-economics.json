@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "phase": "P28",
+  "updated": "2026-10-04",
+  "status": "not_calculable",
+  "offer_usd_per_month": {
+    "value": 19,
+    "label": "scenario_hypothesis"
+  },
+  "contribution_margin_target": {
+    "value": 0.7,
+    "label": "provisional_target"
+  },
+  "inputs": {
+    "qloo_cost_per_outing_usd": {
+      "value": null,
+      "label": "unknown_pending_commercial_quote"
+    },
+    "openai_cost_per_outing_usd": {
+      "value": null,
+      "label": "optional_path_unknown_until_metered"
+    },
+    "cloudflare_marginal_usd": {
+      "value": 0,
+      "label": "free_tier_assumption_documented",
+      "citation": "docs/ops/free-tier.md"
+    },
+    "founder_support_minutes_per_outing": {
+      "value": null,
+      "label": "unknown_pending_P26_support_log"
+    },
+    "venue_fact_maintenance_minutes_per_outing": {
+      "value": null,
+      "label": "unknown"
+    },
+    "support_loaded_cost_usd_per_hour": {
+      "value": null,
+      "label": "unknown_founder_opportunity_cost_not_zeroed"
+    }
+  },
+  "usage_scenarios": {
+    "typical_outings_per_month": 2,
+    "heavier_outings_per_month": 4
+  },
+  "contribution_typical": null,
+  "contribution_heavier": null,
+  "decision": "Do not claim 70% contribution. Keep status not_calculable until Qloo commercial quote and measured support minutes exist. Unknowns are null, never silently zeroed into a passing margin.",
+  "commercial_rights": {
+    "status": "not_assumed",
+    "citation": "docs/vendor-rights.md"
+  }
+}

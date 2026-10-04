@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "phase": "P26",
+  "protocol_version": "2026-10-04-v1",
+  "status": "incomplete",
+  "updated": "2026-10-04",
+  "owner": "founder",
+  "notes": "Formal comparative enrollment opens after P24 freeze. Do not pool P04 Path A alpha outcomes into this ledger. Synthetic sessions never count toward host-time or intake gates.",
+  "targets": {
+    "independent_groups": 12,
+    "eligible_occasions_per_group_min": 1,
+    "median_host_time_reduction": 0.2,
+    "intake_without_researcher_entry": "10/12",
+    "acceptance_not_lower": true
+  },
+  "field_definitions": {
+    "host_active_minutes": "Checking, correction, and troubleshooting inclusive — not generate-click only",
+    "founder_support_minutes": "Separate from host time; includes fact maintenance",
+    "intake_completed_without_researcher": "boolean; researcher-entered rows fail the intake gate",
+    "intention_to_attend": "1-5 or null; never imputed",
+    "predicted_preference": "ordinal/shortlist position or null; never imputed",
+    "actual_venue_used": "venue id/name or null if outing did not happen; never imputed from intention",
+    "abandoned": "true if session stopped before export or explicit abandon"
+  },
+  "groups": [],
+  "abandoned_sessions": [],
+  "denominators": {
+    "enrolled_groups": 0,
+    "completed_intake_without_researcher": 0,
+    "paired_host_time_observations": 0,
+    "actual_attendance_observed": 0
+  },
+  "graduation": {
+    "ac01_active_time_includes_troubleshooting": "protocol_ready",
+    "ac02_host_time_and_intake_gates": "incomplete",
+    "ac03_separate_intention_prediction_actual": "schema_ready_no_rows"
+  }
+}

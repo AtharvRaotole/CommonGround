@@ -24,7 +24,10 @@ export function ExportPage() {
   const [role, setRole] = useState("member");
 
   useEffect(() => {
-    if (!eventId) return;
+    if (!eventId) {
+      setError("Nothing to export yet — open an outing handoff from a plan.");
+      return;
+    }
     void (async () => {
       const ev = await fetch(`/api/events/${eventId}`, { credentials: "include" });
       if (ev.ok) {
@@ -139,8 +142,13 @@ export function ExportPage() {
             </div>
           ) : null}
         </section>
-      ) : (
+      ) : !error ? (
         <p className="form__note">Loading export…</p>
+      ) : (
+        <p className="form__note">
+          Tentative or ready export banners appear here after approval. Common Ground never places a
+          reservation.
+        </p>
       )}
       {eventId ? <FeedbackForm eventId={eventId} isHost={role === "host"} /> : null}
     </div>

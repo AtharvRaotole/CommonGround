@@ -1,7 +1,7 @@
 # Setup — Common Ground product app
 
 **Runtime pin:** Node ≥ 22 · pnpm 9.15.0  
-**Hosting target:** Cloudflare Worker (+ D1 in P07). Not Supabase.
+**Hosting target:** Cloudflare Worker + D1. Not Supabase.
 
 ## Fresh checkout
 
@@ -29,24 +29,27 @@ pnpm dev:web
 
 - Web: http://127.0.0.1:5173  
 - Health: http://127.0.0.1:8787/api/health  
+- Guided demo: http://127.0.0.1:5173/demo  
 
 ## Environment
 
 Copy `.env.example` → `.env`. Keep values empty in git. Live Qloo/OpenAI are optional until keys exist; default CI never needs them.
 
-## Preview deploy
+Worker secrets (preview/production only, never commit):
 
-Requires a Cloudflare account + `wrangler login` (not available in this scaffold session).
+- `QLOO_API_KEY` — when issued  
+- `OPENAI_API_KEY` — optional explanations  
+
+## Preview deploy
 
 ```sh
 export GIT_SHA="$(git rev-parse HEAD)"
 pnpm --filter @common-ground/worker exec wrangler deploy
+pnpm --filter @common-ground/worker exec wrangler d1 migrations apply common-ground --remote
 ```
 
-Set `ENVIRONMENT=preview` and a distinct D1 database before any real participant data (P07).
+Stay on Workers Free (`docs/ops/free-tier.md`). If Cloudflare prompts to upgrade, **stop**.
 
-## What is intentionally missing
+## Synthetic fixtures
 
-- D1 schema / capability auth → P07  
-- Live Qloo ranking → blocked on hackathon key (P03/P11)  
-- Full host/member flows → later phases; landing + synthetic shortlist ship now
+Use `/demo` and `/example` plus `fixtures/synthetic/` — never commit proprietary raw Qloo responses.

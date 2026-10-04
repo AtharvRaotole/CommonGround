@@ -86,14 +86,19 @@ export function WaitingPage() {
                 ? `${dto.me.seeds.length} favorite(s) saved`
                 : "not yet submitted"}
           </p>
-          <p className="form__actions">
-            <Link className="btn" to={`/plan?event=${eventId}`}>
-              Open plan
-            </Link>
-          </p>
         </div>
-      ) : (
+      ) : !error ? (
         <p className="form__note">Loading…</p>
+      ) : null}
+
+      {eventId ? (
+        <p className="form__actions">
+          <Link className="btn" to={`/plan?event=${eventId}`}>
+            Open plan
+          </Link>
+        </p>
+      ) : (
+        <p className="form__note">Missing event — return home or use a join link.</p>
       )}
     </div>
   );

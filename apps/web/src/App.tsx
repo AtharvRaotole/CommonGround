@@ -4,6 +4,7 @@ import { HostCreatePage } from "./routes/HostCreatePage";
 import { JoinPage } from "./routes/JoinPage";
 import { WaitingPage } from "./routes/WaitingPage";
 import { SyntheticDemoPage } from "./routes/SyntheticDemoPage";
+import { DemoPage } from "./routes/demo";
 import { PlanPage } from "./routes/PlanPage";
 import { ExportPage } from "./routes/ExportPage";
 import { PrivacyPage } from "./routes/PrivacyPage";
@@ -19,6 +20,7 @@ export function App() {
       <Route path="/export" element={<ExportPage />} />
       <Route path="/privacy" element={<PrivacyPage />} />
       <Route path="/example" element={<SyntheticDemoPage />} />
+      <Route path="/demo" element={<DemoPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

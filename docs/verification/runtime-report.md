@@ -10,10 +10,10 @@
 
 | Stat | Value |
 |---|---|
-| min | 0.5 |
-| p50 | 0.8 |
-| p95 | 2.3 |
-| max | 12.6 |
+| min | 0.6 |
+| p50 | 1.4 |
+| p95 | 9.6 |
+| max | 14.7 |
 
 Targets: typical < 20000ms · p95 < 30000ms  
 **Decision:** Local sample meets timing targets (local Node/SQLite only — not Cloudflare isolate CPU).

@@ -2,9 +2,16 @@
   "schema_version": 1,
   "created": "2026-10-03",
   "owner": "founder",
-  "phase": "P01",
-  "status": "frozen_pre_interview",
-  "notes": "Numerical thresholds are targets/estimates/scenarios. No assumption below is treated as proven customer or live-provider evidence.",
+  "phase": "P32",
+  "status": "reopened_for_eight_week_review",
+  "notes": "Numerical thresholds are targets/estimates/scenarios. No assumption below is treated as proven customer or live-provider evidence. P32 2026-10-04: continue hackathon artifact; hold SaaS claims. See docs/business/eight-week-review.md.",
+  "p32_decision": {
+    "date": "2026-10-04",
+    "artifact": "continue",
+    "startup_thesis": "hold_pending_key_pilots_rights_wtp",
+    "claim_gte_9": false,
+    "next_experiment": "docs/business/next-experiment.md"
+  },
   "capacity": {
     "id": "A-CAPACITY",
     "statement": "Founder can sustain approximately 30 hours/week for eight relative weeks (240 hours total).",
@@ -61,7 +68,7 @@
       "statement": "At least some qualified budget owners will take a meaningful commercial next step (dated nonbinding exact-offer intent or budget-approver commitment) for a bounded planning offer; pricing hypothesis e.g. $19/month organizer offer is experimental only.",
       "label": "assumption",
       "owner": "founder",
-      "status": "unverified",
+      "status": "unverified_offer_defined_zero_commitments",
       "related_targets": {
         "week_one_commercial_signal": { "value": "≥1 of early hosts", "label": "target" },
         "exact_offer_intents": { "value": 5, "label": "target" },
@@ -69,7 +76,8 @@
         "contribution_margin_gate": { "value": 0.7, "label": "target" }
       },
       "falsification_test": "After concrete offer presentation (P04/P28), zero budget-owner exact-offer or approver commitments and persistent rejection reasons that planning software is not valued → do not claim validated monetization; pivot offer/buyer or stop commercial thesis.",
-      "evidence_required": "Private nonbinding intent records with offer, price, usage cap, owner, start condition; no payment before commercial rights."
+      "evidence_required": "Private nonbinding intent records with offer, price, usage cap, owner, start condition; no payment before commercial rights.",
+      "p28_update": "Offer documented in docs/business/offer-test.md; unit economics not_calculable; 0/5 commitments."
     },
     {
       "id": "A-INTAKE",
@@ -92,7 +100,7 @@
       "statement": "The bounded Worker + D1 + static assets architecture can complete representative planning sessions within Cloudflare Free CPU/subrequest limits and proposed latency targets without a paid hosting upgrade.",
       "label": "assumption",
       "owner": "founder",
-      "status": "unverified",
+      "status": "supported_local_sample_live_remote_pending",
       "related_targets": {
         "typical_recommendation_seconds": { "value": 20, "label": "target" },
         "p95_seconds": { "value": 30, "label": "target" },
@@ -100,7 +108,8 @@
         "staging_sessions_sample": { "value": 30, "label": "target" }
       },
       "falsification_test": "P03 probe and P23 measurement: Free CPU/quota errors persist after reducing stage/input/catalog size → do not promise this architecture; choose a verified free alternative or stop the live release; never silently upgrade paid plan to force fit.",
-      "evidence_required": "Deployed CPU/latency/payload samples (P03) and runtime report (P23)."
+      "evidence_required": "Deployed CPU/latency/payload samples (P03) and runtime report (P23).",
+      "p23_update": "Local 30/30 complete sample recorded in docs/verification/runtime-report.md; remote live-provider sample still pending key."
     }
   ],
   "week_one_gates_frozen": {
