@@ -1,4 +1,10 @@
 import { RANK_COVERAGE_POLICY, type RankCell } from "@common-ground/contracts";
+import {
+  COMPROMISE_POLICY,
+  selectCompromiseAlternatives,
+  sortByCompromise,
+  type CompromiseAlternative,
+} from "./compromise";
 
 export type MemberScoreRow = {
   memberId: string;
@@ -27,6 +33,7 @@ export type RankBuildResult = {
   cells: RankCell[];
   /** Compromise order using ordinal ranks only (never raw affinity averages). */
   compromiseVenueIds: string[];
+  alternatives: CompromiseAlternative[];
   /** Host-safe summary — no per-member private rank rows. */
   publicSummary: {
     tasteMode: "full" | "mixed";
@@ -37,8 +44,11 @@ export type RankBuildResult = {
     coverageRatio: number;
     readiness: "ready_for_host_review" | "needs_input" | "blocked";
     compromiseVenueIds: string[];
+    alternatives: CompromiseAlternative[];
+    limitations: readonly string[];
     requiresAllMemberAcceptance: true;
     policyVersion: string;
+    compromisePolicyVersion: string;
   };
 };
 
@@ -89,6 +99,9 @@ export function buildComparableRanks(input: {
   memberRows: MemberScoreRow[];
   candidateEntityIds: string[];
   totalMemberCount: number;
+  suitabilityByVenueId?: Record<string, number>;
+  familiarVenueIds?: string[];
+  vetoedVenueIds?: string[];
 }): RankBuildResult {
   const submittedSlate = freezeSubmittedSlate(input.candidateEntityIds);
   const profiled = input.memberRows.filter((m) => m.profiled);
@@ -111,6 +124,7 @@ export function buildComparableRanks(input: {
       coverageRatio: 0,
       cells: [],
       compromiseVenueIds: [],
+      alternatives: [],
       publicSummary: {
         tasteMode,
         profiledMemberCount: profiled.length,
@@ -120,8 +134,11 @@ export function buildComparableRanks(input: {
         coverageRatio: 0,
         readiness: "blocked",
         compromiseVenueIds: [],
+        alternatives: [],
+        limitations: COMPROMISE_POLICY.limitations,
         requiresAllMemberAcceptance: true,
         policyVersion: RANK_COVERAGE_POLICY.version,
+        compromisePolicyVersion: COMPROMISE_POLICY.version,
       },
     };
   }
@@ -172,8 +189,24 @@ export function buildComparableRanks(input: {
     commonVenueIds.length >= RANK_COVERAGE_POLICY.minSharedFullyRanked &&
     coverageRatio + 1e-9 >= RANK_COVERAGE_POLICY.minSubmittedCoverage;
 
+  const profiledIds = profiled.map((m) => m.memberId);
+  const selection = gateOk
+    ? selectCompromiseAlternatives({
+        venueIds: commonVenueIds,
+        cells,
+        profiledMemberIds: profiledIds,
+        suitabilityByVenueId: input.suitabilityByVenueId,
+        familiarVenueIds: input.familiarVenueIds,
+        vetoedVenueIds: input.vetoedVenueIds,
+      })
+    : {
+        policyVersion: COMPROMISE_POLICY.version,
+        alternatives: [] as CompromiseAlternative[],
+        limitations: COMPROMISE_POLICY.limitations,
+      };
+
   const compromiseVenueIds = gateOk
-    ? orderByCompromise(commonVenueIds, cells, profiled.map((m) => m.memberId))
+    ? orderByCompromise(commonVenueIds, cells, profiledIds, input.suitabilityByVenueId)
     : [];
 
   const status: RankBuildResult["status"] = !profiled.length
@@ -195,6 +228,7 @@ export function buildComparableRanks(input: {
     coverageRatio,
     cells,
     compromiseVenueIds,
+    alternatives: selection.alternatives,
     publicSummary: {
       tasteMode,
       profiledMemberCount: profiled.length,
@@ -204,20 +238,24 @@ export function buildComparableRanks(input: {
       coverageRatio,
       readiness,
       compromiseVenueIds,
+      alternatives: selection.alternatives,
+      limitations: selection.limitations,
       requiresAllMemberAcceptance: true,
       policyVersion: RANK_COVERAGE_POLICY.version,
+      compromisePolicyVersion: COMPROMISE_POLICY.version,
     },
   };
 }
 
 /**
- * Disclosed compromise: minimize worst ordinal rank, then mean rank,
- * then stable venue id. Uses ranks only — never raw affinity arithmetic.
+ * Disclosed compromise order: minimize worst ordinal rank, then mean rank,
+ * then host suitability, then stable venue id. Ranks only — never affinity arithmetic.
  */
 export function orderByCompromise(
   venueIds: string[],
   cells: RankCell[],
   profiledMemberIds: string[],
+  suitabilityByVenueId?: Record<string, number>,
 ): string[] {
   const scored = venueIds.map((venueId) => {
     const ranks = profiledMemberIds.map((memberId) => {
@@ -225,20 +263,22 @@ export function orderByCompromise(
       return cell?.rank;
     });
     if (ranks.some((r) => r == null)) {
-      return { venueId, max: Number.POSITIVE_INFINITY, mean: Number.POSITIVE_INFINITY };
+      return {
+        venueId,
+        worstRank: Number.POSITIVE_INFINITY,
+        meanRank: Number.POSITIVE_INFINITY,
+        suitability: suitabilityByVenueId?.[venueId] ?? 0,
+      };
     }
     const nums = ranks as number[];
-    const max = Math.max(...nums);
-    const mean = nums.reduce((a, b) => a + b, 0) / nums.length;
-    return { venueId, max, mean };
+    return {
+      venueId,
+      worstRank: Math.max(...nums),
+      meanRank: nums.reduce((a, b) => a + b, 0) / nums.length,
+      suitability: suitabilityByVenueId?.[venueId] ?? 0,
+    };
   });
-
-  scored.sort((a, b) => {
-    if (a.max !== b.max) return a.max - b.max;
-    if (a.mean !== b.mean) return a.mean - b.mean;
-    return a.venueId.localeCompare(b.venueId);
-  });
-  return scored.map((s) => s.venueId);
+  return sortByCompromise(scored).map((s) => s.venueId);
 }
 
 /** Host DTO must never include private per-member rank rows. */
@@ -269,6 +309,7 @@ function emptyResult(
     coverageRatio: 0,
     cells: [],
     compromiseVenueIds: [],
+    alternatives: [],
     publicSummary: {
       tasteMode,
       profiledMemberCount,
@@ -278,8 +319,11 @@ function emptyResult(
       coverageRatio: 0,
       readiness: "needs_input",
       compromiseVenueIds: [],
+      alternatives: [],
+      limitations: COMPROMISE_POLICY.limitations,
       requiresAllMemberAcceptance: true,
       policyVersion: RANK_COVERAGE_POLICY.version,
+      compromisePolicyVersion: COMPROMISE_POLICY.version,
     },
   };
 }

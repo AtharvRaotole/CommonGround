@@ -445,6 +445,8 @@ export default {
       const body = (await request.json().catch(() => null)) as {
         runId?: string;
         candidateEntityIds?: string[];
+        familiarVenueIds?: string[];
+        suitabilityByVenueId?: Record<string, number>;
       } | null;
       const candidates = Array.isArray(body?.candidateEntityIds)
         ? body!.candidateEntityIds!.filter((id) => EntityIdSchema.safeParse(id).success).slice(0, 30)
@@ -461,12 +463,10 @@ export default {
         );
       }
 
-      // Hard requirements before taste — infeasible slate short-circuits ranking.
       const constraints = await repo.listConstraints(session.eventId);
-      if (constraints.some((c) => c.kind === "veto")) {
-        // Vetoes are venue-id based; without venue records here we still rank only the
-        // requested entity slate. Full venue-fact readiness uses /readiness.
-      }
+      const vetoedVenueIds = constraints
+        .filter((c) => c.kind === "veto")
+        .map((c) => c.value.venueId);
 
       const prefs = await repo.listPreferences(session.eventId);
       const consents = await repo.listConsents(session.eventId);
@@ -486,6 +486,10 @@ export default {
         };
       });
 
+      const familiarVenueIds = Array.isArray(body?.familiarVenueIds)
+        ? body!.familiarVenueIds!.filter((id) => EntityIdSchema.safeParse(id).success)
+        : [];
+
       const ranked = await rankProfiledMembersOnSlate({
         db: env.DB,
         client: qlooClient(env),
@@ -493,9 +497,12 @@ export default {
         members,
         candidateEntityIds: candidates,
         totalMemberCount: participants.length,
+        suitabilityByVenueId: body?.suitabilityByVenueId,
+        familiarVenueIds,
+        vetoedVenueIds,
       });
 
-      // AC02: host response is public summary only — never private rank rows.
+      // Host response is public summary only — never private rank rows.
       return json({
         ...toPublicRankDto(ranked),
         status: ranked.status,

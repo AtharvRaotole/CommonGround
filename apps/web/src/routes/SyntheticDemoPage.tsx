@@ -31,14 +31,19 @@ export function SyntheticDemoPage() {
       <p className="badge">Synthetic example — not a live recommendation</p>
       <h1 className="page__title">Shortlist</h1>
       <p className="page__lede">
-        Ranking signals order options for this slate. They are not a percentage chance you&apos;ll
-        enjoy the meal.
+        Options balance relative taste ranking on one slate. That is an ordinal compromise — not a
+        percent likelihood, calibrated happiness score, or fairness guarantee.
       </p>
       <ol className="cards">
         {OPTIONS.map((option, index) => (
           <li key={option.title} className="card">
             <p className="card__kicker">
-              {index + 1} · {index === 0 ? "Compromise" : index === 1 ? "Familiar" : "Discovery"}
+              {index + 1} ·{" "}
+              {index === 0
+                ? "Best compromise"
+                : index === 1
+                  ? "Familiar fallback"
+                  : "Mean-rank alternative"}
             </p>
             <h2>{option.title}</h2>
             <p className="card__meta">{option.meta}</p>

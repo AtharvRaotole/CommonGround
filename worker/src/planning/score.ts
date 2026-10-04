@@ -21,6 +21,9 @@ export async function rankProfiledMembersOnSlate(input: {
   members: ScoreMember[];
   candidateEntityIds: string[];
   totalMemberCount: number;
+  suitabilityByVenueId?: Record<string, number>;
+  familiarVenueIds?: string[];
+  vetoedVenueIds?: string[];
 }): Promise<RankBuildResult & { qlooCallsUsed: number; dataMode: "synthetic" | "live" }> {
   let qlooCallsUsed = 0;
   let dataMode: "synthetic" | "live" = input.client.hasLiveKey ? "live" : "synthetic";
@@ -83,6 +86,9 @@ export async function rankProfiledMembersOnSlate(input: {
     memberRows: rows,
     candidateEntityIds: input.candidateEntityIds,
     totalMemberCount: input.totalMemberCount,
+    suitabilityByVenueId: input.suitabilityByVenueId,
+    familiarVenueIds: input.familiarVenueIds,
+    vetoedVenueIds: input.vetoedVenueIds,
   });
 
   return { ...ranked, qlooCallsUsed, dataMode };

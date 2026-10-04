@@ -1,6 +1,6 @@
 # P14 — Implement and explain the compromise policy
 
-> Implementation plan for a future product phase. Use the available Superpowers executing-plans workflow task by task; review the linked specification and evidence gates before coding. This phase is currently **planned**, not complete.
+> Implementation plan executed **2026-10-04**. Policy `2026-10-04-v1` recorded in `docs/decisions/004-ranking-policy.md`.
 
 **Goal:** Choose useful group alternatives without claiming calibrated happiness or guaranteed fairness.
 
