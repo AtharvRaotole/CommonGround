@@ -27,9 +27,14 @@ test.describe("P27 friction regressions", () => {
     page,
   }) => {
     await page.goto("/demo");
-    await expect(page.getByText(/Synthetic example|Guided demo/i).first()).toBeVisible();
-    await expect(page.getByText(/not a live recommendation|not live/i).first()).toBeVisible();
-    await expect(page.getByText(/veto|replan|export/i).first()).toBeVisible();
+    await expect(page.getByText(/not a live recommendation/i).first()).toBeVisible();
+    await expect(page.getByText(/Demo data only/i).first()).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /watch the story|playing story|play|pause/i }).first(),
+    ).toBeVisible();
+    await expect(page.getByRole("button", { name: /^veto$/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /^replan$/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /^export$/i })).toBeVisible();
   });
 
   test("export route shows reservation disclaimer copy when opened cold", async ({ page }) => {

@@ -1,25 +1,26 @@
 import { Link } from "react-router-dom";
+import { BrandMark } from "../components/BrandMark";
 import "./landing.css";
 
 export function LandingPage() {
   return (
     <div className="landing">
       <header className="landing__top">
-        <span className="landing__mode" data-mode="example">
-          Synthetic example available
-        </span>
+        <Link className="landing__brandlink" to="/">
+          <BrandMark className="landing__mark" />
+          <span>Common Ground</span>
+        </Link>
         <nav className="landing__nav" aria-label="Primary">
-          <Link to="/demo">Guided demo</Link>
+          <Link to="/demo">Watch the story</Link>
           <Link to="/example">Walk through</Link>
           <Link to="/privacy">Privacy</Link>
         </nav>
       </header>
 
       <main className="landing__hero">
-        <p className="landing__eyebrow">For hosts of small recurring dinners</p>
-        <h1 className="landing__brand">Common Ground</h1>
+        <h1 className="landing__brand">Agree on the place.</h1>
         <p className="landing__support">
-          Agree on where the group goes — without another endless thread.
+          Private tastes for a small group. One shortlist. No endless thread.
         </p>
         <div className="landing__cta">
           <Link className="btn btn--primary" to="/host/new">
@@ -33,15 +34,6 @@ export function LandingPage() {
           Approving a plan is not a reservation. Ranking signals are not enjoyment percentages.
         </p>
       </main>
-
-      <aside className="landing__plan" aria-label="Plan stages">
-        <ol className="plan-strip">
-          <li className="is-active">Collect</li>
-          <li>Shortlist</li>
-          <li>Agree</li>
-          <li>Handoff</li>
-        </ol>
-      </aside>
     </div>
   );
 }

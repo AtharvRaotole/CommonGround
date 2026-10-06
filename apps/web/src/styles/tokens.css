@@ -1,14 +1,14 @@
 :root {
-  --ink: #14181c;
-  --paper: #e8ecf0;
-  --paper-deep: #cfd8e2;
-  --copper: #b85c38;
+  --ink: #121417;
+  --paper: #f7f6f3;
+  --paper-deep: #ebe8e2;
+  --copper: #9a3f24;
   --copper-ink: #fff8f4;
-  --moss: #2f5d50;
-  --line: #9aa8b5;
-  --font-display: "Fraunces", Georgia, serif;
-  --font-body: "Source Serif 4", Georgia, serif;
-  --font-ui: "IBM Plex Sans", system-ui, sans-serif;
+  --moss: #1f6b4a;
+  --line: #d5d2cb;
+  --font-display: "Satoshi", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Satoshi", "Segoe UI", system-ui, sans-serif;
+  --font-ui: "Satoshi", "Segoe UI", system-ui, sans-serif;
   color-scheme: light;
 }
 
@@ -29,9 +29,14 @@ body {
   color: var(--ink);
   font-family: var(--font-body);
   background:
-    radial-gradient(1200px 600px at 10% -10%, #f7fafc 0%, transparent 55%),
-    linear-gradient(165deg, var(--paper) 0%, var(--paper-deep) 55%, #b7c4d1 100%);
+    radial-gradient(1000px 520px at 92% -12%, color-mix(in srgb, var(--moss) 9%, transparent), transparent 58%),
+    linear-gradient(180deg, var(--paper) 0%, var(--paper-deep) 100%);
   background-attachment: fixed;
+}
+
+body ::selection {
+  background: color-mix(in srgb, var(--moss) 22%, white);
+  color: var(--ink);
 }
 
 a {

@@ -6,7 +6,8 @@ test.describe("P20 accessibility smoke", () => {
   }) => {
     await page.setViewportSize({ width: 360, height: 740 });
     await page.goto("/");
-    await expect(page.getByRole("heading", { name: "Common Ground" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Agree on the place/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Common Ground/i }).first()).toBeVisible();
     await page.keyboard.press("Tab");
     const focused = page.locator(":focus");
     await expect(focused).toBeVisible();

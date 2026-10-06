@@ -1,7 +1,7 @@
 .landing {
   min-height: 100vh;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto 1fr;
   padding: 1.25rem clamp(1rem, 4vw, 3rem) 2rem;
 }
 
@@ -14,11 +14,17 @@
   font-size: 0.875rem;
 }
 
-.landing__mode {
-  border: 1px solid var(--line);
-  padding: 0.35rem 0.65rem;
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.45);
+.landing__brandlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.landing__mark {
+  color: var(--moss);
 }
 
 .landing__nav {
@@ -47,22 +53,14 @@
   animation: rise 700ms ease-out both;
 }
 
-.landing__eyebrow {
-  font-family: var(--font-ui);
-  font-size: 0.8rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin: 0 0 1rem;
-  color: #334;
-}
-
 .landing__brand {
   font-family: var(--font-display);
   font-weight: 650;
-  font-size: clamp(3.4rem, 12vw, 6.5rem);
-  line-height: 0.92;
-  letter-spacing: -0.035em;
+  font-size: clamp(2.8rem, 9vw, 5.2rem);
+  line-height: 0.96;
+  letter-spacing: -0.045em;
   margin: 0 0 1rem;
+  max-width: 12ch;
 }
 
 .landing__support {
@@ -93,8 +91,8 @@
 }
 
 .btn--primary {
-  background: var(--copper);
-  color: var(--copper-ink);
+  background: var(--moss);
+  color: #f4fbf7;
 }
 
 .btn--primary:hover {
@@ -111,36 +109,8 @@
   font-size: 0.85rem;
   max-width: 28rem;
   line-height: 1.4;
-  color: #334;
+  color: color-mix(in srgb, var(--ink) 62%, transparent);
   margin: 0;
-}
-
-.landing__plan {
-  border-top: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
-  padding-top: 1rem;
-}
-
-.plan-strip {
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.5rem;
-  margin: 0;
-  padding: 0;
-  font-family: var(--font-ui);
-  font-size: 0.85rem;
-}
-
-.plan-strip li {
-  padding: 0.65rem 0.5rem;
-  background: rgba(255, 255, 255, 0.4);
-  border-left: 3px solid var(--line);
-}
-
-.plan-strip li.is-active {
-  border-left-color: var(--moss);
-  font-weight: 600;
-  animation: pulse-border 1.8s ease-in-out 1;
 }
 
 @keyframes rise {
@@ -154,21 +124,7 @@
   }
 }
 
-@keyframes pulse-border {
-  0%,
-  100% {
-    border-left-color: var(--moss);
-  }
-  50% {
-    border-left-color: var(--copper);
-  }
-}
-
 @media (max-width: 560px) {
-  .plan-strip {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .landing__hero {
     padding-top: 4vh;
   }
