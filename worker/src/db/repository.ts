@@ -45,6 +45,8 @@ export class Repository {
     area?: string;
     timezone?: string;
     startsAtLocal?: string;
+    budgetCents?: number | null;
+    currency?: string | null;
   }): Promise<{
     eventId: string;
     hostParticipantId: string;
@@ -56,11 +58,12 @@ export class Repository {
     const recovery = await mintCapability();
     const claim = await mintCapability();
     const ts = nowIso();
+    const currency = (input.currency || "USD").trim().toUpperCase().slice(0, 3) || "USD";
 
     await this.db
       .prepare(
-        `INSERT INTO events (id, title, group_size, starts_at_local, timezone, area, state, version, host_recovery_hash, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, 'draft', 1, ?, ?, ?)`,
+        `INSERT INTO events (id, title, group_size, starts_at_local, timezone, area, budget_cents, currency, state, version, host_recovery_hash, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'draft', 1, ?, ?, ?)`,
       )
       .bind(
         eventId,
@@ -69,6 +72,8 @@ export class Repository {
         input.startsAtLocal ?? null,
         input.timezone ?? null,
         input.area ?? null,
+        input.budgetCents ?? null,
+        currency,
         recovery.hash,
         ts,
         ts,

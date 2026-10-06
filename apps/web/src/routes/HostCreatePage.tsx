@@ -6,6 +6,7 @@ type Created = {
   eventId: string;
   hostRecoverySecret: string;
   hostClaimSecret: string;
+  hostParticipantId?: string;
 };
 
 export function HostCreatePage() {
@@ -26,6 +27,16 @@ export function HostCreatePage() {
       setError("Choose a timezone — we won't guess daylight-saving.");
       return;
     }
+    const budgetDollars = String(data.get("budget") || "").trim();
+    let budgetCents: number | undefined;
+    if (budgetDollars) {
+      const dollars = Number(budgetDollars);
+      if (!Number.isFinite(dollars) || dollars < 0) {
+        setError("Budget must be a non-negative dollar amount.");
+        return;
+      }
+      budgetCents = Math.round(dollars * 100);
+    }
     setError(null);
     setBusy(true);
     const res = await fetch("/api/events", {
@@ -38,6 +49,8 @@ export function HostCreatePage() {
         area: String(data.get("area") || "").trim() || undefined,
         timezone: String(data.get("timezone") || "").trim(),
         startsAtLocal: String(data.get("when") || "").trim() || undefined,
+        budgetCents,
+        currency: "USD",
       }),
     });
     const body = (await res.json().catch(() => null)) as Created | { message?: string } | null;
@@ -53,13 +66,34 @@ export function HostCreatePage() {
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ secret: body.hostClaimSecret }),
     });
+    const claimBody = (await claim.json().catch(() => null)) as {
+      participantId?: string;
+    } | null;
+    if (claim.ok && claimBody?.participantId && budgetCents != null) {
+      await fetch(`/api/events/${body.eventId}/constraints`, {
+        method: "PUT",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          id: crypto.randomUUID(),
+          ownerId: claimBody.participantId,
+          kind: "budget",
+          required: true,
+          value: {
+            maxCents: budgetCents,
+            currency: "USD",
+            includesTaxTipDrinks: "unknown",
+          },
+        }),
+      });
+    }
     setBusy(false);
     if (!claim.ok) {
       setError("Event created but host session claim failed. Use the recovery secret.");
       setCreated(body);
       return;
     }
-    setCreated(body);
+    setCreated({ ...body, hostParticipantId: claimBody?.participantId });
   }
 
   async function mintInvite() {
@@ -117,8 +151,13 @@ export function HostCreatePage() {
             Neighborhood / catchment
             <input name="area" placeholder="East Village + Williamsburg" />
           </label>
+          <label>
+            Per-person budget ceiling (USD, optional)
+            <input name="budget" type="number" min={0} step={1} placeholder="45" />
+          </label>
           <p className="form__note" role="note">
-            Saving a brief does not book a table. Free-tier Workers + D1 only.
+            Budget is a hard gate when set — unknown venue prices need host confirmation. Saving a
+            brief does not book a table.
           </p>
           {error ? (
             <p className="form__error" role="alert">

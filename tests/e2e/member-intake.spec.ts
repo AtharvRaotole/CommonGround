@@ -15,5 +15,11 @@ test.describe("P10 member intake", () => {
     await page.goto("/host/new");
     await expect(page.getByRole("heading", { name: /plan an outing/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /create event/i })).toBeVisible();
+    await expect(page.getByText(/per-person budget ceiling/i)).toBeVisible();
+  });
+
+  test("join form copy mentions hard needs when invite missing", async ({ page }) => {
+    await page.goto("/join");
+    await expect(page.getByText(/hard needs stay private|Missing invite/i).first()).toBeVisible();
   });
 });

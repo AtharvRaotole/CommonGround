@@ -1,7 +1,7 @@
 # Submission package draft (Devpost)
 
-**Status:** Draft for founder review · **Not auto-submitted**  
-**Updated:** 2026-10-04
+**Status:** Ready for founder paste into Devpost · **Not auto-submitted**  
+**Updated:** 2026-10-06
 
 ## Links
 
@@ -12,7 +12,7 @@
 | Synthetic shortlist | https://common-ground.issue-atharva.workers.dev/example |
 | Privacy | https://common-ground.issue-atharva.workers.dev/privacy |
 | Source | https://github.com/AtharvRaotole/CommonGround |
-| Release SHA | fill at submit time (`git rev-parse HEAD`) |
+| Release SHA | `3c3dd74ce5a0bc31804f1365a522e836dcd3b7e3` (bump at final submit) |
 
 ## One-paragraph description
 
@@ -20,35 +20,35 @@ Common Ground helps hosts of recurring small-group dinners agree on a venue with
 
 ## Built with
 
-React, Vite, TypeScript, Cloudflare Workers, D1, Vitest, Playwright, Qloo (when key issued), optional OpenAI for language (template explanations first).
+React, Vite, TypeScript, Cloudflare Workers, D1, Vitest, Playwright, Qloo (live key on deploy), optional OpenAI for agent tool-choice (`/v1/chat/completions`, `store:false`; template explanations first).
 
 ## Honest limitations (must paste)
 
 - Live Qloo key is installed; Insights may rate-limit under burst — product fail-closes and retries within caps.
-- Controlled preference study: incomplete (0 consented group ratings) unless filled for narrative.
-- Full workflow pilots / voluntary return / commercial intents: incomplete unless filled for narrative.
+- Controlled preference study: incomplete (0 consented group ratings).
+- Full workflow pilots / voluntary return / commercial intents: incomplete.
 - Unit economics: not calculable without commercial provider quote.
 - The planning document’s eight-week schedule is a **hypothetical** operating plan; it does **not** claim to match the actual October hackathon cutoff.
-- **Make the GitHub repo public** before Devpost submit (currently private).
+- Confirm the GitHub repo is **public** before Devpost submit.
 
 ## What judges can do without a key
 
-1. Open `/demo` and complete the synthetic agent loop.
-2. Open `/example` for the static shortlist.
-3. Read threat model, privacy notice, evaluation protocol, and evidence map.
-4. Clone repo → `pnpm install --frozen-lockfile` → `pnpm verify:ci`.
+1. Open `/demo` and complete the synthetic agent loop (or `/example` for the static shortlist).
+2. Read threat model, privacy notice, evaluation protocol, and evidence map.
+3. Clone repo → `pnpm install --frozen-lockfile` → `pnpm verify:ci`.
 
-## What requires the key
+## What the live deploy already shows
 
-- Live Insights ranking over a real venue slate
-- C6 live provider tests
-- Any Qloo uplift claim (still requires human ratings)
+1. Plan an outing → mint invite → private hard needs + taste seeds → guided/agent planning → veto reason → approve → ICS export.
+2. `pnpm smoke:live` against production (create → Qloo search → plan → approve → export).
+3. `/api/health/providers` reports Qloo/OpenAI readiness and catalog counts (23 confirmed rows / 22 distinct Qloo IDs).
 
 ## Published-state checklist
 
-- [ ] No private pilot PII or emails in git
-- [ ] No API keys in git (verify-release PASS)
-- [ ] LICENSE visible (MIT for app code)
-- [ ] Free-tier only (`docs/ops/free-tier.md`)
-- [ ] Production smoke recorded
+- [x] No private pilot PII or emails in git
+- [x] No API keys in git (verify-release PASS)
+- [x] LICENSE visible (MIT for app code)
+- [x] Free-tier only (`docs/ops/free-tier.md`)
+- [x] Production smoke recorded (`docs/verification/release/production-smoke.md` + `pnpm smoke:live`)
 - [ ] Founder reviews Devpost fields before submit
+- [ ] Confirm GitHub repo is public

@@ -5,5 +5,6 @@ test.describe("P17 veto copy", () => {
     await page.goto("/example");
     await expect(page.getByText(/Synthetic example/i)).toBeVisible();
     await expect(page.getByText(/ordinal compromise/i)).toBeVisible();
+    await expect(page.getByText(/name and reason stay private/i).first()).toBeVisible();
   });
 });

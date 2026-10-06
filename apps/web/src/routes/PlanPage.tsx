@@ -5,6 +5,17 @@ import { RevisionBanner } from "../features/planning/revisions";
 import "./form.css";
 import "./plan.css";
 
+const VETO_REASONS = [
+  { value: "access", label: "Access / mobility" },
+  { value: "budget", label: "Budget" },
+  { value: "vibe", label: "Vibe / noise" },
+  { value: "location", label: "Location / travel" },
+  { value: "dietary", label: "Dietary evidence" },
+  { value: "other", label: "Other" },
+] as const;
+
+type VetoReason = (typeof VETO_REASONS)[number]["value"];
+
 type RevisionDto = {
   revisionId: string;
   eventVersion: number;
@@ -48,6 +59,8 @@ export function PlanPage() {
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [vetoVenueId, setVetoVenueId] = useState<string | null>(null);
+  const [vetoReason, setVetoReason] = useState<VetoReason>("other");
 
   const load = useCallback(async () => {
     if (!eventId) return;
@@ -108,13 +121,19 @@ export function PlanPage() {
     }
   }
 
-  async function onVeto(venueId: string) {
-    if (!eventId) return;
+  function beginVeto(venueId: string) {
+    setVetoVenueId(venueId);
+    setVetoReason("other");
+    setError(null);
+  }
+
+  async function confirmVeto() {
+    if (!eventId || !vetoVenueId) return;
     const res = await fetch(`/api/events/${eventId}/vetoes`, {
       method: "POST",
       credentials: "include",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ venueId, reasonCategory: "other" }),
+      body: JSON.stringify({ venueId: vetoVenueId, reasonCategory: vetoReason }),
     });
     if (!res.ok) {
       setError("Could not record objection.");
@@ -122,6 +141,7 @@ export function PlanPage() {
     }
     const body = (await res.json()) as { groupSummary: string };
     setStatus(body.groupSummary);
+    setVetoVenueId(null);
     setRevision(null);
   }
 
@@ -213,14 +233,46 @@ export function PlanPage() {
             }
             onReplan={event?.role === "host" ? () => void runPlan() : undefined}
           />
+          {vetoVenueId ? (
+            <div className="form" role="group" aria-labelledby="veto-reason-title">
+              <h2 id="veto-reason-title" className="wait__title">
+                Private objection reason
+              </h2>
+              <p className="form__note">
+                Category stays with your session. The host only sees that someone objected.
+              </p>
+              <label>
+                Why this venue doesn&apos;t work for you
+                <select
+                  value={vetoReason}
+                  onChange={(e) => setVetoReason(e.target.value as VetoReason)}
+                >
+                  {VETO_REASONS.map((r) => (
+                    <option key={r.value} value={r.value}>
+                      {r.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <div className="form__actions">
+                <button type="button" className="btn btn--primary" onClick={() => void confirmVeto()}>
+                  Submit private objection
+                </button>
+                <button type="button" className="btn" onClick={() => setVetoVenueId(null)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : null}
           <Shortlist
             cards={cards}
             tasteMode={revision.tasteMode}
             profiledMemberCount={revision.profiledMemberCount}
             totalMemberCount={revision.totalMemberCount}
             selectedVenueId={selected}
+            vetoPendingVenueId={vetoVenueId}
             onSelect={(id) => void onAccept(id)}
-            onVeto={(id) => void onVeto(id)}
+            onVeto={beginVeto}
             footer={
               event?.role === "host" ? (
                 <div className="form__actions">

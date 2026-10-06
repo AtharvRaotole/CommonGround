@@ -25,6 +25,7 @@ type Props = {
   onVeto?: (venueId: string) => void;
   onSelect?: (venueId: string) => void;
   selectedVenueId?: string | null;
+  vetoPendingVenueId?: string | null;
   footer?: ReactNode;
 };
 
@@ -37,6 +38,7 @@ export function Shortlist({
   onVeto,
   onSelect,
   selectedVenueId,
+  vetoPendingVenueId,
   footer,
 }: Props) {
   return (
@@ -103,9 +105,12 @@ export function Shortlist({
                   type="button"
                   className="btn btn--ghost"
                   aria-label={`Doesn't work for me: ${card.name}`}
+                  aria-pressed={vetoPendingVenueId === card.venueId}
                   onClick={() => onVeto(card.venueId)}
                 >
-                  Doesn&apos;t work for me
+                  {vetoPendingVenueId === card.venueId
+                    ? "Choose a private reason below"
+                    : "Doesn't work for me"}
                 </button>
               ) : null}
             </div>

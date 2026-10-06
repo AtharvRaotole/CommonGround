@@ -253,6 +253,8 @@ export default {
         area?: string;
         timezone?: string;
         startsAtLocal?: string;
+        budgetCents?: number;
+        currency?: string;
       } | null;
       const title = body?.title?.trim();
       const groupSize = Number(body?.groupSize);
@@ -274,12 +276,42 @@ export default {
           422,
         );
       }
+      const budgetCents =
+        body?.budgetCents == null ? null : Number(body.budgetCents);
+      if (
+        budgetCents != null &&
+        (!Number.isFinite(budgetCents) || budgetCents < 0 || budgetCents > 5_000_000)
+      ) {
+        return json(
+          {
+            code: "invalid",
+            message: "budgetCents must be a non-negative integer (cents)",
+            retryable: false,
+            requestId: crypto.randomUUID(),
+          },
+          422,
+        );
+      }
+      const currency = body?.currency?.trim().toUpperCase();
+      if (currency && !/^[A-Z]{3}$/.test(currency)) {
+        return json(
+          {
+            code: "invalid",
+            message: "currency must be a 3-letter code",
+            retryable: false,
+            requestId: crypto.randomUUID(),
+          },
+          422,
+        );
+      }
       const created = await repo.createEvent({
         title,
         groupSize,
         area: body?.area,
         timezone: body?.timezone,
         startsAtLocal: startsAtLocal || undefined,
+        budgetCents: budgetCents != null ? Math.floor(budgetCents) : null,
+        currency: currency || "USD",
       });
       await recordTelemetry({
         db: env.DB,

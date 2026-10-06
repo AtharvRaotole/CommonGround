@@ -6,7 +6,7 @@
 
 - Outing settings you enter (title, group size, area, time/timezone when provided).
 - Optional cultural “seeds” (up to three confirmed catalog entities) if you opt in.
-- Hard needs / constraints you submit (budget, access, dietary tags, vetoes).
+- Hard needs / constraints you submit on join or as host brief (budget, access, dietary tags) and private veto categories.
 - Session capability cookies (HttpOnly) after you redeem a one-time invite.
 - Optional post-outing feedback (attendance, fit, planning experience) — missing answers stay missing.
 - Aggregate product telemetry (started/completed/replan/approval/export counts). Telemetry never stores seed lists, rank matrices, or veto reasons.

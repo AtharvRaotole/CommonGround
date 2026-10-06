@@ -4,7 +4,7 @@
 |---|---|
 | URL | https://common-ground.issue-atharva.workers.dev |
 | Date | 2026-10-06 |
-| Notes | Qloo key installed as Worker secret; 23 confirmed venue rows / 22 distinct Qloo IDs; GitHub public |
+| Notes | Qloo key installed as Worker secret; 23 confirmed venue rows / 22 distinct Qloo IDs; `pnpm smoke:live` SMOKE_PASS (create→search→plan→approve→export) |
 
 | Check | Result |
 |---|---|

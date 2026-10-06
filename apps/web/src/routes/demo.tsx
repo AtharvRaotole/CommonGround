@@ -65,6 +65,10 @@ export function DemoPage() {
         Cold walkthrough of the bounded agent loop: private intake → hard gates → ordinal shortlist →
         private veto → honest replan → export that still is not a reservation.
       </p>
+      <p className="form__note" role="note">
+        This page is a labeled synthetic storyboard. For the live Worker + D1 + Qloo path,{" "}
+        <Link to="/host/new">plan a real outing</Link> (keys installed on the public deploy).
+      </p>
 
       <ol className="demo__steps" aria-label="Demo stages">
         {STEPS.map((label, index) => (

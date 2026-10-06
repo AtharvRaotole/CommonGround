@@ -49,6 +49,10 @@ export function SyntheticDemoPage() {
             <p className="card__meta">{option.meta}</p>
             <p>{option.fit}</p>
             <p className="card__unknown">Unknown: {option.unknown}</p>
+            <p className="form__note">
+              Live path: “Doesn&apos;t work for me” records a private objection reason. Your name and
+              reason stay private — the host only sees that someone objected.
+            </p>
           </li>
         ))}
       </ol>
