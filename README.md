@@ -21,7 +21,7 @@ Venue-planning agent for hosts of recurring small-group dinners. Taste signals s
 | Pilots / commercial P26–P28 | Protocols ready — human evidence **incomplete** |
 | Release / submission P29–P31 | [docs/submission.md](docs/submission.md) |
 | Startup decision P32 | Continue artifact; hold SaaS claims — [review](docs/business/eight-week-review.md) |
-| Live Qloo | Waiting on hackathon API key |
+| Live Qloo | Key installed · 23 confirmed NYC place mappings · Insights subject to rate limits |
 | Customer interviews | Incomplete (desk/Reddit only) |
 | Cloudflare spend | **$0** — Workers Free + D1 Free only ([policy](docs/ops/free-tier.md)) |
 

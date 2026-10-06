@@ -166,7 +166,7 @@ export function DemoPage() {
           </p>
           <div className="form__actions">
             <Link className="btn" to="/host/new">
-              Start a live outing
+              Plan a real outing
             </Link>
             <Link className="btn btn--ghost" to="/example">
               Static shortlist only

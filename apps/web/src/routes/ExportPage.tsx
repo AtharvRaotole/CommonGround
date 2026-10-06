@@ -7,6 +7,7 @@ type ExportSummary = {
   revisionId: string;
   title: string;
   venueId: string;
+  venueName?: string;
   timezone: string;
   localStart: string;
   reservationStatus: "unconfirmed";
@@ -55,7 +56,7 @@ export function ExportPage() {
     const text = [
       summary.banner,
       summary.title,
-      `Venue: ${summary.venueId}`,
+      `Venue: ${summary.venueName || summary.venueId}`,
       `When: ${summary.localStart} (${summary.timezone})`,
       `Reservation: ${summary.reservationStatus}`,
       "Common Ground does not book tables. You still make the reservation and send invites.",
@@ -100,7 +101,7 @@ export function ExportPage() {
           <dl className="wait__counts">
             <div>
               <dt>Venue</dt>
-              <dd>{summary.venueId}</dd>
+              <dd>{summary.venueName || summary.venueId}</dd>
             </div>
             <div>
               <dt>When</dt>

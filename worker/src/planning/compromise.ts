@@ -57,9 +57,10 @@ export function scoreVenues(input: {
   suitabilityByVenueId?: Record<string, number>;
 }): VenueScore[] {
   const out: VenueScore[] = [];
+  if (!input.profiledMemberIds.length) return out;
   for (const venueId of input.venueIds) {
     const ranks = ranksForVenue(venueId, input.cells, input.profiledMemberIds);
-    if (!ranks) continue;
+    if (!ranks?.length) continue;
     out.push({
       venueId,
       worstRank: Math.max(...ranks),
@@ -91,6 +92,9 @@ export function sortByMeanRank(scores: VenueScore[]): VenueScore[] {
 }
 
 function explainCompromise(score: VenueScore, slateSize: number, role: AlternativeRole): string {
+  if (!Number.isFinite(score.worstRank) || !Number.isFinite(score.meanRank) || slateSize < 1) {
+    return "Relative taste ranking unavailable for this slate — profiled members or ranks are missing. This is not a calibrated likelihood.";
+  }
   const worst = formatOrdinal(score.worstRank);
   const mean = score.meanRank.toFixed(2);
   if (role === "best_compromise") {
@@ -103,6 +107,7 @@ function explainCompromise(score: VenueScore, slateSize: number, role: Alternati
 }
 
 function formatOrdinal(n: number): string {
+  if (!Number.isFinite(n)) return "unknown";
   if (Number.isInteger(n)) return `${n}`;
   return n.toFixed(1);
 }
@@ -127,13 +132,36 @@ export function selectCompromiseAlternatives(input: {
 }): CompromiseSelection {
   const vetoed = new Set(input.vetoedVenueIds ?? []);
   const feasible = input.venueIds.filter((id) => !vetoed.has(id));
+  const slateSize = feasible.length || 1;
+
+  // Honest catalog fallback when nobody has profiled taste seeds yet.
+  if (!input.profiledMemberIds.length && feasible.length) {
+    const sorted = [...feasible].sort((a, b) => {
+      const sa = input.suitabilityByVenueId?.[a] ?? 0;
+      const sb = input.suitabilityByVenueId?.[b] ?? 0;
+      if (sa !== sb) return sb - sa;
+      return a.localeCompare(b);
+    });
+    return {
+      policyVersion: COMPROMISE_POLICY.version,
+      alternatives: sorted.slice(0, COMPROMISE_POLICY.maxAlternatives).map((venueId, index) => ({
+        venueId,
+        role: (index === 0 ? "best_compromise" : "mean_rank_alternative") as AlternativeRole,
+        worstMemberRank: 0,
+        meanMemberRank: 0,
+        explanation:
+          "No profiled taste signals yet — showing catalog options that clear hard requirements. Add member seeds for ordinal taste ranking. Not a percent likelihood.",
+      })),
+      limitations: COMPROMISE_POLICY.limitations,
+    };
+  }
+
   const scores = scoreVenues({
     venueIds: feasible,
     cells: input.cells,
     profiledMemberIds: input.profiledMemberIds,
     suitabilityByVenueId: input.suitabilityByVenueId,
   });
-  const slateSize = feasible.length || 1;
   const picked = new Set<string>();
   const alternatives: CompromiseAlternative[] = [];
 

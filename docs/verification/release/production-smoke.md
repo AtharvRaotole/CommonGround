@@ -3,14 +3,12 @@
 | Field | Record |
 |---|---|
 | URL | https://common-ground.issue-atharva.workers.dev |
-| Date | 2026-10-04 |
-| Deploy version | b50b97a9-4473-4a3b-bd5d-914f84d4ae6e |
-| SHA | recorded at git push of P26–P32 |
+| Date | 2026-10-06 |
+| Notes | Qloo key installed as Worker secret; 23 confirmed catalog mappings; GitHub public |
 
 | Check | Result |
 |---|---|
-| `/api/health` | 200 `ok:true` |
-| `/` | 200 |
-| `/demo` | 200 |
-| `/example` | 200 |
-| `/privacy` | 200 |
+| `/api/health` | 200 `ok:true` · revision wired via `GIT_SHA` |
+| `/` `/demo` `/example` `/privacy` `/host/new` | 200 |
+| Live `/search` (server-side key) | 200 |
+| Remote D1 confirmed venues | 23 |

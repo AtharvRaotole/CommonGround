@@ -37,6 +37,7 @@ export function HostCreatePage() {
         groupSize: size,
         area: String(data.get("area") || "").trim() || undefined,
         timezone: String(data.get("timezone") || "").trim(),
+        startsAtLocal: String(data.get("when") || "").trim() || undefined,
       }),
     });
     const body = (await res.json().catch(() => null)) as Created | { message?: string } | null;

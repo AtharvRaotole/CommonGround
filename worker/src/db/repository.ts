@@ -44,6 +44,7 @@ export class Repository {
     groupSize: number;
     area?: string;
     timezone?: string;
+    startsAtLocal?: string;
   }): Promise<{
     eventId: string;
     hostParticipantId: string;
@@ -58,13 +59,14 @@ export class Repository {
 
     await this.db
       .prepare(
-        `INSERT INTO events (id, title, group_size, timezone, area, state, version, host_recovery_hash, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, 'draft', 1, ?, ?, ?)`,
+        `INSERT INTO events (id, title, group_size, starts_at_local, timezone, area, state, version, host_recovery_hash, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, 'draft', 1, ?, ?, ?)`,
       )
       .bind(
         eventId,
         input.title,
         input.groupSize,
+        input.startsAtLocal ?? null,
         input.timezone ?? null,
         input.area ?? null,
         recovery.hash,
@@ -242,7 +244,8 @@ export class Repository {
   async getEvent(eventId: string) {
     return this.db
       .prepare(
-        `SELECT id, title, group_size, state, version, area, results_invalid_at FROM events WHERE id = ?`,
+        `SELECT id, title, group_size, state, version, area, timezone, starts_at_local, results_invalid_at
+         FROM events WHERE id = ?`,
       )
       .bind(eventId)
       .first<{
@@ -252,8 +255,27 @@ export class Repository {
         state: string;
         version: number;
         area: string | null;
+        timezone: string | null;
+        starts_at_local: string | null;
         results_invalid_at: string | null;
       }>();
+  }
+
+  async listVenueNamesByEntityIds(entityIds: string[]): Promise<Record<string, string>> {
+    const unique = [...new Set(entityIds.filter(Boolean))];
+    if (!unique.length) return {};
+    const out: Record<string, string> = {};
+    for (const id of unique) {
+      const row = await this.db
+        .prepare(
+          `SELECT name, qloo_entity_id FROM venues
+           WHERE qloo_entity_id = ? OR id = ? LIMIT 1`,
+        )
+        .bind(id, id)
+        .first<{ name: string; qloo_entity_id: string | null }>();
+      if (row?.name) out[id] = row.name;
+    }
+    return out;
   }
 
   async listParticipants(eventId: string) {
@@ -274,12 +296,49 @@ export class Repository {
   async listConfirmedCatalogEntityIds(): Promise<string[]> {
     const { results } = await this.db
       .prepare(
-        `SELECT qloo_entity_id FROM venues
+        `SELECT DISTINCT qloo_entity_id FROM venues
          WHERE qloo_mapping_status = 'confirmed' AND qloo_entity_id IS NOT NULL`,
       )
       .bind()
       .all<{ qloo_entity_id: string }>();
     return results.map((r) => r.qloo_entity_id).filter(Boolean);
+  }
+
+  async listConfirmedVenues(): Promise<
+    {
+      id: string;
+      name: string;
+      neighborhood: string | null;
+      borough: string | null;
+      address: string | null;
+      category: string | null;
+      price_band: string | null;
+      official_url: string | null;
+      qloo_entity_id: string;
+      qloo_mapping_status: string;
+    }[]
+  > {
+    const { results } = await this.db
+      .prepare(
+        `SELECT id, name, neighborhood, borough, address, category, price_band, official_url,
+                qloo_entity_id, qloo_mapping_status
+         FROM venues
+         WHERE qloo_mapping_status = 'confirmed' AND qloo_entity_id IS NOT NULL`,
+      )
+      .bind()
+      .all<{
+        id: string;
+        name: string;
+        neighborhood: string | null;
+        borough: string | null;
+        address: string | null;
+        category: string | null;
+        price_band: string | null;
+        official_url: string | null;
+        qloo_entity_id: string;
+        qloo_mapping_status: string;
+      }>();
+    return results;
   }
 
   async listAllCatalogEntityIds(): Promise<string[]> {

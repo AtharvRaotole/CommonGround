@@ -1,8 +1,8 @@
 # Vendor rights — Qloo (P03)
 
-**Date:** 2026-10-03  
+**Date:** 2026-10-06 (updated)  
 **Owner:** founder  
-**Status:** Public terms reviewed; **hackathon key not yet issued**; Additional Terms for the key **not in hand**.
+**Status:** Public terms reviewed; **hackathon key issued and installed** (Worker secret). Additional Terms email not separately filed — treat public Terms + hackathon guide as controlling until written answers arrive.
 
 ## Controlling documents (known)
 
@@ -13,7 +13,7 @@
 | Devpost starter kit email (2026-10-03) | inbox · support@devpost.com | Key request form; personal key; no personal data to Qloo; results are group tendencies |
 | Key request form | https://forms.gle/zz12orkLHTAneLGz6 · also docs.google.com form in starter email | Founder must submit |
 | Privacy policy | https://www.qloo.com/legal/privacy | Input handling (review before pilots) |
-| Actual key email / Additional Terms | **Not received** (Gmail search 2026-10-03: no key delivery) | **Required for AC03 confirmation** |
+| Actual key email / Additional Terms | **Key received 2026-10-06** (hackathon starter email) | Installed as Worker secret; Additional Terms still not a separate attachment |
 
 ## What public terms clearly constrain
 
@@ -33,7 +33,7 @@ From the public Terms (not a substitute for the hackathon Additional Terms):
 |---|---|
 | Call hackathon API from server with approved key | Allowed once key issued; keep key server-side only |
 | Persist raw proprietary Qloo JSON in public git/fixtures | **Blocked** |
-| Persist normalized ranks / entity IDs for demo TTL | **Blocked until written permission or clear Additional Terms** — use ephemeral run state only in memory/session with short TTL if we must proceed to design |
+| Persist normalized ranks / entity IDs for demo TTL | **Hackathon demo allow:** confirmed place entity IDs in private venue catalog + ephemeral run/revision TTL; **no** raw proprietary response dumps in git |
 | Display names + relative ranks in UI for consenting users | **Conditional** — likely intended for hackathon demos; still ask (Q3) |
 | Send Qloo output subset to OpenAI for explanations | **Blocked until Q5 answered** — ship template explanations first (P16) |
 | Public synthetic fixtures | **Allowed** if fully fabricated (see `fixtures/synthetic/`) |

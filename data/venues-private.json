@@ -3,7 +3,7 @@
   "created": "2026-10-04",
   "catchment": "Manhattan south of 59th + Brooklyn Williamsburg/Prospect Heights/Park Slope corridor",
   "data_mode": "official_site_desk_check",
-  "warning": "Desk-checked evidence only. Unknown \u2260 pass. No Qloo IDs until live confirm. Not a booking system.",
+  "warning": "Desk-checked evidence + live Qloo place IDs confirmed via /search with name-match threshold. Unknown facts still \u2260 pass. Not a booking system.",
   "policy_ref": "docs/data/venue-policy.md",
   "count": 25,
   "venues": [
@@ -16,8 +16,8 @@
       "category": "pizza / quick casual",
       "priceBand": "$",
       "officialUrl": "https://www.joespizzanyc.com/locations-1-1",
-      "qlooEntityId": null,
-      "qlooMappingStatus": "unknown",
+      "qlooEntityId": "59F80C13-968D-4FDB-B526-4E39C9A6283C",
+      "qlooMappingStatus": "confirmed",
       "facts": [
         {
           "id": "V01-name",
@@ -107,8 +107,8 @@
       "category": "Xi'an Chinese / noodles",
       "priceBand": "$",
       "officialUrl": "https://www.xianfoods.com/locations",
-      "qlooEntityId": null,
-      "qlooMappingStatus": "unknown",
+      "qlooEntityId": "CE10CAC9-83F1-472E-99BB-90F36794E770",
+      "qlooMappingStatus": "confirmed",
       "facts": [
         {
           "id": "V02-name",
@@ -198,8 +198,8 @@
       "category": "noodles / contemporary",
       "priceBand": "$$",
       "officialUrl": "https://www.momofuku.com/restaurants/noodle-bar-east-village",
-      "qlooEntityId": null,
-      "qlooMappingStatus": "unknown",
+      "qlooEntityId": "F4D95D7E-29BA-4A04-B1F3-B3948878F60E",
+      "qlooMappingStatus": "confirmed",
       "facts": [
         {
           "id": "V03-name",
@@ -289,8 +289,8 @@
       "category": "vegetarian diner",
       "priceBand": "$$",
       "officialUrl": "https://www.superiorityburger.com/contact",
-      "qlooEntityId": null,
-      "qlooMappingStatus": "unknown",
+      "qlooEntityId": "B11D69D4-F5DD-4269-AE3E-619F696BAF66",
+      "qlooMappingStatus": "confirmed",
       "facts": [
         {
           "id": "V04-name",
@@ -380,8 +380,8 @@
       "category": "American / French brasserie",
       "priceBand": "$$$",
       "officialUrl": "https://www.theodeonrestaurant.com/location/the-odeon/",
-      "qlooEntityId": null,
-      "qlooMappingStatus": "unknown",
+      "qlooEntityId": "A8689F0F-3AFD-4760-AAC8-6FEF2FFEAE3B",
+      "qlooMappingStatus": "confirmed",
       "facts": [
         {
           "id": "V05-name",
@@ -471,8 +471,8 @@
       "category": "Jewish deli",
       "priceBand": "$$",
       "officialUrl": "https://katzsdelicatessen.com/address",
-      "qlooEntityId": null,
-      "qlooMappingStatus": "unknown",
+      "qlooEntityId": "8505B59A-E2DA-4BFF-94A4-97707ECA4686",
+      "qlooMappingStatus": "confirmed",
       "facts": [
         {
           "id": "V06-name",
@@ -562,8 +562,8 @@
       "category": "American / bakery restaurant",
       "priceBand": "$$",
       "officialUrl": "https://clintonstreetbaking.com/pages/contact",
-      "qlooEntityId": null,
-      "qlooMappingStatus": "unknown",
+      "qlooEntityId": "AC371FC7-1EA2-41DB-A8C5-4BA005868563",
+      "qlooMappingStatus": "confirmed",
       "facts": [
         {
           "id": "V07-name",
@@ -653,8 +653,8 @@
       "category": "Italian",
       "priceBand": "$$$",
       "officialUrl": "https://www.lilianewyork.com/",
-      "qlooEntityId": null,
-      "qlooMappingStatus": "unknown",
+      "qlooEntityId": "55E6BA87-F930-4AF0-AD01-D2A3AF0CF782",
+      "qlooMappingStatus": "confirmed",
       "facts": [
         {
           "id": "V08-name",
@@ -744,8 +744,8 @@
       "category": "steakhouse",
       "priceBand": "$$$$",
       "officialUrl": "https://peterluger.com/pages/locations-reservations",
-      "qlooEntityId": null,
-      "qlooMappingStatus": "unknown",
+      "qlooEntityId": "8ED30F75-C932-4BB9-A598-FAF9F6528076",
+      "qlooMappingStatus": "confirmed",
       "facts": [
         {
           "id": "V09-name",
@@ -835,8 +835,8 @@
       "category": "Xi'an Chinese / noodles",
       "priceBand": "$",
       "officialUrl": "https://www.xianfoods.com/locations",
-      "qlooEntityId": null,
-      "qlooMappingStatus": "unknown",
+      "qlooEntityId": "CE10CAC9-83F1-472E-99BB-90F36794E770",
+      "qlooMappingStatus": "confirmed",
       "facts": [
         {
           "id": "V10-name",
@@ -926,8 +926,8 @@
       "category": "pizza",
       "priceBand": "$$",
       "officialUrl": "https://www.lucali.com/",
-      "qlooEntityId": null,
-      "qlooMappingStatus": "unknown",
+      "qlooEntityId": "895FA243-5148-421C-B962-74FF86B12E33",
+      "qlooMappingStatus": "confirmed",
       "facts": [
         {
           "id": "V11-name",
@@ -1017,8 +1017,8 @@
       "category": "Italian / pizza",
       "priceBand": "$$",
       "officialUrl": "https://www.rubirosanyc.com/",
-      "qlooEntityId": null,
-      "qlooMappingStatus": "unknown",
+      "qlooEntityId": "51D6B9CF-BF3B-4EAA-912E-492E6C8B4125",
+      "qlooMappingStatus": "confirmed",
       "facts": [
         {
           "id": "V12-name",
@@ -1108,8 +1108,8 @@
       "category": "ramen",
       "priceBand": "$$",
       "officialUrl": "https://ippudony.com/",
-      "qlooEntityId": null,
-      "qlooMappingStatus": "unknown",
+      "qlooEntityId": "4B40DD10-8DA5-42EA-BB89-A21ABB11F95D",
+      "qlooMappingStatus": "confirmed",
       "facts": [
         {
           "id": "V13-name",
@@ -1199,8 +1199,8 @@
       "category": "pizza",
       "priceBand": "$",
       "officialUrl": "https://www.princestreetpizzanyc.com/",
-      "qlooEntityId": null,
-      "qlooMappingStatus": "unknown",
+      "qlooEntityId": "8E625CD0-8BDE-47DD-9F6C-B6641428AB68",
+      "qlooMappingStatus": "confirmed",
       "facts": [
         {
           "id": "V14-name",
@@ -1290,8 +1290,8 @@
       "category": "French brasserie",
       "priceBand": "$$$",
       "officialUrl": "https://balthazarny.com/",
-      "qlooEntityId": null,
-      "qlooMappingStatus": "unknown",
+      "qlooEntityId": "FCE8B172-4795-43E4-B222-3B550DC05FD9",
+      "qlooMappingStatus": "confirmed",
       "facts": [
         {
           "id": "V15-name",
@@ -1381,8 +1381,8 @@
       "category": "pizza",
       "priceBand": "$$",
       "officialUrl": "https://www.firstpizza.com/",
-      "qlooEntityId": null,
-      "qlooMappingStatus": "unknown",
+      "qlooEntityId": "810D9FAE-ED67-422B-AEED-F6642F612277",
+      "qlooMappingStatus": "confirmed",
       "facts": [
         {
           "id": "V16-name",
@@ -1472,8 +1472,8 @@
       "category": "American",
       "priceBand": "$$",
       "officialUrl": "https://emmastorch.org/",
-      "qlooEntityId": null,
-      "qlooMappingStatus": "unknown",
+      "qlooEntityId": "CC61A96B-A1B9-432B-B49A-4884C6B5FD7A",
+      "qlooMappingStatus": "confirmed",
       "facts": [
         {
           "id": "V17-name",
@@ -1654,8 +1654,8 @@
       "category": "American",
       "priceBand": "$$$",
       "officialUrl": "https://www.olmstednyc.com/",
-      "qlooEntityId": null,
-      "qlooMappingStatus": "unknown",
+      "qlooEntityId": "3BD03F3B-5DAE-49C8-B7A5-B203799A66A9",
+      "qlooMappingStatus": "confirmed",
       "facts": [
         {
           "id": "V19-name",
@@ -1745,8 +1745,8 @@
       "category": "Italian",
       "priceBand": "$$",
       "officialUrl": "https://www.aldilatrattoria.com/",
-      "qlooEntityId": null,
-      "qlooMappingStatus": "unknown",
+      "qlooEntityId": "5732F72D-3425-431A-89E6-491067289E99",
+      "qlooMappingStatus": "confirmed",
       "facts": [
         {
           "id": "V20-name",
@@ -1836,8 +1836,8 @@
       "category": "cafe / New American",
       "priceBand": "$$",
       "officialUrl": "https://www.karenskafe.com/",
-      "qlooEntityId": null,
-      "qlooMappingStatus": "unknown",
+      "qlooEntityId": "14FF71BE-FEFB-4B52-BB6D-4D03195CDF47",
+      "qlooMappingStatus": "confirmed",
       "facts": [
         {
           "id": "V21-name",
@@ -1927,8 +1927,8 @@
       "category": "Southwestern",
       "priceBand": "$$",
       "officialUrl": "https://www.santafenyc.com/",
-      "qlooEntityId": null,
-      "qlooMappingStatus": "unknown",
+      "qlooEntityId": "601F83CB-7203-4148-B3D6-1131768DA8BB",
+      "qlooMappingStatus": "confirmed",
       "facts": [
         {
           "id": "V22-name",
@@ -2018,8 +2018,8 @@
       "category": "Ukrainian / diner",
       "priceBand": "$$",
       "officialUrl": "https://veselka.com/",
-      "qlooEntityId": null,
-      "qlooMappingStatus": "unknown",
+      "qlooEntityId": "E93F7266-8F59-45F9-8A4E-436F3F559B18",
+      "qlooMappingStatus": "confirmed",
       "facts": [
         {
           "id": "V23-name",
@@ -2109,8 +2109,8 @@
       "category": "Italian",
       "priceBand": "$$$$",
       "officialUrl": "https://carbonenewyork.com/",
-      "qlooEntityId": null,
-      "qlooMappingStatus": "unknown",
+      "qlooEntityId": "3ED85B88-E3F4-4FB0-85BD-C101554E96D7",
+      "qlooMappingStatus": "confirmed",
       "facts": [
         {
           "id": "V24-name",
@@ -2282,5 +2282,7 @@
         }
       ]
     }
-  ]
+  ],
+  "qloo_mapped_at": "2026-10-06T12:18:39.878Z",
+  "count_confirmed": 23
 }

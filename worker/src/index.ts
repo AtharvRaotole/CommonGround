@@ -214,6 +214,7 @@ export default {
         groupSize?: number;
         area?: string;
         timezone?: string;
+        startsAtLocal?: string;
       } | null;
       const title = body?.title?.trim();
       const groupSize = Number(body?.groupSize);
@@ -223,11 +224,24 @@ export default {
           422,
         );
       }
+      const startsAtLocal = body?.startsAtLocal?.trim();
+      if (startsAtLocal && !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(startsAtLocal)) {
+        return json(
+          {
+            code: "invalid",
+            message: "startsAtLocal must be YYYY-MM-DDTHH:mm",
+            retryable: false,
+            requestId: crypto.randomUUID(),
+          },
+          422,
+        );
+      }
       const created = await repo.createEvent({
         title,
         groupSize,
         area: body?.area,
         timezone: body?.timezone,
+        startsAtLocal: startsAtLocal || undefined,
       });
       await recordTelemetry({
         db: env.DB,
@@ -649,20 +663,27 @@ export default {
         idempotencyKey: parsed.data.idempotencyKey,
         preferAgent: !!env.OPENAI_API_KEY,
       });
-      // Stash optional candidates on first create via last_safe_json.
-      if (created && (parsed.data.candidateEntityIds?.length || parsed.data.familiarVenueIds?.length)) {
-        await env.DB.prepare(
-          `UPDATE runs SET last_safe_json = ? WHERE id = ? AND event_id = ?`,
-        )
-          .bind(
-            JSON.stringify({
-              candidateEntityIds: parsed.data.candidateEntityIds ?? [],
-              familiarVenueIds: parsed.data.familiarVenueIds ?? [],
-            }),
-            run.id,
-            run.event_id,
+      // Stash candidates on first create. Prefer client slate; else confirmed catalog for live demos.
+      if (created) {
+        const catalogIds = await repo.listConfirmedCatalogEntityIds();
+        const candidateEntityIds =
+          parsed.data.candidateEntityIds?.length
+            ? parsed.data.candidateEntityIds
+            : catalogIds.slice(0, 30);
+        if (candidateEntityIds.length || parsed.data.familiarVenueIds?.length) {
+          await env.DB.prepare(
+            `UPDATE runs SET last_safe_json = ? WHERE id = ? AND event_id = ?`,
           )
-          .run();
+            .bind(
+              JSON.stringify({
+                candidateEntityIds,
+                familiarVenueIds: parsed.data.familiarVenueIds ?? [],
+              }),
+              run.id,
+              run.event_id,
+            )
+            .run();
+        }
       }
       if (created) {
         await recordTelemetry({
@@ -734,13 +755,27 @@ export default {
       } catch {
         lastSafe = {};
       }
+      const catalogVenues = await repo.listConfirmedVenues();
+      const venues = catalogVenues.map((v) => ({
+        id: v.qloo_entity_id,
+        name: v.name,
+        neighborhood: v.neighborhood,
+        borough: v.borough,
+        address: v.address,
+        category: v.category,
+        priceBand: v.price_band,
+        officialUrl: v.official_url,
+        qlooEntityId: v.qloo_entity_id,
+        qlooMappingStatus: "confirmed" as const,
+        facts: [],
+      }));
       const result = await stepRun({
         deps: { db: env.DB, qloo: qlooClient(env), openai: openaiClient(env) },
         runId: run.id,
         ctx: {
           members: ctxBundle.members,
           constraints: ctxBundle.constraints,
-          venues: [],
+          venues,
           catalogEntityIds: ctxBundle.catalogEntityIds,
           candidateEntityIds: (lastSafe.candidateEntityIds as string[] | undefined) ?? undefined,
           familiarVenueIds: (lastSafe.familiarVenueIds as string[] | undefined) ?? undefined,
@@ -786,8 +821,17 @@ export default {
         );
       }
       const veto = await repo.vetoSummary(session.eventId);
-      const alternatives = JSON.parse(rev.alternatives_json);
+      const alternatives = JSON.parse(rev.alternatives_json) as {
+        venueId: string;
+        role: string;
+        explanation: string;
+      }[];
       const explanations = JSON.parse(rev.explanations_json);
+      const venueIds = JSON.parse(rev.venue_ids_json) as string[];
+      const venueNames = await repo.listVenueNamesByEntityIds([
+        ...venueIds,
+        ...alternatives.map((a) => a.venueId),
+      ]);
       // Host: aggregate only. Member: same public cards (private ranks never stored).
       return json({
         revisionId: rev.id,
@@ -797,7 +841,8 @@ export default {
         profiledMemberCount: rev.profiled_member_count,
         totalMemberCount: rev.total_member_count,
         readiness: rev.readiness,
-        venueIds: JSON.parse(rev.venue_ids_json),
+        venueIds,
+        venueNames,
         unknownFactIds: JSON.parse(rev.unknown_fact_ids_json),
         alternatives,
         explanations,
@@ -963,13 +1008,16 @@ export default {
       const event = await repo.getEvent(session.eventId);
       const venueIds = JSON.parse(rev.venue_ids_json) as string[];
       const selected = venueIds[0] ?? "venue";
-      const timezone = "America/New_York";
-      const localStart = "2026-10-18T19:00";
+      const venueNames = await repo.listVenueNamesByEntityIds([selected]);
+      const venueLabel = venueNames[selected] ?? selected;
+      const timezone = event?.timezone?.trim() || "America/New_York";
+      const localStart = event?.starts_at_local?.trim() || "2026-10-18T19:00";
       const dst = assessDstLocalTime(localStart, timezone);
       const summary = {
         revisionId: rev.id,
         title: event?.title ?? "Outing",
         venueId: selected,
+        venueName: venueLabel,
         timezone,
         localStart,
         dataMode: rev.data_mode,
@@ -997,8 +1045,8 @@ export default {
         const ics = buildIcs({
           uid: `${rev.id}@common-ground`,
           summary: event?.title ?? "Common Ground outing",
-          description: `${summary.banner}\nVenue: ${selected}`,
-          location: selected,
+          description: `${summary.banner}\nVenue: ${venueLabel}`,
+          location: venueLabel,
           localStart,
           timezone,
           dstStatus: dst,

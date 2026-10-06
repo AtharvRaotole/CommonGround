@@ -20,9 +20,9 @@ for (const v of doc.venues) {
       v.id,
     )}, ${sql(v.name)}, ${sql(v.neighborhood)}, ${sql(v.borough)}, ${sql(v.address)}, ${sql(
       v.category,
-    )}, ${sql(v.priceBand)}, ${sql(v.officialUrl)}, NULL, ${sql(v.qlooMappingStatus)}, ${sql(
-      doc.created + "T00:00:00.000Z",
-    )});`,
+    )}, ${sql(v.priceBand)}, ${sql(v.officialUrl)}, ${sql(v.qlooEntityId)}, ${sql(
+      v.qlooMappingStatus,
+    )}, ${sql(doc.created + "T00:00:00.000Z")});`,
   );
   for (const f of v.facts) {
     statements.push(

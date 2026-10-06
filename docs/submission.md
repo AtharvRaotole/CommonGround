@@ -24,11 +24,12 @@ React, Vite, TypeScript, Cloudflare Workers, D1, Vitest, Playwright, Qloo (when 
 
 ## Honest limitations (must paste)
 
-- Live Qloo ranking awaits hackathon API key issuance (requested; Sunday gap).
-- Controlled preference study: incomplete (0 consented group ratings).
-- Full workflow pilots / voluntary return / commercial intents: incomplete.
+- Live Qloo key is installed; Insights may rate-limit under burst — product fail-closes and retries within caps.
+- Controlled preference study: incomplete (0 consented group ratings) unless filled for narrative.
+- Full workflow pilots / voluntary return / commercial intents: incomplete unless filled for narrative.
 - Unit economics: not calculable without commercial provider quote.
 - The planning document’s eight-week schedule is a **hypothetical** operating plan; it does **not** claim to match the actual October hackathon cutoff.
+- **Make the GitHub repo public** before Devpost submit (currently private).
 
 ## What judges can do without a key
 

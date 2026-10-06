@@ -1,4 +1,4 @@
-# Runtime report (P23) · 2026-10-04
+# Runtime report (P23) · 2026-10-06
 
 ## Sample
 
@@ -11,9 +11,9 @@
 | Stat | Value |
 |---|---|
 | min | 0.6 |
-| p50 | 1.4 |
-| p95 | 9.6 |
-| max | 14.7 |
+| p50 | 1.3 |
+| p95 | 3.2 |
+| max | 10.6 |
 
 Targets: typical < 20000ms · p95 < 30000ms  
 **Decision:** Local sample meets timing targets (local Node/SQLite only — not Cloudflare isolate CPU).
