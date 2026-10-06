@@ -12,7 +12,7 @@
 | Synthetic shortlist | https://common-ground.issue-atharva.workers.dev/example |
 | Privacy | https://common-ground.issue-atharva.workers.dev/privacy |
 | Source | https://github.com/AtharvRaotole/CommonGround |
-| Release SHA | `3c3dd74ce5a0bc31804f1365a522e836dcd3b7e3` (bump at final submit) |
+| Release SHA | `7500de8` (`git rev-parse HEAD` at submit) |
 
 ## One-paragraph description
 
