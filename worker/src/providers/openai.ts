@@ -22,7 +22,8 @@ export class OpenAIClient {
   constructor(cfg: OpenAIConfig = {}) {
     this.apiKey = cfg.apiKey?.trim() || undefined;
     this.model = cfg.model?.trim() || "gpt-4o-mini";
-    this.fetchImpl = cfg.fetchImpl ?? fetch;
+    // Wrap global fetch — Workers throw Illegal invocation if fetch is detached from globalThis.
+    this.fetchImpl = cfg.fetchImpl ?? ((input, init) => fetch(input, init));
   }
 
   get available(): boolean {

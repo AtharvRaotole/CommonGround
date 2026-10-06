@@ -157,7 +157,8 @@ export class QlooClient {
   constructor(opts: QlooClientOptions = {}) {
     this.apiKey = opts.apiKey?.trim() || undefined;
     this.baseUrl = (opts.baseUrl || QLOO_DEFAULT_BASE).replace(/\/$/, "");
-    this.fetchImpl = opts.fetchImpl ?? fetch;
+    // Wrap global fetch — Workers throw Illegal invocation if fetch is detached from globalThis.
+    this.fetchImpl = opts.fetchImpl ?? ((input, init) => fetch(input, init));
     this.synthetic = opts.syntheticEntities ?? DEFAULT_SYNTHETIC;
     this.forceTimeout = opts.forceTimeout;
     this.forceStatus = opts.forceStatus;
@@ -216,14 +217,22 @@ export class QlooClient {
       if (status < 200 || status >= 300) {
         return { status: "unavailable", dataMode: "live", candidates: [], httpStatus: status };
       }
-      const json = (await res.json()) as unknown;
+      const text = await res.text();
+      let json: unknown;
+      try {
+        json = JSON.parse(text) as unknown;
+      } catch {
+        console.error("qloo_search_json_parse_failed", text.slice(0, 120));
+        return { status: "unavailable", dataMode: "live", candidates: [], httpStatus: status };
+      }
       const candidates = pickSearchCandidates(json);
       if (!candidates.length) {
         return { status: "no_match", dataMode: "live", candidates: [] };
       }
       return { status: "ok", dataMode: "live", candidates: candidates.slice(0, 10) };
-    } catch {
-      return { status: "timeout", dataMode: "live", candidates: [] };
+    } catch (err) {
+      console.error("qloo_search_fetch_failed", err instanceof Error ? err.message : "unknown");
+      return { status: "unavailable", dataMode: "live", candidates: [], httpStatus: 0 };
     }
   }
 

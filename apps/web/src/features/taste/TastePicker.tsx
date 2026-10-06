@@ -26,6 +26,7 @@ type Props = {
   disabled?: boolean;
 };
 
+/** Default artist/movie/book bias for taste search — shrinks Qloo payloads. */
 async function searchEntities(
   eventId: string,
   query: string,
@@ -34,7 +35,10 @@ async function searchEntities(
     method: "POST",
     credentials: "include",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ query }),
+    body: JSON.stringify({
+      query,
+      types: ["urn:entity:artist", "urn:entity:movie", "urn:entity:book"],
+    }),
   });
   const data = (await res.json().catch(() => null)) as {
     status?: SearchStatus;

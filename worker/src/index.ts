@@ -161,6 +161,43 @@ export default {
       return json(body);
     }
 
+    if (request.method === "GET" && url.pathname === "/api/health/providers") {
+      const qloo = qlooClient(env);
+      const openai = openaiClient(env);
+      const t0 = Date.now();
+      const search = await qloo.searchEntities({
+        query: "Radiohead",
+        types: ["urn:entity:artist"],
+        take: 1,
+      });
+      const qlooMs = Date.now() - t0;
+      let openaiStatus: "ok" | "unavailable" | "missing_key" = "missing_key";
+      let openaiMs = 0;
+      if (openai.available) {
+        const o0 = Date.now();
+        const polished = await openai.chooseTool({ state: "queued" });
+        openaiMs = Date.now() - o0;
+        openaiStatus = polished.status === "ok" || polished.status === "invalid" ? "ok" : "unavailable";
+      }
+      return json({
+        qloo: {
+          keyConfigured: !!env.QLOO_API_KEY,
+          baseUrl: env.QLOO_BASE_URL || "https://hackathon.api.qloo.com",
+          searchStatus: search.status,
+          dataMode: search.dataMode,
+          candidateCount: "candidates" in search ? search.candidates.length : 0,
+          ms: qlooMs,
+        },
+        openai: {
+          keyConfigured: !!env.OPENAI_API_KEY,
+          model: env.OPENAI_MODEL || "gpt-4o-mini",
+          status: openaiStatus,
+          ms: openaiMs,
+        },
+        catalogConfirmed: (await repo.listConfirmedCatalogEntityIds()).length,
+      });
+    }
+
     if (url.pathname.startsWith("/api/") && !assertSameOrigin(request, allowedOrigins(env, url))) {
       return json(
         { code: "forbidden_origin", message: "Origin not allowed", retryable: false, requestId: crypto.randomUUID() },

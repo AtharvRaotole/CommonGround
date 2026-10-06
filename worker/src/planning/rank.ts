@@ -190,9 +190,18 @@ export function buildComparableRanks(input: {
     coverageRatio + 1e-9 >= RANK_COVERAGE_POLICY.minSubmittedCoverage;
 
   const profiledIds = profiled.map((m) => m.memberId);
-  const selection = gateOk
+  // When the hard coverage gate fails but we still have a usable common set, produce a
+  // shortlist for host review with readiness=needs_input (honest — not a full pass).
+  const shortlistVenueIds =
+    gateOk
+      ? commonVenueIds
+      : commonVenueIds.length >= 3
+        ? commonVenueIds
+        : [];
+
+  const selection = shortlistVenueIds.length
     ? selectCompromiseAlternatives({
-        venueIds: commonVenueIds,
+        venueIds: shortlistVenueIds,
         cells,
         profiledMemberIds: profiledIds,
         suitabilityByVenueId: input.suitabilityByVenueId,
@@ -205,15 +214,17 @@ export function buildComparableRanks(input: {
         limitations: COMPROMISE_POLICY.limitations,
       };
 
-  const compromiseVenueIds = gateOk
-    ? orderByCompromise(commonVenueIds, cells, profiledIds, input.suitabilityByVenueId)
+  const compromiseVenueIds = shortlistVenueIds.length
+    ? orderByCompromise(shortlistVenueIds, cells, profiledIds, input.suitabilityByVenueId)
     : [];
 
   const status: RankBuildResult["status"] = !profiled.length
     ? "needs_input"
     : gateOk
       ? "ok"
-      : "needs_input";
+      : shortlistVenueIds.length
+        ? "needs_input"
+        : "needs_input";
 
   const readiness: RankBuildResult["publicSummary"]["readiness"] =
     status === "ok" ? "ready_for_host_review" : "needs_input";
