@@ -194,7 +194,8 @@ export default {
           status: openaiStatus,
           ms: openaiMs,
         },
-        catalogConfirmed: (await repo.listConfirmedCatalogEntityIds()).length,
+        catalogConfirmed: (await repo.listConfirmedVenues()).length,
+        catalogDistinctQlooIds: (await repo.listConfirmedCatalogEntityIds()).length,
       });
     }
 

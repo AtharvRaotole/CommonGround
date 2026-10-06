@@ -8,8 +8,8 @@ Start with the [decision brief](00-decision-brief.md). The selected customer is 
 
 ## Read the plan
 
-- [Complete typeset PDF](../output/pdf/common-ground-master-plan.pdf)
-- [Single consolidated Markdown copy](MASTER-PLAN.md)
+- [Single consolidated Markdown copy](MASTER-PLAN.md) (canonical in-repo reading copy)
+- Typeset PDF: generate locally with `python3 plan/tools/build_pdf.py` → `output/pdf/` (gitignored derived artifact)
 - [32-phase execution index](phases/README.md)
 - [Machine-readable phases and dependencies](phases.json)
 - [Working research and verification templates](templates/README.md)

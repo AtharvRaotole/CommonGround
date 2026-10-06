@@ -24,7 +24,7 @@
 | Place Insights candidate-restricted | live authed | **Rate-limited (429)** on burst after search storm | same report; retry with backoff in product |
 | Missing/extra candidate detection | live | Blocked by 429 on first Insights wave | re-run after cool-down |
 | Contradictory filter silent-ignore probe | live | Blocked by 429 | re-run after cool-down |
-| Venue catalog mapping | live search | **23/25 confirmed** with name-match threshold | `data/venues-private.json` · redacted map in p03-private |
+| Venue catalog mapping | live search | **23/25 confirmed rows** (22 distinct Qloo IDs; Xi'an branches collide) | `data/venues-private.json` · redacted map in p03-private |
 | Parse verbose responses | synthetic | Pass | prior |
 | Free Worker deploy | live | Pass | workers.dev |
 | Numerical quotas | issued terms | **Unknown** — observed 429 under burst | Ask Q2 / measure |

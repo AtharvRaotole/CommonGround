@@ -20,7 +20,8 @@
     "eval:report": "pnpm exec vitest run --config vitest.config.ts tests/unit/eval-analysis.test.ts",
     "dev:web": "pnpm --filter @common-ground/web dev",
     "dev:worker": "pnpm --filter @common-ground/worker dev",
-    "verify:ci": "pnpm lint && pnpm typecheck && pnpm build && pnpm test:unit && pnpm test:integration && pnpm verify:release"
+    "verify:ci": "pnpm lint && pnpm typecheck && pnpm build && pnpm test:unit && pnpm test:integration && pnpm verify:release",
+    "smoke:live": "node scripts/live-smoke.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.51.0",
